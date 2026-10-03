@@ -28,9 +28,8 @@ this comment and privacy review.
 
 ## Public repository boundary
 
-The new public-facing Glideslope repository exists to leave deleted files and all earlier private history behind.
-Keep the current repository and its full history private as an archive. Create an independent private repository
-from an explicit allowlist of files present at the frozen source commit, with a fresh root commit. Do not import
-old commits, branches, tags, Git objects, or deleted-file blobs, and do not use a fork, mirror, or clone-and-delete
-workflow. Exclude private screenshots and other personal material from the allowlist. Verify the new repository's
-entire history and release artifacts before making it public.
+This public-facing Glideslope repository was created from an explicit allowlist of current files in a fresh root
+commit to leave deleted files and earlier private history behind. Keep the original repository and its full history
+private as an archive. Do not import old commits, branches, tags, Git objects, or deleted-file blobs, or use a fork,
+mirror, or clone-and-delete workflow. Include personal material only with Doug's explicit approval; he approved the
+four original README screenshots. Verify this repository's entire history and release artifacts before making it public.

@@ -18,6 +18,16 @@ text you saw and the exact wording you recommend. I'll review the correction and
   can be browsed with ‹ › Now.
 - The 5-hour window, Codex reset credits and Claude's separate Fable weekly limit show when the provider reports them.
 
+## Screenshots
+
+| Codex · full mode · dark | Claude · mini mode · dark |
+| --- | --- |
+| <img src="screenshots/Codex-Full-Dark-v2.5.1.png" alt="Codex card in full mode with the dark theme" width="470"> | <img src="screenshots/Claude-Mini-Dark-v2.5.1.png" alt="Claude card in mini mode with the dark theme" width="265"> |
+| **Claude · full mode · light** | **Gemini · full mode · dark** |
+| <img src="screenshots/Claude-Full-Light-v2.5.1.png" alt="Claude card in full mode with the light theme" width="470"> | <img src="screenshots/Gemini-Full-Dark-v2.5.1.png" alt="Gemini card in full mode with the dark theme" width="470"> |
+
+[View all screenshots](screenshots/).
+
 ## Working with the cards
 
 - **Snap.** Drag a card next to another and release. They snap together 10 px apart, and the card you dragged
