@@ -31,5 +31,12 @@ this comment and privacy review.
 This public-facing Glideslope repository was created from an explicit allowlist of current files in a fresh root
 commit to leave deleted files and earlier private history behind. Keep the original repository and its full history
 private as an archive. Do not import old commits, branches, tags, Git objects, or deleted-file blobs, or use a fork,
-mirror, or clone-and-delete workflow. Include personal material only with Doug's explicit approval; he approved the
-four original README screenshots. Verify this repository's entire history and release artifacts before making it public.
+mirror, or clone-and-delete workflow.
+
+This repository is public. Before each commit and push, review the exact staged files, diff, generated artifacts,
+and commit metadata for private personal information or credentials. Do not commit private contact details, nonpublic
+account identifiers, tokens, keys, real user-specific paths, private machine identifiers, personal logs, or unrelated
+desktop content. Doug's intentionally public contact email is allowed in commits and documentation. Screenshots of
+the Glideslope app itself are allowed, including its displayed usage figures. Check that screenshots do not expose
+credentials or unrelated personal content. Doug approved the four original README screenshots. Apply the same check
+to release assets before uploading them.
