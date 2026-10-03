@@ -1,0 +1,22 @@
+# Local Codex worktrees and task state
+.codex/
+
+# Scratch builds, logs and test output
+temp/
+
+# .NET build output
+**/bin/
+**/obj/
+.vs/
+
+# User-specific IDE files
+*.user
+*.suo
+
+# Local package cache for reproducible, repository-scoped restores
+.nuget/
+
+# Generated self-contained publish artifacts
+artifacts/publish/
+artifacts/verification/
+artifacts/packages/

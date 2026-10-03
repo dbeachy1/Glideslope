@@ -1,0 +1,685 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Name" xml:space="preserve">
+    <value>Glideslope</value>
+  </data>
+  <data name="Tray_Show" xml:space="preserve">
+    <value>显示 Glideslope</value>
+  </data>
+  <data name="Tray_Exit" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="Tray_ToolTip" xml:space="preserve">
+    <value>Glideslope</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Glideslope 设置</value>
+  </data>
+  <data name="Settings_Heading" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Settings_EnabledProviders" xml:space="preserve">
+    <value>已启用的提供方</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>外观</value>
+  </data>
+  <data name="Settings_ThemeSystem" xml:space="preserve">
+    <value>跟随系统主题</value>
+  </data>
+  <data name="Settings_ThemeDark" xml:space="preserve">
+    <value>深色主题</value>
+  </data>
+  <data name="Settings_ThemeLight" xml:space="preserve">
+    <value>浅色主题</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>语言</value>
+    <comment>Settings row label for application wording. A saved choice takes effect after restarting Glideslope.</comment>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>系统语言</value>
+    <comment>First option in the application language selector; follows the operating system's display language on each launch.</comment>
+  </data>
+  <data name="Settings_LanguageRestart" xml:space="preserve">
+    <value>重启 Glideslope 以应用语言更改。</value>
+    <comment>Help text under the language selector. It must clearly say the saved language change applies after restarting the app.</comment>
+  </data>
+  <data name="Settings_CardSize" xml:space="preserve">
+    <value>卡片大小</value>
+    <comment>Settings row label beside a slider from 70 % to 150 % that scales every card.</comment>
+  </data>
+  <data name="Settings_MiniCardSize" xml:space="preserve">
+    <value>迷你卡片大小</value>
+    <comment>Settings row label beside a slider from 70 % to 150 % that scales mini cards, directly under Card size.</comment>
+  </data>
+  <data name="Settings_LogFile" xml:space="preserve">
+    <value>日志文件</value>
+    <comment>Settings label above the full path of the app's log file, shown as a link.</comment>
+  </data>
+  <data name="Settings_OpenLogFolder" xml:space="preserve">
+    <value>打开日志所在文件夹</value>
+    <comment>Tooltip on the log file path link in Settings.</comment>
+  </data>
+  <data name="Settings_StartInMiniMode" xml:space="preserve">
+    <value>以迷你模式启动</value>
+    <comment>Checkbox directly under Mini card size. When checked, every card opens mini at the next launch; otherwise cards open full. Card modes are not saved at shutdown.</comment>
+  </data>
+  <data name="Settings_CtrlPeek" xml:space="preserve">
+    <value>在迷你卡片上按住 Ctrl 可查看完整卡片</value>
+    <comment>Checkbox directly under Start in mini mode, on by default. While enabled, holding Ctrl over a hovered mini card shows it full until Ctrl is released, the pointer leaves, or a mouse button goes down.</comment>
+  </data>
+  <data name="Settings_AlwaysOnTop" xml:space="preserve">
+    <value>卡片始终显示在其他窗口上方</value>
+  </data>
+  <data name="Settings_SnapToScreenEdge" xml:space="preserve">
+    <value>卡片彼此吸附并贴靠屏幕边缘</value>
+  </data>
+  <data name="Settings_ResetPositions" xml:space="preserve">
+    <value>重置窗口位置</value>
+  </data>
+  <data name="Settings_RefreshInterval" xml:space="preserve">
+    <value>刷新间隔（{0}–{1} 分钟）</value>
+    <comment>{0} = the smallest allowed interval (5), {1} = the largest (30), both in minutes.</comment>
+  </data>
+  <data name="Settings_RetentionDays" xml:space="preserve">
+    <value>保留使用记录（{0}–{1} 天）</value>
+    <comment>{0} = the fewest days that can be kept (7), {1} = the most (365).</comment>
+  </data>
+  <data name="Settings_AtLeastOneProvider" xml:space="preserve">
+    <value>请至少启用一个提供方。</value>
+  </data>
+  <data name="Settings_StartAtSignIn" xml:space="preserve">
+    <value>登录时启动</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Settings_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Settings_ApplyFailedUnavailable" xml:space="preserve">
+    <value>无法应用设置：当前不可用。请查看提示后重试。</value>
+  </data>
+  <data name="Settings_ApplyFailedNotOwned" xml:space="preserve">
+    <value>无法应用设置：无法识别。请查看提示后重试。</value>
+  </data>
+  <data name="Settings_ApplyFailedStale" xml:space="preserve">
+    <value>无法应用设置：启动器已过期。请查看提示后重试。</value>
+  </data>
+  <data name="Settings_ApplyFailedLauncherMissing" xml:space="preserve">
+    <value>无法应用设置：启动器不可用。请查看提示后重试。</value>
+  </data>
+  <data name="Settings_ApplyFailedRevisionConflict" xml:space="preserve">
+    <value>无法应用设置：设置已在其他位置更改。请查看提示后重试。</value>
+  </data>
+  <data name="Settings_ApplyFailedHistoryUnavailable" xml:space="preserve">
+    <value>无法应用设置：使用记录不可用，因此无法应用保留期限。请查看提示后重试。</value>
+  </data>
+  <data name="Settings_ApplyFailedHistoryPruneFailed" xml:space="preserve">
+    <value>无法应用设置：无法删除旧的使用记录。请查看提示后重试。</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableUnavailable" xml:space="preserve">
+    <value>无法启用登录时启动（当前不可用）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableNotOwned" xml:space="preserve">
+    <value>无法启用登录时启动（无法识别）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableStale" xml:space="preserve">
+    <value>无法启用登录时启动（启动器已过期）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableLauncherMissing" xml:space="preserve">
+    <value>无法启用登录时启动（启动器不可用）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableUnavailable" xml:space="preserve">
+    <value>无法停用登录时启动（当前不可用）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableNotOwned" xml:space="preserve">
+    <value>无法停用登录时启动（无法识别）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableStale" xml:space="preserve">
+    <value>无法停用登录时启动（启动器已过期）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableLauncherMissing" xml:space="preserve">
+    <value>无法停用登录时启动（启动器不可用）。</value>
+  </data>
+  <data name="Provider_Codex" xml:space="preserve">
+    <value>Codex</value>
+  </data>
+  <data name="Provider_Claude" xml:space="preserve">
+    <value>Claude</value>
+  </data>
+  <data name="Provider_Gemini" xml:space="preserve">
+    <value>Gemini</value>
+  </data>
+  <data name="Card_Title" xml:space="preserve">
+    <value>Glideslope — {0}</value>
+    <comment>Window title. {0} = provider name (Codex, Claude or Gemini; never translated).</comment>
+  </data>
+  <data name="Card_MinimumHeight" xml:space="preserve">
+    <value>740</value>
+    <comment>A number, not text: the smallest card height in pixels (at card size 100 %) that fits this language at the 790-pixel minimum width. English 680; text about 30 % longer needs about 790.</comment>
+  </data>
+  <data name="Card_SettingsTooltip" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Card_ResetSizeTooltip" xml:space="preserve">
+    <value>重置大小</value>
+  </data>
+  <data name="Card_MiniModeTooltip" xml:space="preserve">
+    <value>迷你模式</value>
+    <comment>Tooltip and accessible name of the title-row toggle while the card is full; clicking switches its group to mini.</comment>
+  </data>
+  <data name="Card_FullModeTooltip" xml:space="preserve">
+    <value>完整模式</value>
+    <comment>Tooltip and accessible name of the title-row toggle while the card is mini; clicking switches its group to full.</comment>
+  </data>
+  <data name="Card_RemainingTooltip" xml:space="preserve">
+    <value>剩余 {0}</value>
+    <comment>{0} = the weekly remaining percentage. Tooltip and accessible name of the mini card's remaining bar.</comment>
+  </data>
+  <data name="Card_Size" xml:space="preserve">
+    <value>卡片大小</value>
+    <comment>Tooltip of the title-row button that opens the card size slider, and the heading inside it.</comment>
+  </data>
+  <data name="Card_AppNameVersion" xml:space="preserve">
+    <value>Glideslope {0}</value>
+    <comment>{0} = version number, for example 1.1.0. "Glideslope" is the product name.</comment>
+  </data>
+  <data name="Card_MinimizeTooltip" xml:space="preserve">
+    <value>最小化所有卡片</value>
+    <comment>Tooltip for the header button that minimizes every card together.</comment>
+  </data>
+  <data name="Card_CloseTooltip" xml:space="preserve">
+    <value>关闭 {0} 卡片</value>
+    <comment>{0} = provider name (Codex, Claude or Gemini).</comment>
+  </data>
+  <data name="Card_FooterNoSynthetic" xml:space="preserve">
+    <value>节奏依据提供方报告的重置时间表。图表线条仅使用已记录的读数。</value>
+  </data>
+  <data name="Card_WeeklyRemaining" xml:space="preserve">
+    <value>每周剩余</value>
+  </data>
+  <data name="Card_CreditExpires" xml:space="preserve">
+    <value>用量重置机会到期</value>
+  </data>
+  <data name="Card_CreditExpiration" xml:space="preserve">
+    <value>{0} {1}（{2}）</value>
+    <comment>{0} = uppercase weekday (Card_CreditWeekdayPattern), {1} = date (Card_CreditExpirationDatePattern), {2} = Card_CreditExpiresIn or Card_CreditExpiresToday. Example: THU Oct 22 (in 26 days).</comment>
+  </data>
+  <data name="Card_CreditWeekdayPattern" xml:space="preserve">
+    <value>ddd</value>
+    <comment>.NET date format for the credit box weekday; the app uppercases it.</comment>
+  </data>
+  <data name="Card_CreditExpirationDatePattern" xml:space="preserve">
+    <value>M'月'd'日'</value>
+    <comment>.NET date format for the credit box date and the "Past week" dates. Never add an ordinal suffix.</comment>
+  </data>
+  <data name="Card_CreditExpiresIn_One" xml:space="preserve">
+    <value>{0} 天后</value>
+    <comment>{0} = number of days until the usage reset expires.</comment>
+  </data>
+  <data name="Card_CreditExpiresIn_Other" xml:space="preserve">
+    <value>{0} 天后</value>
+    <comment>{0} = number of days until the usage reset expires.</comment>
+  </data>
+  <data name="Card_CreditExpiresToday" xml:space="preserve">
+    <value>今天</value>
+  </data>
+  <data name="Card_CreditExpirationUnknown" xml:space="preserve">
+    <value>到期时间不可用</value>
+  </data>
+  <data name="Card_NoticeSignInHeading" xml:space="preserve">
+    <value>需要登录</value>
+  </data>
+  <data name="Card_NoticeSignInClaude" xml:space="preserve">
+    <value>运行 claude 并使用 /login。</value>
+    <comment>"claude" and "/login" are commands; do not translate them.</comment>
+  </data>
+  <data name="Card_NoticeSignInCodex" xml:space="preserve">
+    <value>运行 codex 并登录。</value>
+    <comment>"codex" is a command; do not translate it.</comment>
+  </data>
+  <data name="Card_NoticeSignInGemini" xml:space="preserve">
+    <value>运行 agy 并登录。</value>
+    <comment>"agy" is a command; do not translate it.</comment>
+  </data>
+  <data name="Card_NoticeMissingHeading" xml:space="preserve">
+    <value>未找到 CLI</value>
+  </data>
+  <data name="Card_NoticeMissingClaude" xml:space="preserve">
+    <value>安装 Claude Code。</value>
+  </data>
+  <data name="Card_NoticeMissingCodex" xml:space="preserve">
+    <value>安装 Codex CLI。</value>
+  </data>
+  <data name="Card_NoticeMissingGemini" xml:space="preserve">
+    <value>安装 Antigravity (agy)。</value>
+  </data>
+  <data name="Card_CreditTooltip_NoClick_One" xml:space="preserve">
+    <value>有 {0} 次用量重置机会。</value>
+    <comment>{0} = count. This sentence is used at zero or one credit, when the credit flyout is unavailable.</comment>
+  </data>
+  <data name="Card_CreditTooltip_NoClick_Other" xml:space="preserve">
+    <value>共有 {0} 次用量重置机会。</value>
+    <comment>{0} = count. This sentence is used at zero or one credit, when the credit flyout is unavailable.</comment>
+  </data>
+  <data name="Card_CreditTooltip_Click_One" xml:space="preserve">
+    <value>共有 {0} 次用量重置机会。点击查看其余 {1} 次。</value>
+    <comment>{0} = total usage resets; {1} = those listed when clicked ({0} minus one). This sentence is used only above one credit, when the credit flyout is available. Noun grammar still follows the language's plural category.</comment>
+  </data>
+  <data name="Card_CreditTooltip_Click_Other" xml:space="preserve">
+    <value>共有 {0} 次用量重置机会。点击查看其余 {1} 次。</value>
+    <comment>{0} = total usage resets; {1} = those listed when clicked ({0} minus one). This sentence is used only above one credit, when the credit flyout is available. Noun grammar still follows the language's plural category.</comment>
+  </data>
+  <data name="Card_CreditUndisclosed_One" xml:space="preserve">
+    <value>另有 {0} 次用量重置机会（到期时间未公布）</value>
+    <comment>{0} = number of usage resets whose expiration the provider does not report.</comment>
+  </data>
+  <data name="Card_CreditUndisclosed_Other" xml:space="preserve">
+    <value>另有 {0} 次用量重置机会（到期时间未公布）</value>
+    <comment>{0} = number of usage resets whose expiration the provider does not report.</comment>
+  </data>
+  <data name="Card_FiveHourDelta" xml:space="preserve">
+    <value>5 小时节奏</value>
+  </data>
+  <data name="Card_FiveHourRemaining" xml:space="preserve">
+    <value>5 小时剩余</value>
+  </data>
+  <data name="Card_WeeklyGlideSlope" xml:space="preserve">
+    <value>每周 GLIDESLOPE</value>
+  </data>
+  <data name="Card_ObservedLegend" xml:space="preserve">
+    <value>已观测</value>
+  </data>
+  <data name="Card_EvenPaceLegend" xml:space="preserve">
+    <value>均匀节奏</value>
+  </data>
+  <data name="Card_WeeklyDeltaTitle" xml:space="preserve">
+    <value>每周节奏</value>
+  </data>
+  <data name="Card_WeeklyRemainingSection" xml:space="preserve">
+    <value>每周剩余</value>
+  </data>
+  <data name="Card_FableThisWeek" xml:space="preserve">
+    <value>本周 FABLE</value>
+    <comment>"Fable" is a model name; do not translate it.</comment>
+  </data>
+  <data name="Card_FableThisWeekWithReset" xml:space="preserve">
+    <value>本周 FABLE · 重置时间 {0}</value>
+    <comment>{0} = reset date and time (Card_DateTimeFormat), for example Sat, Sep 26 · 6:00 AM.</comment>
+  </data>
+  <data name="Card_FableDeltaTitle" xml:space="preserve">
+    <value>FABLE 节奏</value>
+  </data>
+  <data name="Card_ChartWindowHint" xml:space="preserve">
+    <value>图表覆盖提供方报告的每周时间段。蓝色表示已记录的样本。</value>
+  </data>
+  <data name="Card_ResetUnavailable" xml:space="preserve">
+    <value>重置时间不可用</value>
+  </data>
+  <data name="Card_WindowUnavailable" xml:space="preserve">
+    <value>配额窗口不可用</value>
+  </data>
+  <data name="Card_PaceUnavailable" xml:space="preserve">
+    <value>节奏不可用</value>
+  </data>
+  <data name="Card_WindowNotStarted" xml:space="preserve">
+    <value>尚未使用 · 窗口从首次请求开始</value>
+  </data>
+  <data name="Card_NoUsageYet" xml:space="preserve">
+    <value>尚未使用</value>
+    <comment>Short form of Card_WindowNotStarted for the narrow Fable pace cell.</comment>
+  </data>
+  <data name="Card_ResetAfterFirstUse" xml:space="preserve">
+    <value>首次使用后 {0} 重置</value>
+    <comment>{0} = a duration phrase, Card_DurationDays or Card_DurationHours, for example "7 days".</comment>
+  </data>
+  <data name="Card_DurationHours_One" xml:space="preserve">
+    <value>{0} 小时</value>
+    <comment>{0} = whole number of hours.</comment>
+  </data>
+  <data name="Card_DurationHours_Other" xml:space="preserve">
+    <value>{0} 小时</value>
+    <comment>{0} = whole number of hours.</comment>
+  </data>
+  <data name="Card_DurationDays_One" xml:space="preserve">
+    <value>{0} 天</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_DurationDays_Other" xml:space="preserve">
+    <value>{0} 天</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_NoSamplesYet" xml:space="preserve">
+    <value>尚无实际观测值</value>
+  </data>
+  <data name="Card_HistoryUnavailable" xml:space="preserve">
+    <value>使用记录不可用；实时读取仍会继续</value>
+  </data>
+  <data name="Card_DockPreview" xml:space="preserve">
+    <value>停靠预览</value>
+  </data>
+  <data name="Card_Connecting" xml:space="preserve">
+    <value>正在连接提供方</value>
+  </data>
+  <data name="Card_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Card_Undock" xml:space="preserve">
+    <value>取消停靠</value>
+  </data>
+  <data name="Card_PlanType" xml:space="preserve">
+    <value>方案类型：{0}</value>
+    <comment>{0} = the plan name as the provider reports it (for example max, pro); not translated.</comment>
+  </data>
+  <data name="Card_PreviousWeekTooltip" xml:space="preserve">
+    <value>上一周</value>
+  </data>
+  <data name="Card_NextWeekTooltip" xml:space="preserve">
+    <value>下一周</value>
+  </data>
+  <data name="Card_CurrentWeek" xml:space="preserve">
+    <value>现在</value>
+  </data>
+  <data name="Card_CurrentWeekTooltip" xml:space="preserve">
+    <value>返回本周</value>
+  </data>
+  <data name="Card_PastWindow" xml:space="preserve">
+    <value>历史周 · {0} – {1}</value>
+    <comment>{0} = first day of the week shown, {1} = its last day, both in Card_CreditExpirationDatePattern.</comment>
+  </data>
+  <data name="Card_StatusLine" xml:space="preserve">
+    <value>{0} · {1}</value>
+    <comment>The card's status line. {0} = status title (shown bold, for example "Live provider data"), {1} = its details sentence. Reorder or change the separator as needed.</comment>
+  </data>
+  <data name="Card_ResetAt" xml:space="preserve">
+    <value>{0} 重置</value>
+    <comment>{0} = reset date and time (Card_DateTimeFormat).</comment>
+  </data>
+  <data name="Card_ResetAtWithTimeLeft" xml:space="preserve">
+    <value>{0} 重置（{1}）</value>
+    <comment>{0} = reset date and time (Card_DateTimeFormat), {1} = time left until the reset (Card_TimeLeftDays, Card_TimeLeftHours or Card_TimeLeftMinutes). Example: Resets Thu, Oct 1 · 6:00 AM (2.1 days).</comment>
+  </data>
+  <data name="Card_TimeLeftDays_One" xml:space="preserve">
+    <value>{0} 天</value>
+    <comment>{0} = days left until the reset, with one decimal (for example 2.1).</comment>
+  </data>
+  <data name="Card_TimeLeftDays_Other" xml:space="preserve">
+    <value>{0} 天</value>
+    <comment>{0} = days left until the reset, with one decimal (for example 2.1).</comment>
+  </data>
+  <data name="Card_TimeLeftHours_One" xml:space="preserve">
+    <value>{0} 小时</value>
+    <comment>{0} = hours left until the reset (under one day): whole hours on the weekly line, one decimal on the 5-hour line (for example 1.0).</comment>
+  </data>
+  <data name="Card_TimeLeftHours_Other" xml:space="preserve">
+    <value>{0} 小时</value>
+    <comment>{0} = hours left until the reset (under one day): whole hours on the weekly line, one decimal on the 5-hour line (for example 1.1).</comment>
+  </data>
+  <data name="Card_TimeLeftMinutes_One" xml:space="preserve">
+    <value>{0} 分钟</value>
+    <comment>{0} = whole minutes left until the reset (under one hour).</comment>
+  </data>
+  <data name="Card_TimeLeftMinutes_Other" xml:space="preserve">
+    <value>{0} 分钟</value>
+    <comment>{0} = whole minutes left until the reset (under one hour).</comment>
+  </data>
+  <data name="Card_DateTimeFormat" xml:space="preserve">
+    <value>{0} · {1}</value>
+    <comment>{0} = weekday and date (Card_WeekdayDatePattern), {1} = time in the user's regional short-time format.</comment>
+  </data>
+  <data name="Card_WeekdayDatePattern" xml:space="preserve">
+    <value>M'月'd'日' ddd</value>
+    <comment>.NET date format for reset and reading dates, for example Sat, Sep 26.</comment>
+  </data>
+  <data name="Card_ChartDayPattern" xml:space="preserve">
+    <value>ddd</value>
+    <comment>.NET date format for the chart's day labels; the app uppercases it. Keep it short: seven labels share the chart width.</comment>
+  </data>
+  <data name="Card_PacePercent" xml:space="preserve">
+    <value>节奏 {0}%</value>
+    <comment>{0} = pace percent, a whole number: use relative to the allowance expected to be spent by now.</comment>
+  </data>
+  <data name="Card_PaceSuppressedMissingDuration" xml:space="preserve">
+    <value>节奏不可用：窗口时长不可用</value>
+  </data>
+  <data name="Card_PaceSuppressedMissingReset" xml:space="preserve">
+    <value>节奏不可用：重置时间不可用</value>
+  </data>
+  <data name="Card_PaceSuppressedStale" xml:space="preserve">
+    <value>节奏不可用：读数已过期</value>
+  </data>
+  <data name="Card_PaceSuppressedAuthentication" xml:space="preserve">
+    <value>节奏不可用：需要检查登录状态</value>
+  </data>
+  <data name="Card_PaceSuppressedAccountChanged" xml:space="preserve">
+    <value>节奏不可用：账户已更改</value>
+  </data>
+  <data name="Card_PaceSuppressedHistorical" xml:space="preserve">
+    <value>节奏不可用：正在等待新读数</value>
+  </data>
+  <data name="Card_PaceSuppressedWindowNotStarted" xml:space="preserve">
+    <value>节奏不可用：窗口尚未开始</value>
+  </data>
+  <data name="Card_PaceSuppressedWindowReset" xml:space="preserve">
+    <value>节奏不可用：窗口已重置</value>
+  </data>
+  <data name="Card_PaceSuppressedInsufficientElapsed" xml:space="preserve">
+    <value>节奏不可用：窗口刚刚开始</value>
+  </data>
+  <data name="Card_PaceSuppressedUnknown" xml:space="preserve">
+    <value>节奏不可用：数据源不可用</value>
+  </data>
+  <data name="Card_PacePercentUnavailableMissingDuration" xml:space="preserve">
+    <value>节奏百分比不可用：窗口时长不可用</value>
+    <comment>Follows a budget sentence after " · " (the {1} of Card_UnderBudget*/Card_OverBudget*/Card_OnBudget).</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableMissingReset" xml:space="preserve">
+    <value>节奏百分比不可用：重置时间不可用</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableStale" xml:space="preserve">
+    <value>节奏百分比不可用：读数已过期</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableAuthentication" xml:space="preserve">
+    <value>节奏百分比不可用：需要检查登录状态</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableAccountChanged" xml:space="preserve">
+    <value>节奏百分比不可用：账户已更改</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableHistorical" xml:space="preserve">
+    <value>节奏百分比不可用：正在等待新读数</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableWindowNotStarted" xml:space="preserve">
+    <value>节奏百分比不可用：窗口尚未开始</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableWindowReset" xml:space="preserve">
+    <value>节奏百分比不可用：窗口已重置</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableInsufficientElapsed" xml:space="preserve">
+    <value>节奏百分比不可用：窗口刚刚开始</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableUnknown" xml:space="preserve">
+    <value>节奏百分比不可用：数据源不可用</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_OnBudget" xml:space="preserve">
+    <value>与均匀进度一致 · {0}</value>
+    <comment>{0} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetMinutes_One" xml:space="preserve">
+    <value>比均匀进度慢 {0} 分钟 · {1}</value>
+    <comment>{0} = whole minutes of allowance left above even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetMinutes_Other" xml:space="preserve">
+    <value>比均匀进度慢 {0} 分钟 · {1}</value>
+    <comment>{0} = whole minutes of allowance left above even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetHours_One" xml:space="preserve">
+    <value>比均匀进度慢 {0} 小时 · {1}</value>
+    <comment>{0} = hours with one decimal (for example 0.8 or 1.0), {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetHours_Other" xml:space="preserve">
+    <value>比均匀进度慢 {0} 小时 · {1}</value>
+    <comment>{0} = hours with one decimal (for example 13.4), {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetMinutes_One" xml:space="preserve">
+    <value>比均匀进度快 {0} 分钟 · {1}</value>
+    <comment>{0} = whole minutes of allowance used beyond even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetMinutes_Other" xml:space="preserve">
+    <value>比均匀进度快 {0} 分钟 · {1}</value>
+    <comment>{0} = whole minutes of allowance used beyond even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetHours_One" xml:space="preserve">
+    <value>比均匀进度快 {0} 小时 · {1}</value>
+    <comment>{0} = hours with one decimal, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetHours_Other" xml:space="preserve">
+    <value>比均匀进度快 {0} 小时 · {1}</value>
+    <comment>{0} = hours with one decimal, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_Reading" xml:space="preserve">
+    <value>正在读取当前使用量</value>
+  </data>
+  <data name="Card_ProviderReady" xml:space="preserve">
+    <value>提供方实时数据</value>
+  </data>
+  <data name="Card_StaleTitle" xml:space="preserve">
+    <value>上次提供方读数已过期</value>
+  </data>
+  <data name="Card_HistoricalTitle" xml:space="preserve">
+    <value>已保存的提供方读数</value>
+  </data>
+  <data name="Card_MissingApplication" xml:space="preserve">
+    <value>缺少提供方应用</value>
+  </data>
+  <data name="Card_NeedsSignIn" xml:space="preserve">
+    <value>需要登录</value>
+  </data>
+  <data name="Card_AuthenticationExpired" xml:space="preserve">
+    <value>登录已过期</value>
+  </data>
+  <data name="Card_RateLimited" xml:space="preserve">
+    <value>提供方要求等待</value>
+  </data>
+  <data name="Card_ProviderOffline" xml:space="preserve">
+    <value>提供方离线</value>
+  </data>
+  <data name="Card_UnsupportedAccount" xml:space="preserve">
+    <value>不支持此账户类型</value>
+  </data>
+  <data name="Card_SchemaChanged" xml:space="preserve">
+    <value>提供方响应已更改</value>
+  </data>
+  <data name="Card_QuotaGuardDetails" xml:space="preserve">
+    <value>为保护你的配额，Glideslope 已停止读取此提供方。重启 Glideslope 后重试。</value>
+    <comment>Follows Card_SchemaChanged when the provider's tool answered in a way that could have spent quota; only a restart clears it.</comment>
+  </data>
+  <data name="Card_NoResponse" xml:space="preserve">
+    <value>{0} 无响应</value>
+    <comment>Status title when the provider's command-line tool gave no answer in time. {0} = provider name, for example Gemini.</comment>
+  </data>
+  <data name="Card_NoResponseDetails" xml:space="preserve">
+    <value>点击“刷新”。如果问题仍然存在，请尝试重启 Glideslope。</value>
+    <comment>Follows Card_NoResponse. "Refresh" is the card's Refresh button (Card_Refresh).</comment>
+  </data>
+  <data name="Card_ProviderUnavailable" xml:space="preserve">
+    <value>提供方数据不可用</value>
+  </data>
+  <data name="Card_ConnectingDetails" xml:space="preserve">
+    <value>正在等待首次读取此提供方的数据。不会虚构配额数值。</value>
+  </data>
+  <data name="Card_ReadingDetails" xml:space="preserve">
+    <value>正在读取已登录提供方账户的当前使用量。</value>
+  </data>
+  <data name="Card_StaleDetails" xml:space="preserve">
+    <value>正在显示上次的真实读数。成功获取新读数前不显示节奏。</value>
+  </data>
+  <data name="Card_HistoricalDetails" xml:space="preserve">
+    <value>正在显示已保存的读数。成功获取新读数前不显示节奏。</value>
+  </data>
+  <data name="Card_HistoryScopeUnavailable" xml:space="preserve">
+    <value>实时配额可用。由于无法保存稳定的账户范围，账户记录仅限于本应用会话。</value>
+  </data>
+  <data name="Card_ObservedAt" xml:space="preserve">
+    <value>上次读取时间 {0}</value>
+    <comment>{0} = date and time of the last reading (Card_DateTimeFormat).</comment>
+  </data>
+  <data name="Card_MissingApplicationDetails" xml:space="preserve">
+    <value>安装提供方的官方应用或命令行工具，然后重试。</value>
+  </data>
+  <data name="Card_NeedsSignInDetails" xml:space="preserve">
+    <value>通过提供方的官方应用登录，然后重试。</value>
+  </data>
+  <data name="Card_AuthenticationExpiredDetails" xml:space="preserve">
+    <value>刷新提供方的官方登录状态，然后重试。Glideslope 不会索要你的密码。</value>
+  </data>
+  <data name="Card_RateLimitedUntil" xml:space="preserve">
+    <value>提供方允许在 {0} 后再次读取。</value>
+    <comment>{0} = a time of day in the user's regional short-time format.</comment>
+  </data>
+  <data name="Card_RateLimitedDetails" xml:space="preserve">
+    <value>提供方要求 Glideslope 等待一段时间后再读取。</value>
+  </data>
+  <data name="Card_OfflineDetails" xml:space="preserve">
+    <value>检查连接后重试。其他提供方卡片会继续独立运行。</value>
+  </data>
+  <data name="Card_UnsupportedAccountDetails" xml:space="preserve">
+    <value>此已登录账户未提供受支持的订阅配额。</value>
+  </data>
+  <data name="Card_SchemaChangedDetails" xml:space="preserve">
+    <value>无法安全读取提供方数据。重新登录提供方后重试。</value>
+  </data>
+  <data name="Card_ProviderUnavailableDetails" xml:space="preserve">
+    <value>尚未连接此提供方的实时数据。</value>
+  </data>
+  <data name="Card_ChartSampleTooltip" xml:space="preserve">
+    <value>观测时间 {0}：剩余 {1} · 距采样已过 {2}</value>
+    <comment>{0} = date and time of the reading (Card_DateTimeFormat), {1} = percent remaining, {2} = an age phrase (Card_AgeDays, Card_AgeHours or Card_AgeMinutes).</comment>
+  </data>
+  <data name="Card_AgeDays_One" xml:space="preserve">
+    <value>{0} 天</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_AgeDays_Other" xml:space="preserve">
+    <value>{0} 天</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_AgeHours_One" xml:space="preserve">
+    <value>{0} 小时</value>
+    <comment>{0} = hours with one decimal.</comment>
+  </data>
+  <data name="Card_AgeHours_Other" xml:space="preserve">
+    <value>{0} 小时</value>
+    <comment>{0} = hours with one decimal.</comment>
+  </data>
+  <data name="Card_AgeMinutes_One" xml:space="preserve">
+    <value>{0} 分钟</value>
+    <comment>{0} = whole number of minutes.</comment>
+  </data>
+  <data name="Card_AgeMinutes_Other" xml:space="preserve">
+    <value>{0} 分钟</value>
+    <comment>{0} = whole number of minutes.</comment>
+  </data>
+</root>

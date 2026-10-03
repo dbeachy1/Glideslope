@@ -1,0 +1,813 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Name" xml:space="preserve">
+    <value>Glideslope</value>
+  </data>
+  <data name="Tray_Show" xml:space="preserve">
+    <value>Показать Glideslope</value>
+  </data>
+  <data name="Tray_Exit" xml:space="preserve">
+    <value>Выход</value>
+  </data>
+  <data name="Tray_ToolTip" xml:space="preserve">
+    <value>Glideslope</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Настройки Glideslope</value>
+  </data>
+  <data name="Settings_Heading" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Settings_EnabledProviders" xml:space="preserve">
+    <value>Включенные поставщики</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Внешний вид</value>
+  </data>
+  <data name="Settings_ThemeSystem" xml:space="preserve">
+    <value>Следовать системной теме</value>
+  </data>
+  <data name="Settings_ThemeDark" xml:space="preserve">
+    <value>Темная тема</value>
+  </data>
+  <data name="Settings_ThemeLight" xml:space="preserve">
+    <value>Светлая тема</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Язык</value>
+    <comment>Settings row label for application wording. A saved choice takes effect after restarting Glideslope.</comment>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>Язык системы</value>
+    <comment>First option in the application language selector; follows the operating system's display language on each launch.</comment>
+  </data>
+  <data name="Settings_LanguageRestart" xml:space="preserve">
+    <value>Перезапустите Glideslope, чтобы применить смену языка.</value>
+    <comment>Help text under the language selector. It must clearly say the saved language change applies after restarting the app.</comment>
+  </data>
+  <data name="Settings_CardSize" xml:space="preserve">
+    <value>Размер карточки</value>
+    <comment>Settings row label beside a slider from 70 % to 150 % that scales every card.</comment>
+  </data>
+  <data name="Settings_MiniCardSize" xml:space="preserve">
+    <value>Размер мини-карточки</value>
+    <comment>Settings row label beside a slider from 70 % to 150 % that scales mini cards, directly under Card size.</comment>
+  </data>
+  <data name="Settings_LogFile" xml:space="preserve">
+    <value>Файл журнала</value>
+    <comment>Settings label above the full path of the app's log file, shown as a link.</comment>
+  </data>
+  <data name="Settings_OpenLogFolder" xml:space="preserve">
+    <value>Открыть папку с журналом</value>
+    <comment>Tooltip on the log file path link in Settings.</comment>
+  </data>
+  <data name="Settings_StartInMiniMode" xml:space="preserve">
+    <value>Запускать в мини-режиме</value>
+    <comment>Checkbox directly under Mini card size. When checked, every card opens mini at the next launch; otherwise cards open full. Card modes are not saved at shutdown.</comment>
+  </data>
+  <data name="Settings_CtrlPeek" xml:space="preserve">
+    <value>Удерживайте Ctrl над мини-карточкой, чтобы развернуть ее</value>
+    <comment>Checkbox directly under Start in mini mode, on by default. While enabled, holding Ctrl over a hovered mini card shows it full until Ctrl is released, the pointer leaves, or a mouse button goes down.</comment>
+  </data>
+  <data name="Settings_AlwaysOnTop" xml:space="preserve">
+    <value>Всегда поверх других окон</value>
+  </data>
+  <data name="Settings_SnapToScreenEdge" xml:space="preserve">
+    <value>Привязывать карточки друг к другу и к краям экрана</value>
+  </data>
+  <data name="Settings_ResetPositions" xml:space="preserve">
+    <value>Сбросить положение окон</value>
+  </data>
+  <data name="Settings_RefreshInterval" xml:space="preserve">
+    <value>Интервал обновления ({0}–{1} мин.)</value>
+    <comment>{0} = the smallest allowed interval (5), {1} = the largest (30), both in minutes.</comment>
+  </data>
+  <data name="Settings_RetentionDays" xml:space="preserve">
+    <value>Хранить историю использования ({0}–{1} дн.)</value>
+    <comment>{0} = the fewest days that can be kept (7), {1} = the most (365).</comment>
+  </data>
+  <data name="Settings_AtLeastOneProvider" xml:space="preserve">
+    <value>Оставьте включенным хотя бы одного поставщика.</value>
+  </data>
+  <data name="Settings_StartAtSignIn" xml:space="preserve">
+    <value>Запускать при входе</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Settings_Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="Settings_ApplyFailedUnavailable" xml:space="preserve">
+    <value>Не удалось применить настройки: недоступно. Проверьте сообщение и повторите попытку.</value>
+  </data>
+  <data name="Settings_ApplyFailedNotOwned" xml:space="preserve">
+    <value>Не удалось применить настройки: не распознано. Проверьте сообщение и повторите попытку.</value>
+  </data>
+  <data name="Settings_ApplyFailedStale" xml:space="preserve">
+    <value>Не удалось применить настройки: устаревшая программа запуска. Проверьте сообщение и повторите попытку.</value>
+  </data>
+  <data name="Settings_ApplyFailedLauncherMissing" xml:space="preserve">
+    <value>Не удалось применить настройки: программа запуска недоступна. Проверьте сообщение и повторите попытку.</value>
+  </data>
+  <data name="Settings_ApplyFailedRevisionConflict" xml:space="preserve">
+    <value>Не удалось применить настройки: настройки изменены в другом месте. Проверьте сообщение и повторите попытку.</value>
+  </data>
+  <data name="Settings_ApplyFailedHistoryUnavailable" xml:space="preserve">
+    <value>Не удалось применить настройки: история использования недоступна, поэтому срок хранения применить нельзя. Проверьте сообщение и повторите попытку.</value>
+  </data>
+  <data name="Settings_ApplyFailedHistoryPruneFailed" xml:space="preserve">
+    <value>Не удалось применить настройки: не удалось удалить старую историю использования. Проверьте сообщение и повторите попытку.</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableUnavailable" xml:space="preserve">
+    <value>Не удалось включить запуск при входе (недоступно).</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableNotOwned" xml:space="preserve">
+    <value>Не удалось включить запуск при входе (не распознано).</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableStale" xml:space="preserve">
+    <value>Не удалось включить запуск при входе (программа запуска устарела).</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableLauncherMissing" xml:space="preserve">
+    <value>Не удалось включить запуск при входе (программа запуска недоступна).</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableUnavailable" xml:space="preserve">
+    <value>Не удалось отключить запуск при входе (недоступно).</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableNotOwned" xml:space="preserve">
+    <value>Не удалось отключить запуск при входе (не распознано).</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableStale" xml:space="preserve">
+    <value>Не удалось отключить запуск при входе (программа запуска устарела).</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableLauncherMissing" xml:space="preserve">
+    <value>Не удалось отключить запуск при входе (программа запуска недоступна).</value>
+  </data>
+  <data name="Provider_Codex" xml:space="preserve">
+    <value>Codex</value>
+  </data>
+  <data name="Provider_Claude" xml:space="preserve">
+    <value>Claude</value>
+  </data>
+  <data name="Provider_Gemini" xml:space="preserve">
+    <value>Gemini</value>
+  </data>
+  <data name="Card_Title" xml:space="preserve">
+    <value>Glideslope — {0}</value>
+    <comment>Window title. {0} = provider name (Codex, Claude or Gemini; never translated).</comment>
+  </data>
+  <data name="Card_MinimumHeight" xml:space="preserve">
+    <value>760</value>
+    <comment>A number, not text: the smallest card height in pixels (at card size 100 %) that fits this language at the 790-pixel minimum width. English 680; text about 30 % longer needs about 790.</comment>
+  </data>
+  <data name="Card_SettingsTooltip" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Card_ResetSizeTooltip" xml:space="preserve">
+    <value>Сбросить размер</value>
+  </data>
+  <data name="Card_MiniModeTooltip" xml:space="preserve">
+    <value>Мини-режим</value>
+    <comment>Tooltip and accessible name of the title-row toggle while the card is full; clicking switches its group to mini.</comment>
+  </data>
+  <data name="Card_FullModeTooltip" xml:space="preserve">
+    <value>Полный режим</value>
+    <comment>Tooltip and accessible name of the title-row toggle while the card is mini; clicking switches its group to full.</comment>
+  </data>
+  <data name="Card_RemainingTooltip" xml:space="preserve">
+    <value>Осталось {0}</value>
+    <comment>{0} = the weekly remaining percentage. Tooltip and accessible name of the mini card's remaining bar.</comment>
+  </data>
+  <data name="Card_Size" xml:space="preserve">
+    <value>Размер карточки</value>
+    <comment>Tooltip of the title-row button that opens the card size slider, and the heading inside it.</comment>
+  </data>
+  <data name="Card_AppNameVersion" xml:space="preserve">
+    <value>Glideslope {0}</value>
+    <comment>{0} = version number, for example 1.1.0. "Glideslope" is the product name.</comment>
+  </data>
+  <data name="Card_MinimizeTooltip" xml:space="preserve">
+    <value>Свернуть все карточки</value>
+    <comment>Tooltip for the header button that minimizes every card together.</comment>
+  </data>
+  <data name="Card_CloseTooltip" xml:space="preserve">
+    <value>Закрыть карточку {0}</value>
+    <comment>{0} = provider name (Codex, Claude or Gemini).</comment>
+  </data>
+  <data name="Card_FooterNoSynthetic" xml:space="preserve">
+    <value>Темп рассчитывается по расписанию сброса поставщика. Линии графика используют только записанные показания.</value>
+  </data>
+  <data name="Card_WeeklyRemaining" xml:space="preserve">
+    <value>остаток за неделю</value>
+  </data>
+  <data name="Card_CreditExpires" xml:space="preserve">
+    <value>СРОК ДЕЙСТВИЯ СБРОСА ИСТЕКАЕТ</value>
+  </data>
+  <data name="Card_CreditExpiration" xml:space="preserve">
+    <value>{0} {1} ({2})</value>
+    <comment>{0} = uppercase weekday (Card_CreditWeekdayPattern), {1} = date (Card_CreditExpirationDatePattern), {2} = Card_CreditExpiresIn or Card_CreditExpiresToday. Example: THU Oct 22 (in 26 days).</comment>
+  </data>
+  <data name="Card_CreditWeekdayPattern" xml:space="preserve">
+    <value>ddd</value>
+    <comment>.NET date format for the credit box weekday; the app uppercases it.</comment>
+  </data>
+  <data name="Card_CreditExpirationDatePattern" xml:space="preserve">
+    <value>d MMM</value>
+    <comment>.NET date format for the credit box date and the "Past week" dates. Never add an ordinal suffix.</comment>
+  </data>
+  <data name="Card_CreditExpiresIn_One" xml:space="preserve">
+    <value>через {0} день</value>
+    <comment>{0} = number of days until the usage reset expires.</comment>
+  </data>
+  <data name="Card_CreditExpiresIn_Other" xml:space="preserve">
+    <value>через {0} дня</value>
+    <comment>{0} = number of days until the usage reset expires.</comment>
+  </data>
+  <data name="Card_CreditExpiresToday" xml:space="preserve">
+    <value>сегодня</value>
+  </data>
+  <data name="Card_CreditExpirationUnknown" xml:space="preserve">
+    <value>Срок действия неизвестен</value>
+  </data>
+  <data name="Card_NoticeSignInHeading" xml:space="preserve">
+    <value>ТРЕБУЕТСЯ ВХОД</value>
+  </data>
+  <data name="Card_NoticeSignInClaude" xml:space="preserve">
+    <value>Запустите claude и выполните /login.</value>
+    <comment>"claude" and "/login" are commands; do not translate them.</comment>
+  </data>
+  <data name="Card_NoticeSignInCodex" xml:space="preserve">
+    <value>Запустите codex и войдите.</value>
+    <comment>"codex" is a command; do not translate it.</comment>
+  </data>
+  <data name="Card_NoticeSignInGemini" xml:space="preserve">
+    <value>Запустите agy и войдите.</value>
+    <comment>"agy" is a command; do not translate it.</comment>
+  </data>
+  <data name="Card_NoticeMissingHeading" xml:space="preserve">
+    <value>CLI НЕ НАЙДЕН</value>
+  </data>
+  <data name="Card_NoticeMissingClaude" xml:space="preserve">
+    <value>Установите Claude Code.</value>
+  </data>
+  <data name="Card_NoticeMissingCodex" xml:space="preserve">
+    <value>Установите Codex CLI.</value>
+  </data>
+  <data name="Card_NoticeMissingGemini" xml:space="preserve">
+    <value>Установите Antigravity (agy).</value>
+  </data>
+  <data name="Card_CreditTooltip_NoClick_One" xml:space="preserve">
+    <value>У вас {0} сброс использования.</value>
+    <comment>{0} = count. This sentence is used at zero or one credit, when the credit flyout is unavailable.</comment>
+  </data>
+  <data name="Card_CreditTooltip_NoClick_Other" xml:space="preserve">
+    <value>У вас {0} сброса использования.</value>
+    <comment>{0} = count. This sentence is used at zero or one credit, when the credit flyout is unavailable.</comment>
+  </data>
+  <data name="Card_CreditTooltip_Click_One" xml:space="preserve">
+    <value>У вас всего {0} сброс использования. Нажмите, чтобы посмотреть еще {1}.</value>
+    <comment>{0} = total usage resets; {1} = those listed when clicked ({0} minus one). This sentence is used only above one credit, when the credit flyout is available. Noun grammar still follows the language's plural category.</comment>
+  </data>
+  <data name="Card_CreditTooltip_Click_Other" xml:space="preserve">
+    <value>У вас всего {0} сброса использования. Нажмите, чтобы посмотреть еще {1}.</value>
+    <comment>{0} = total usage resets; {1} = those listed when clicked ({0} minus one). This sentence is used only above one credit, when the credit flyout is available. Noun grammar still follows the language's plural category.</comment>
+  </data>
+  <data name="Card_CreditUndisclosed_One" xml:space="preserve">
+    <value>{0} дополнительный сброс использования с неизвестным сроком действия</value>
+    <comment>{0} = number of usage resets whose expiration the provider does not report.</comment>
+  </data>
+  <data name="Card_CreditUndisclosed_Other" xml:space="preserve">
+    <value>{0} дополнительного сброса использования с неизвестным сроком действия</value>
+    <comment>{0} = number of usage resets whose expiration the provider does not report.</comment>
+  </data>
+  <data name="Card_FiveHourDelta" xml:space="preserve">
+    <value>Темп за 5 часов</value>
+  </data>
+  <data name="Card_FiveHourRemaining" xml:space="preserve">
+    <value>Остаток за 5 часов</value>
+  </data>
+  <data name="Card_WeeklyGlideSlope" xml:space="preserve">
+    <value>НЕДЕЛЬНЫЙ GLIDESLOPE</value>
+  </data>
+  <data name="Card_ObservedLegend" xml:space="preserve">
+    <value>Наблюдаемое</value>
+  </data>
+  <data name="Card_EvenPaceLegend" xml:space="preserve">
+    <value>Равномерный темп</value>
+  </data>
+  <data name="Card_WeeklyDeltaTitle" xml:space="preserve">
+    <value>НЕДЕЛЬНЫЙ ТЕМП</value>
+  </data>
+  <data name="Card_WeeklyRemainingSection" xml:space="preserve">
+    <value>ОСТАТОК ЗА НЕДЕЛЮ</value>
+  </data>
+  <data name="Card_FableThisWeek" xml:space="preserve">
+    <value>FABLE НА ЭТОЙ НЕДЕЛЕ</value>
+    <comment>"Fable" is a model name; do not translate it.</comment>
+  </data>
+  <data name="Card_FableThisWeekWithReset" xml:space="preserve">
+    <value>FABLE НА ЭТОЙ НЕДЕЛЕ · Сброс {0}</value>
+    <comment>{0} = reset date and time (Card_DateTimeFormat), for example Sat, Sep 26 · 6:00 AM.</comment>
+  </data>
+  <data name="Card_FableDeltaTitle" xml:space="preserve">
+    <value>ТЕМП FABLE</value>
+  </data>
+  <data name="Card_ChartWindowHint" xml:space="preserve">
+    <value>График охватывает недельное окно поставщика. Синим показаны записанные измерения.</value>
+  </data>
+  <data name="Card_ResetUnavailable" xml:space="preserve">
+    <value>Время сброса неизвестно</value>
+  </data>
+  <data name="Card_WindowUnavailable" xml:space="preserve">
+    <value>Окно квоты недоступно</value>
+  </data>
+  <data name="Card_PaceUnavailable" xml:space="preserve">
+    <value>Темп недоступен</value>
+  </data>
+  <data name="Card_WindowNotStarted" xml:space="preserve">
+    <value>Использования пока нет · окно начнется с первого запроса</value>
+  </data>
+  <data name="Card_NoUsageYet" xml:space="preserve">
+    <value>Использования пока нет</value>
+    <comment>Short form of Card_WindowNotStarted for the narrow Fable pace cell.</comment>
+  </data>
+  <data name="Card_ResetAfterFirstUse" xml:space="preserve">
+    <value>Сброс через {0} после первого использования</value>
+    <comment>{0} = a duration phrase, Card_DurationDays or Card_DurationHours, for example "7 days".</comment>
+  </data>
+  <data name="Card_DurationHours_One" xml:space="preserve">
+    <value>{0} час</value>
+    <comment>{0} = whole number of hours.</comment>
+  </data>
+  <data name="Card_DurationHours_Other" xml:space="preserve">
+    <value>{0} часа</value>
+    <comment>{0} = whole number of hours.</comment>
+  </data>
+  <data name="Card_DurationDays_One" xml:space="preserve">
+    <value>{0} день</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_DurationDays_Other" xml:space="preserve">
+    <value>{0} дня</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_NoSamplesYet" xml:space="preserve">
+    <value>Реальных наблюдений пока нет</value>
+  </data>
+  <data name="Card_HistoryUnavailable" xml:space="preserve">
+    <value>История использования недоступна; получение данных продолжается</value>
+  </data>
+  <data name="Card_DockPreview" xml:space="preserve">
+    <value>Предпросмотр закрепления</value>
+  </data>
+  <data name="Card_Connecting" xml:space="preserve">
+    <value>Подключение к поставщику</value>
+  </data>
+  <data name="Card_Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="Card_Undock" xml:space="preserve">
+    <value>Открепить</value>
+  </data>
+  <data name="Card_PlanType" xml:space="preserve">
+    <value>Тип плана: {0}</value>
+    <comment>{0} = the plan name as the provider reports it (for example max, pro); not translated.</comment>
+  </data>
+  <data name="Card_PreviousWeekTooltip" xml:space="preserve">
+    <value>Предыдущая неделя</value>
+  </data>
+  <data name="Card_NextWeekTooltip" xml:space="preserve">
+    <value>Следующая неделя</value>
+  </data>
+  <data name="Card_CurrentWeek" xml:space="preserve">
+    <value>Сейчас</value>
+  </data>
+  <data name="Card_CurrentWeekTooltip" xml:space="preserve">
+    <value>Вернуться к текущей неделе</value>
+  </data>
+  <data name="Card_PastWindow" xml:space="preserve">
+    <value>Прошлая неделя · {0} – {1}</value>
+    <comment>{0} = first day of the week shown, {1} = its last day, both in Card_CreditExpirationDatePattern.</comment>
+  </data>
+  <data name="Card_StatusLine" xml:space="preserve">
+    <value>{0} · {1}</value>
+    <comment>The card's status line. {0} = status title (shown bold, for example "Live provider data"), {1} = its details sentence. Reorder or change the separator as needed.</comment>
+  </data>
+  <data name="Card_ResetAt" xml:space="preserve">
+    <value>Сброс {0}</value>
+    <comment>{0} = reset date and time (Card_DateTimeFormat).</comment>
+  </data>
+  <data name="Card_ResetAtWithTimeLeft" xml:space="preserve">
+    <value>Сброс {0} ({1})</value>
+    <comment>{0} = reset date and time (Card_DateTimeFormat), {1} = time left until the reset (Card_TimeLeftDays, Card_TimeLeftHours or Card_TimeLeftMinutes). Example: Resets Thu, Oct 1 · 6:00 AM (2.1 days).</comment>
+  </data>
+  <data name="Card_TimeLeftDays_One" xml:space="preserve">
+    <value>{0} день</value>
+    <comment>{0} = days left until the reset, with one decimal (for example 2.1).</comment>
+  </data>
+  <data name="Card_TimeLeftDays_Other" xml:space="preserve">
+    <value>{0} дня</value>
+    <comment>{0} = days left until the reset, with one decimal (for example 2.1).</comment>
+  </data>
+  <data name="Card_TimeLeftHours_One" xml:space="preserve">
+    <value>{0} час</value>
+    <comment>{0} = hours left until the reset (under one day): whole hours on the weekly line, one decimal on the 5-hour line (for example 1.0).</comment>
+  </data>
+  <data name="Card_TimeLeftHours_Other" xml:space="preserve">
+    <value>{0} часа</value>
+    <comment>{0} = hours left until the reset (under one day): whole hours on the weekly line, one decimal on the 5-hour line (for example 1.1).</comment>
+  </data>
+  <data name="Card_TimeLeftMinutes_One" xml:space="preserve">
+    <value>{0} минута</value>
+    <comment>{0} = whole minutes left until the reset (under one hour).</comment>
+  </data>
+  <data name="Card_TimeLeftMinutes_Other" xml:space="preserve">
+    <value>{0} минуты</value>
+    <comment>{0} = whole minutes left until the reset (under one hour).</comment>
+  </data>
+  <data name="Card_DateTimeFormat" xml:space="preserve">
+    <value>{0} · {1}</value>
+    <comment>{0} = weekday and date (Card_WeekdayDatePattern), {1} = time in the user's regional short-time format.</comment>
+  </data>
+  <data name="Card_WeekdayDatePattern" xml:space="preserve">
+    <value>ddd, d MMM</value>
+    <comment>.NET date format for reset and reading dates, for example Sat, Sep 26.</comment>
+  </data>
+  <data name="Card_ChartDayPattern" xml:space="preserve">
+    <value>ddd</value>
+    <comment>.NET date format for the chart's day labels; the app uppercases it. Keep it short: seven labels share the chart width.</comment>
+  </data>
+  <data name="Card_PacePercent" xml:space="preserve">
+    <value>Темп {0}%</value>
+    <comment>{0} = pace percent, a whole number: use relative to the allowance expected to be spent by now.</comment>
+  </data>
+  <data name="Card_PaceSuppressedMissingDuration" xml:space="preserve">
+    <value>Темп недоступен: длительность окна неизвестна</value>
+  </data>
+  <data name="Card_PaceSuppressedMissingReset" xml:space="preserve">
+    <value>Темп недоступен: время сброса неизвестно</value>
+  </data>
+  <data name="Card_PaceSuppressedStale" xml:space="preserve">
+    <value>Темп недоступен: показание устарело</value>
+  </data>
+  <data name="Card_PaceSuppressedAuthentication" xml:space="preserve">
+    <value>Темп недоступен: требуется проверить вход</value>
+  </data>
+  <data name="Card_PaceSuppressedAccountChanged" xml:space="preserve">
+    <value>Темп недоступен: учетная запись изменилась</value>
+  </data>
+  <data name="Card_PaceSuppressedHistorical" xml:space="preserve">
+    <value>Темп недоступен: ожидание новых данных</value>
+  </data>
+  <data name="Card_PaceSuppressedWindowNotStarted" xml:space="preserve">
+    <value>Темп недоступен: окно еще не началось</value>
+  </data>
+  <data name="Card_PaceSuppressedWindowReset" xml:space="preserve">
+    <value>Темп недоступен: окно сброшено</value>
+  </data>
+  <data name="Card_PaceSuppressedInsufficientElapsed" xml:space="preserve">
+    <value>Темп недоступен: окно только началось</value>
+  </data>
+  <data name="Card_PaceSuppressedUnknown" xml:space="preserve">
+    <value>Темп недоступен: источник недоступен</value>
+  </data>
+  <data name="Card_PacePercentUnavailableMissingDuration" xml:space="preserve">
+    <value>Процент темпа недоступен: длительность окна неизвестна</value>
+    <comment>Follows a budget sentence after " · " (the {1} of Card_UnderBudget*/Card_OverBudget*/Card_OnBudget).</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableMissingReset" xml:space="preserve">
+    <value>Процент темпа недоступен: время сброса неизвестно</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableStale" xml:space="preserve">
+    <value>Процент темпа недоступен: показание устарело</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableAuthentication" xml:space="preserve">
+    <value>Процент темпа недоступен: требуется проверить вход</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableAccountChanged" xml:space="preserve">
+    <value>Процент темпа недоступен: учетная запись изменилась</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableHistorical" xml:space="preserve">
+    <value>Процент темпа недоступен: ожидание новых данных</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableWindowNotStarted" xml:space="preserve">
+    <value>Процент темпа недоступен: окно еще не началось</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableWindowReset" xml:space="preserve">
+    <value>Процент темпа недоступен: окно сброшено</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableInsufficientElapsed" xml:space="preserve">
+    <value>Процент темпа недоступен: окно только началось</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableUnknown" xml:space="preserve">
+    <value>Процент темпа недоступен: источник недоступен</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_OnBudget" xml:space="preserve">
+    <value>Равномерный расход · {0}</value>
+    <comment>{0} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetMinutes_One" xml:space="preserve">
+    <value>Запас: {0} минута · {1}</value>
+    <comment>{0} = whole minutes of allowance left above even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetMinutes_Other" xml:space="preserve">
+    <value>Запас: {0} минуты · {1}</value>
+    <comment>{0} = whole minutes of allowance left above even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetHours_One" xml:space="preserve">
+    <value>Запас: {0} час · {1}</value>
+    <comment>{0} = hours with one decimal (for example 0.8 or 1.0), {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetHours_Other" xml:space="preserve">
+    <value>Запас: {0} часа · {1}</value>
+    <comment>{0} = hours with one decimal (for example 13.4), {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetMinutes_One" xml:space="preserve">
+    <value>Перерасход: {0} минута · {1}</value>
+    <comment>{0} = whole minutes of allowance used beyond even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetMinutes_Other" xml:space="preserve">
+    <value>Перерасход: {0} минуты · {1}</value>
+    <comment>{0} = whole minutes of allowance used beyond even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetHours_One" xml:space="preserve">
+    <value>Перерасход: {0} час · {1}</value>
+    <comment>{0} = hours with one decimal, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetHours_Other" xml:space="preserve">
+    <value>Перерасход: {0} часа · {1}</value>
+    <comment>{0} = hours with one decimal, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_Reading" xml:space="preserve">
+    <value>Чтение текущего использования</value>
+  </data>
+  <data name="Card_ProviderReady" xml:space="preserve">
+    <value>Текущие данные поставщика</value>
+  </data>
+  <data name="Card_StaleTitle" xml:space="preserve">
+    <value>Последнее показание поставщика устарело</value>
+  </data>
+  <data name="Card_HistoricalTitle" xml:space="preserve">
+    <value>Сохраненное показание поставщика</value>
+  </data>
+  <data name="Card_MissingApplication" xml:space="preserve">
+    <value>Приложение поставщика не найдено</value>
+  </data>
+  <data name="Card_NeedsSignIn" xml:space="preserve">
+    <value>Требуется вход</value>
+  </data>
+  <data name="Card_AuthenticationExpired" xml:space="preserve">
+    <value>Срок действия входа истек</value>
+  </data>
+  <data name="Card_RateLimited" xml:space="preserve">
+    <value>Поставщик попросил подождать</value>
+  </data>
+  <data name="Card_ProviderOffline" xml:space="preserve">
+    <value>Поставщик не в сети</value>
+  </data>
+  <data name="Card_UnsupportedAccount" xml:space="preserve">
+    <value>Тип учетной записи не поддерживается</value>
+  </data>
+  <data name="Card_SchemaChanged" xml:space="preserve">
+    <value>Ответ поставщика изменился</value>
+  </data>
+  <data name="Card_QuotaGuardDetails" xml:space="preserve">
+    <value>Glideslope прекратил чтение этого поставщика, чтобы защитить квоту. Перезапустите Glideslope, чтобы повторить попытку.</value>
+    <comment>Follows Card_SchemaChanged when the provider's tool answered in a way that could have spent quota; only a restart clears it.</comment>
+  </data>
+  <data name="Card_NoResponse" xml:space="preserve">
+    <value>Нет ответа от {0}</value>
+    <comment>Status title when the provider's command-line tool gave no answer in time. {0} = provider name, for example Gemini.</comment>
+  </data>
+  <data name="Card_NoResponseDetails" xml:space="preserve">
+    <value>Нажмите «Обновить». Если проблема сохранится, перезапустите Glideslope.</value>
+    <comment>Follows Card_NoResponse. "Refresh" is the card's Refresh button (Card_Refresh).</comment>
+  </data>
+  <data name="Card_ProviderUnavailable" xml:space="preserve">
+    <value>Данные поставщика недоступны</value>
+  </data>
+  <data name="Card_ConnectingDetails" xml:space="preserve">
+    <value>Ожидание первого чтения от поставщика. Значения квоты не подставляются.</value>
+  </data>
+  <data name="Card_ReadingDetails" xml:space="preserve">
+    <value>Чтение текущего использования из учетной записи поставщика.</value>
+  </data>
+  <data name="Card_StaleDetails" xml:space="preserve">
+    <value>Показано последнее реальное показание. Темп скрыт до успешного обновления.</value>
+  </data>
+  <data name="Card_HistoricalDetails" xml:space="preserve">
+    <value>Показано сохраненное показание. Темп скрыт до успешного обновления.</value>
+  </data>
+  <data name="Card_HistoryScopeUnavailable" xml:space="preserve">
+    <value>Текущая квота доступна. История учетной записи доступна только в текущем сеансе приложения: не удалось сохранить ее постоянный локальный идентификатор.</value>
+  </data>
+  <data name="Card_ObservedAt" xml:space="preserve">
+    <value>Последнее чтение: {0}</value>
+    <comment>{0} = date and time of the last reading (Card_DateTimeFormat).</comment>
+  </data>
+  <data name="Card_MissingApplicationDetails" xml:space="preserve">
+    <value>Установите официальное приложение или средство командной строки поставщика и повторите попытку.</value>
+  </data>
+  <data name="Card_NeedsSignInDetails" xml:space="preserve">
+    <value>Войдите через официальное приложение поставщика и повторите попытку.</value>
+  </data>
+  <data name="Card_AuthenticationExpiredDetails" xml:space="preserve">
+    <value>Обновите официальный вход поставщика и повторите попытку. Glideslope никогда не запрашивает пароль.</value>
+  </data>
+  <data name="Card_RateLimitedUntil" xml:space="preserve">
+    <value>Поставщик разрешит следующее чтение после {0}.</value>
+    <comment>{0} = a time of day in the user's regional short-time format.</comment>
+  </data>
+  <data name="Card_RateLimitedDetails" xml:space="preserve">
+    <value>Поставщик попросил Glideslope подождать перед следующим чтением.</value>
+  </data>
+  <data name="Card_OfflineDetails" xml:space="preserve">
+    <value>Проверьте подключение и повторите попытку. Карточки других поставщиков продолжают работать независимо.</value>
+  </data>
+  <data name="Card_UnsupportedAccountDetails" xml:space="preserve">
+    <value>Эта учетная запись не предоставляет поддерживаемую квоту подписки.</value>
+  </data>
+  <data name="Card_SchemaChangedDetails" xml:space="preserve">
+    <value>Не удалось безопасно прочитать данные поставщика. Повторите попытку после повторного входа.</value>
+  </data>
+  <data name="Card_ProviderUnavailableDetails" xml:space="preserve">
+    <value>Получение текущих данных этого поставщика пока недоступно.</value>
+  </data>
+  <data name="Card_ChartSampleTooltip" xml:space="preserve">
+    <value>Наблюдение {0}: осталось {1} · возраст измерения {2}</value>
+    <comment>{0} = date and time of the reading (Card_DateTimeFormat), {1} = percent remaining, {2} = an age phrase (Card_AgeDays, Card_AgeHours or Card_AgeMinutes).</comment>
+  </data>
+  <data name="Card_AgeDays_One" xml:space="preserve">
+    <value>{0} день</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_AgeDays_Other" xml:space="preserve">
+    <value>{0} дня</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_AgeHours_One" xml:space="preserve">
+    <value>{0} час</value>
+    <comment>{0} = hours with one decimal.</comment>
+  </data>
+  <data name="Card_AgeHours_Other" xml:space="preserve">
+    <value>{0} часа</value>
+    <comment>{0} = hours with one decimal.</comment>
+  </data>
+  <data name="Card_AgeMinutes_One" xml:space="preserve">
+    <value>{0} минута</value>
+    <comment>{0} = whole number of minutes.</comment>
+  </data>
+  <data name="Card_AgeMinutes_Other" xml:space="preserve">
+    <value>{0} минуты</value>
+    <comment>{0} = whole number of minutes.</comment>
+  </data>
+  <data name="Card_CreditExpiresIn_Few" xml:space="preserve">
+    <value>через {0} дня</value>
+    <comment>{0} = number of days until the usage reset expires.</comment>
+  </data>
+  <data name="Card_CreditExpiresIn_Many" xml:space="preserve">
+    <value>через {0} дней</value>
+    <comment>{0} = number of days until the usage reset expires.</comment>
+  </data>
+  <data name="Card_CreditTooltip_NoClick_Few" xml:space="preserve">
+    <value>У вас {0} сброса использования.</value>
+    <comment>{0} = count. This sentence is used at zero or one credit, when the credit flyout is unavailable.</comment>
+  </data>
+  <data name="Card_CreditTooltip_NoClick_Many" xml:space="preserve">
+    <value>У вас {0} сбросов использования.</value>
+    <comment>{0} = count. This sentence is used at zero or one credit, when the credit flyout is unavailable.</comment>
+  </data>
+  <data name="Card_CreditTooltip_Click_Few" xml:space="preserve">
+    <value>У вас всего {0} сброса использования. Нажмите, чтобы посмотреть еще {1}.</value>
+    <comment>{0} = total usage resets; {1} = those listed when clicked ({0} minus one). This sentence is used only above one credit, when the credit flyout is available. Noun grammar still follows the language's plural category.</comment>
+  </data>
+  <data name="Card_CreditTooltip_Click_Many" xml:space="preserve">
+    <value>У вас всего {0} сбросов использования. Нажмите, чтобы посмотреть еще {1}.</value>
+    <comment>{0} = total usage resets; {1} = those listed when clicked ({0} minus one). This sentence is used only above one credit, when the credit flyout is available. Noun grammar still follows the language's plural category.</comment>
+  </data>
+  <data name="Card_CreditUndisclosed_Few" xml:space="preserve">
+    <value>{0} дополнительных сброса использования с неизвестным сроком действия</value>
+    <comment>{0} = number of usage resets whose expiration the provider does not report.</comment>
+  </data>
+  <data name="Card_CreditUndisclosed_Many" xml:space="preserve">
+    <value>{0} дополнительных сбросов использования с неизвестным сроком действия</value>
+    <comment>{0} = number of usage resets whose expiration the provider does not report.</comment>
+  </data>
+  <data name="Card_DurationHours_Few" xml:space="preserve">
+    <value>{0} часа</value>
+    <comment>{0} = whole number of hours.</comment>
+  </data>
+  <data name="Card_DurationHours_Many" xml:space="preserve">
+    <value>{0} часов</value>
+    <comment>{0} = whole number of hours.</comment>
+  </data>
+  <data name="Card_DurationDays_Few" xml:space="preserve">
+    <value>{0} дня</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_DurationDays_Many" xml:space="preserve">
+    <value>{0} дней</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_TimeLeftDays_Few" xml:space="preserve">
+    <value>{0} дня</value>
+    <comment>{0} = days left until the reset, with one decimal (for example 2.1).</comment>
+  </data>
+  <data name="Card_TimeLeftDays_Many" xml:space="preserve">
+    <value>{0} дней</value>
+    <comment>{0} = days left until the reset, with one decimal (for example 2.1).</comment>
+  </data>
+  <data name="Card_TimeLeftHours_Few" xml:space="preserve">
+    <value>{0} часа</value>
+    <comment>{0} = hours left until the reset (under one day): whole hours on the weekly line, one decimal on the 5-hour line (for example 1.0).</comment>
+  </data>
+  <data name="Card_TimeLeftHours_Many" xml:space="preserve">
+    <value>{0} часов</value>
+    <comment>{0} = hours left until the reset (under one day): whole hours on the weekly line, one decimal on the 5-hour line (for example 1.0).</comment>
+  </data>
+  <data name="Card_TimeLeftMinutes_Few" xml:space="preserve">
+    <value>{0} минуты</value>
+    <comment>{0} = whole minutes left until the reset (under one hour).</comment>
+  </data>
+  <data name="Card_TimeLeftMinutes_Many" xml:space="preserve">
+    <value>{0} минут</value>
+    <comment>{0} = whole minutes left until the reset (under one hour).</comment>
+  </data>
+  <data name="Card_UnderBudgetMinutes_Few" xml:space="preserve">
+    <value>Запас: {0} минуты · {1}</value>
+    <comment>{0} = whole minutes of allowance left above even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetMinutes_Many" xml:space="preserve">
+    <value>Запас: {0} минут · {1}</value>
+    <comment>{0} = whole minutes of allowance left above even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetHours_Few" xml:space="preserve">
+    <value>Запас: {0} часа · {1}</value>
+    <comment>{0} = hours with one decimal (for example 0.8 or 1.0), {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetHours_Many" xml:space="preserve">
+    <value>Запас: {0} часов · {1}</value>
+    <comment>{0} = hours with one decimal (for example 0.8 or 1.0), {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetMinutes_Few" xml:space="preserve">
+    <value>Перерасход: {0} минуты · {1}</value>
+    <comment>{0} = whole minutes of allowance used beyond even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetMinutes_Many" xml:space="preserve">
+    <value>Перерасход: {0} минут · {1}</value>
+    <comment>{0} = whole minutes of allowance used beyond even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetHours_Few" xml:space="preserve">
+    <value>Перерасход: {0} часа · {1}</value>
+    <comment>{0} = hours with one decimal, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetHours_Many" xml:space="preserve">
+    <value>Перерасход: {0} часов · {1}</value>
+    <comment>{0} = hours with one decimal, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_AgeDays_Few" xml:space="preserve">
+    <value>{0} дня</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_AgeDays_Many" xml:space="preserve">
+    <value>{0} дней</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_AgeHours_Few" xml:space="preserve">
+    <value>{0} часа</value>
+    <comment>{0} = hours with one decimal.</comment>
+  </data>
+  <data name="Card_AgeHours_Many" xml:space="preserve">
+    <value>{0} часов</value>
+    <comment>{0} = hours with one decimal.</comment>
+  </data>
+  <data name="Card_AgeMinutes_Few" xml:space="preserve">
+    <value>{0} минуты</value>
+    <comment>{0} = whole number of minutes.</comment>
+  </data>
+  <data name="Card_AgeMinutes_Many" xml:space="preserve">
+    <value>{0} минут</value>
+    <comment>{0} = whole number of minutes.</comment>
+  </data>
+</root>

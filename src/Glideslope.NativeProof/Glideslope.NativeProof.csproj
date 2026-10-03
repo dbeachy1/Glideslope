@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- This proof drives Win32 windows on a hidden desktop, so it needs the Windows-only API surface
+         (CreateDesktop, STARTUPINFO.lpDesktop, EnumDesktopWindows, and related APIs) without the
+         CA1416 platform-compatibility warnings that a plain net10.0 TFM would raise for that surface. -->
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Glideslope.NativeProof</AssemblyName>
+    <RootNamespace>Glideslope.NativeProof</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <!-- SendInput cannot reach a hidden desktop, so native scenarios invoke card buttons through managed
+         UI Automation. UseWPF supplies the UIAutomationClient and UIAutomationTypes references. It also
+         changes implicit usings, so files using System.IO or System.Net.Http import them explicitly. -->
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Reused only for the AppSettings/LayoutSettings/ProviderCatalog record shapes and the exact
+         settings.json serialization convention (see SettingsStore.cs), so the seeded file can never
+         drift from what the real app reads and writes. -->
+    <ProjectReference Include="..\Glideslope.Core\Glideslope.Core.csproj" />
+  </ItemGroup>
+</Project>

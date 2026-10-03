@@ -1,0 +1,36 @@
+# Agent instructions for Glideslope
+
+## Commit attribution
+
+The lead reviewer prepares the accepted commit message. End every new commit message with one
+`Co-authored-by:` trailer naming the highest-level model that participated in the design, coordination, or
+code review for the work represented by that commit, using its actual model name and version (for example,
+Astra 6 or Sol 6). Attribute the model responsible for the engineering sign-off, not the implementation worker.
+Never list Luna as a co-author. Keep review-model, effort, and baseline trailers accurate.
+
+## Human maintainability
+
+Organize code by responsibility, using the existing project structure where appropriate. Do not impose arbitrary
+file or method size limits or split cohesive code merely to reduce its line count. Use comments judiciously to
+explain non-obvious purpose and invariants. Keep comments focused on current behavior and non-obvious constraints; remove obsolete historical commentary.
+
+## Source comments and publication checks
+
+Use a senior engineer's judgment: explain non-obvious purpose, constraints, and invariants; do not narrate obvious
+operations or the editing process. Write concise comments about current behavior. Remove obsolete draft notes,
+superseded implementations, correction narratives, and lengthy chronological explanations from source comments.
+Preserve a still-relevant technical constraint as a short explanation of why the current code needs it.
+
+Before making a repository public, review comments across all intended source files for this obsolete or excessive
+material, and scan intended source, documentation, Git history and metadata, and release artifacts for personal
+information and credentials. Resolve findings before publication. A file-size or secret scan alone does not satisfy
+this comment and privacy review.
+
+## Public repository boundary
+
+The new public-facing Glideslope repository exists to leave deleted files and all earlier private history behind.
+Keep the current repository and its full history private as an archive. Create an independent private repository
+from an explicit allowlist of files present at the frozen source commit, with a fresh root commit. Do not import
+old commits, branches, tags, Git objects, or deleted-file blobs, and do not use a fork, mirror, or clone-and-delete
+workflow. Exclude private screenshots and other personal material from the allowlist. Verify the new repository's
+entire history and release artifacts before making it public.

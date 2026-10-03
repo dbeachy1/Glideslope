@@ -1,0 +1,2 @@
+Glideslope installed copy. The Windows installer puts this file beside Glideslope.App.exe; its presence
+lets that exe register and reconcile start at sign-in. A build run from its output folder has none.

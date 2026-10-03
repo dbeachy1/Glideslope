@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <!-- This is the neutral (en-US) string table. Translations use Strings.{culture}.resx beside it, and missing keys
+       fall back to the English value here.
+       Rules for translators:
+       - Every value is a whole label or sentence. Nothing is stitched together from fragments in code.
+       - {0}, {1}, ... are filled in by the app; each key's comment says with what. Keep every placeholder.
+       - Keys ending in "Pattern" are .NET date format strings, not words: ddd = abbreviated weekday, MMM = abbreviated
+         month, d = day number. Reorder them for your language; the names come from the user's regional format.
+       - A key with _One and _Other forms is a count sentence. The app picks the form from the displayed number with
+         the language's plural rule (PluralRules.cs). A language whose rule can pick One must supply both forms.
+       - Card_MinimumHeight is a number: the smallest card height, in pixels at card size 100 %, at which the card still
+         fits this language's text at the 790-pixel minimum width. Measure it with the pseudo-long locale spec. -->
+  <data name="App_Name" xml:space="preserve"><value>Glideslope</value></data>
+  <data name="Tray_Show" xml:space="preserve"><value>Afficher Glideslope</value></data>
+  <data name="Tray_Exit" xml:space="preserve"><value>Quitter</value></data>
+  <data name="Tray_ToolTip" xml:space="preserve"><value>Glideslope</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Paramètres de Glideslope</value></data>
+  <data name="Settings_Heading" xml:space="preserve"><value>Paramètres</value></data>
+  <data name="Settings_EnabledProviders" xml:space="preserve"><value>Fournisseurs activés</value></data>
+  <data name="Settings_Theme" xml:space="preserve"><value>Apparence</value></data>
+  <data name="Settings_ThemeSystem" xml:space="preserve"><value>Suivre le thème du système</value></data>
+  <data name="Settings_ThemeDark" xml:space="preserve"><value>Thème sombre</value></data>
+  <data name="Settings_ThemeLight" xml:space="preserve"><value>Thème clair</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Langue</value><comment>Settings row label for application wording. A saved choice takes effect after restarting Glideslope.</comment></data>
+  <data name="Settings_LanguageSystem" xml:space="preserve"><value>Langue du système</value><comment>First option in the application language selector; follows the operating system's display language on each launch.</comment></data>
+  <data name="Settings_LanguageRestart" xml:space="preserve"><value>Le changement de langue prendra effet au prochain démarrage de Glideslope.</value><comment>Help text under the language selector. It must clearly say the saved language change applies after restarting the app.</comment></data>
+  <data name="Settings_CardSize" xml:space="preserve"><value>Taille des cartes</value><comment>Settings row label beside a slider from 70 % to 150 % that scales every card.</comment></data>
+  <data name="Settings_MiniCardSize" xml:space="preserve"><value>Taille des mini-cartes</value><comment>Settings row label beside a slider from 70 % to 150 % that scales mini cards, directly under Card size.</comment></data>
+  <data name="Settings_LogFile" xml:space="preserve"><value>Fichier journal</value><comment>Settings label above the full path of the app's log file, shown as a link.</comment></data>
+  <data name="Settings_OpenLogFolder" xml:space="preserve"><value>Ouvrir le dossier du journal</value><comment>Tooltip on the log file path link in Settings.</comment></data>
+  <data name="Settings_StartInMiniMode" xml:space="preserve"><value>Démarrer en mode mini</value><comment>Checkbox directly under Mini card size. When checked, every card opens mini at the next launch; otherwise cards open full. Card modes are not saved at shutdown.</comment></data>
+  <data name="Settings_CtrlPeek" xml:space="preserve"><value>Maintenez Ctrl sur une mini-carte pour l’afficher en grand</value><comment>Checkbox directly under Start in mini mode, on by default. While enabled, holding Ctrl over a hovered mini card shows it full until Ctrl is released, the pointer leaves, or a mouse button goes down.</comment></data>
+  <data name="Settings_AlwaysOnTop" xml:space="preserve"><value>Garder les cartes au-dessus des autres fenêtres</value></data>
+  <data name="Settings_SnapToScreenEdge" xml:space="preserve"><value>Accrocher les cartes entre elles et aux bords de l’écran</value></data>
+  <data name="Settings_ResetPositions" xml:space="preserve"><value>Réinitialiser la position des fenêtres</value></data>
+  <data name="Settings_RefreshInterval" xml:space="preserve"><value>Intervalle d’actualisation ({0}–{1} minutes)</value><comment>{0} = the smallest allowed interval (5), {1} = the largest (30), both in minutes.</comment></data>
+  <data name="Settings_RetentionDays" xml:space="preserve"><value>Conserver l’historique d’utilisation ({0}–{1} jours)</value><comment>{0} = the fewest days that can be kept (7), {1} = the most (365).</comment></data>
+  <data name="Settings_AtLeastOneProvider" xml:space="preserve"><value>Gardez au moins un fournisseur activé.</value></data>
+  <data name="Settings_StartAtSignIn" xml:space="preserve"><value>Démarrer à la connexion</value></data>
+  <data name="Settings_Cancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="Settings_Save" xml:space="preserve"><value>Enregistrer</value></data>
+  <data name="Settings_ApplyFailedUnavailable" xml:space="preserve"><value>Impossible d’appliquer les paramètres : indisponible. Consultez le message et réessayez.</value></data>
+  <data name="Settings_ApplyFailedNotOwned" xml:space="preserve"><value>Impossible d’appliquer les paramètres : non reconnu. Consultez le message et réessayez.</value></data>
+  <data name="Settings_ApplyFailedStale" xml:space="preserve"><value>Impossible d’appliquer les paramètres : lanceur obsolète. Consultez le message et réessayez.</value></data>
+  <data name="Settings_ApplyFailedLauncherMissing" xml:space="preserve"><value>Impossible d’appliquer les paramètres : lanceur indisponible. Consultez le message et réessayez.</value></data>
+  <data name="Settings_ApplyFailedRevisionConflict" xml:space="preserve"><value>Impossible d’appliquer les paramètres : les paramètres ont été modifiés ailleurs. Consultez le message et réessayez.</value></data>
+  <data name="Settings_ApplyFailedHistoryUnavailable" xml:space="preserve"><value>Impossible d’appliquer les paramètres : l’historique d’utilisation est indisponible, la durée de conservation n’a donc pas pu être appliquée. Consultez le message et réessayez.</value></data>
+  <data name="Settings_ApplyFailedHistoryPruneFailed" xml:space="preserve"><value>Impossible d’appliquer les paramètres : l’ancien historique d’utilisation n’a pas pu être supprimé. Consultez le message et réessayez.</value></data>
+  <data name="Settings_StartupCouldNotEnableUnavailable" xml:space="preserve"><value>Impossible d’activer le démarrage à la connexion (indisponible).</value></data>
+  <data name="Settings_StartupCouldNotEnableNotOwned" xml:space="preserve"><value>Impossible d’activer le démarrage à la connexion (non reconnu).</value></data>
+  <data name="Settings_StartupCouldNotEnableStale" xml:space="preserve"><value>Impossible d’activer le démarrage à la connexion (lanceur obsolète).</value></data>
+  <data name="Settings_StartupCouldNotEnableLauncherMissing" xml:space="preserve"><value>Impossible d’activer le démarrage à la connexion (lanceur indisponible).</value></data>
+  <data name="Settings_StartupCouldNotDisableUnavailable" xml:space="preserve"><value>Impossible de désactiver le démarrage à la connexion (indisponible).</value></data>
+  <data name="Settings_StartupCouldNotDisableNotOwned" xml:space="preserve"><value>Impossible de désactiver le démarrage à la connexion (non reconnu).</value></data>
+  <data name="Settings_StartupCouldNotDisableStale" xml:space="preserve"><value>Impossible de désactiver le démarrage à la connexion (lanceur obsolète).</value></data>
+  <data name="Settings_StartupCouldNotDisableLauncherMissing" xml:space="preserve"><value>Impossible de désactiver le démarrage à la connexion (lanceur indisponible).</value></data>
+  <data name="Provider_Codex" xml:space="preserve"><value>Codex</value></data>
+  <data name="Provider_Claude" xml:space="preserve"><value>Claude</value></data>
+  <data name="Provider_Gemini" xml:space="preserve"><value>Gemini</value></data>
+  <data name="Card_Title" xml:space="preserve"><value>Glideslope · {0}</value><comment>Window title. {0} = provider name (Codex, Claude or Gemini; never translated).</comment></data>
+  <data name="Card_MinimumHeight" xml:space="preserve"><value>830</value><comment>A number, not text: the smallest card height in pixels (at card size 100 %) that fits this language at the 790-pixel minimum width. English 680; text about 30 % longer needs about 790.</comment></data>
+  <data name="Card_SettingsTooltip" xml:space="preserve"><value>Paramètres</value></data>
+  <data name="Card_ResetSizeTooltip" xml:space="preserve"><value>Rétablir la taille</value></data>
+  <data name="Card_MiniModeTooltip" xml:space="preserve"><value>Mode mini</value><comment>Tooltip and accessible name of the title-row toggle while the card is full; clicking switches its group to mini.</comment></data>
+  <data name="Card_FullModeTooltip" xml:space="preserve"><value>Mode complet</value><comment>Tooltip and accessible name of the title-row toggle while the card is mini; clicking switches its group to full.</comment></data>
+  <data name="Card_RemainingTooltip" xml:space="preserve"><value>{0} restant</value><comment>{0} = the weekly remaining percentage. Tooltip and accessible name of the mini card's remaining bar.</comment></data>
+  <data name="Card_Size" xml:space="preserve"><value>Taille de la carte</value><comment>Tooltip of the title-row button that opens the card size slider, and the heading inside it.</comment></data>
+  <data name="Card_AppNameVersion" xml:space="preserve"><value>Glideslope {0}</value><comment>{0} = version number, for example 1.1.0. "Glideslope" is the product name.</comment></data>
+  <data name="Card_MinimizeTooltip" xml:space="preserve"><value>Réduire toutes les cartes</value><comment>Tooltip for the header button that minimizes every card together.</comment></data>
+  <data name="Card_CloseTooltip" xml:space="preserve"><value>Fermer la carte {0}</value><comment>{0} = provider name (Codex, Claude or Gemini).</comment></data>
+  <data name="Card_FooterNoSynthetic" xml:space="preserve"><value>Le rythme suit le calendrier de réinitialisation indiqué par le fournisseur. Les lignes du graphique utilisent uniquement les relevés enregistrés.</value></data>
+  <data name="Card_WeeklyRemaining" xml:space="preserve"><value>reste hebdomadaire</value></data>
+  <data name="Card_CreditExpires" xml:space="preserve"><value>EXPIRATION DE LA RÉINITIALISATION D’UTILISATION</value></data>
+  <data name="Card_CreditExpiration" xml:space="preserve"><value>{0} {1} ({2})</value><comment>{0} = uppercase weekday (Card_CreditWeekdayPattern), {1} = date (Card_CreditExpirationDatePattern), {2} = Card_CreditExpiresIn or Card_CreditExpiresToday. Example: THU Oct 22 (in 26 days).</comment></data>
+  <data name="Card_CreditWeekdayPattern" xml:space="preserve"><value>ddd</value><comment>.NET date format for the credit box weekday; the app uppercases it.</comment></data>
+  <data name="Card_CreditExpirationDatePattern" xml:space="preserve"><value>d MMM</value><comment>.NET date format for the credit box date and the "Past week" dates. Never add an ordinal suffix.</comment></data>
+  <data name="Card_CreditExpiresIn_One" xml:space="preserve"><value>dans {0} jour</value><comment>{0} = number of days until the usage reset expires.</comment></data>
+  <data name="Card_CreditExpiresIn_Other" xml:space="preserve"><value>dans {0} jours</value><comment>{0} = number of days until the usage reset expires.</comment></data>
+  <data name="Card_CreditExpiresToday" xml:space="preserve"><value>aujourd’hui</value></data>
+  <data name="Card_CreditExpirationUnknown" xml:space="preserve"><value>Expiration indisponible</value></data>
+  <data name="Card_NoticeSignInHeading" xml:space="preserve"><value>CONNEXION REQUISE</value></data>
+  <data name="Card_NoticeSignInClaude" xml:space="preserve"><value>Exécutez claude et utilisez /login.</value><comment>"claude" and "/login" are commands; do not translate them.</comment></data>
+  <data name="Card_NoticeSignInCodex" xml:space="preserve"><value>Exécutez codex et connectez-vous.</value><comment>"codex" is a command; do not translate it.</comment></data>
+  <data name="Card_NoticeSignInGemini" xml:space="preserve"><value>Exécutez agy et connectez-vous.</value><comment>"agy" is a command; do not translate it.</comment></data>
+  <data name="Card_NoticeMissingHeading" xml:space="preserve"><value>CLI INTROUVABLE</value></data>
+  <data name="Card_NoticeMissingClaude" xml:space="preserve"><value>Installez Claude Code.</value></data>
+  <data name="Card_NoticeMissingCodex" xml:space="preserve"><value>Installez la CLI Codex.</value></data>
+  <data name="Card_NoticeMissingGemini" xml:space="preserve"><value>Installez Antigravity (agy).</value></data>
+  <data name="Card_CreditTooltip_NoClick_One" xml:space="preserve"><value>Vous avez {0} réinitialisation d’utilisation.</value><comment>{0} = count. This sentence is used at zero or one credit, when the credit flyout is unavailable.</comment></data>
+  <data name="Card_CreditTooltip_NoClick_Other" xml:space="preserve"><value>Vous avez {0} réinitialisations d’utilisation.</value><comment>{0} = count. This sentence is used at zero or one credit, when the credit flyout is unavailable.</comment></data>
+  <data name="Card_CreditTooltip_Click_One" xml:space="preserve"><value>Vous avez {0} réinitialisation d’utilisation au total. Cliquez pour voir le reste : {1}.</value><comment>{0} = total usage resets; {1} = those listed when clicked ({0} minus one). This sentence is used only above one credit, when the credit flyout is available. Noun grammar still follows the language's plural category.</comment></data>
+  <data name="Card_CreditTooltip_Click_Other" xml:space="preserve"><value>Vous avez {0} réinitialisations d’utilisation au total. Cliquez pour voir le reste : {1}.</value><comment>{0} = total usage resets; {1} = those listed when clicked ({0} minus one). This sentence is used only above one credit, when the credit flyout is available. Noun grammar still follows the language's plural category.</comment></data>
+  <data name="Card_CreditUndisclosed_One" xml:space="preserve"><value>{0} réinitialisation d’utilisation supplémentaire sans date d’expiration communiquée</value><comment>{0} = number of usage resets whose expiration the provider does not report.</comment></data>
+  <data name="Card_CreditUndisclosed_Other" xml:space="preserve"><value>{0} réinitialisations d’utilisation supplémentaires sans date d’expiration communiquée</value><comment>{0} = number of usage resets whose expiration the provider does not report.</comment></data>
+  <data name="Card_FiveHourDelta" xml:space="preserve"><value>rythme sur 5 heures</value></data>
+  <data name="Card_FiveHourRemaining" xml:space="preserve"><value>reste sur 5 heures</value></data>
+  <data name="Card_WeeklyGlideSlope" xml:space="preserve"><value>RYTHME HEBDOMADAIRE GLIDESLOPE</value></data>
+  <data name="Card_ObservedLegend" xml:space="preserve"><value>Observé</value></data>
+  <data name="Card_EvenPaceLegend" xml:space="preserve"><value>Rythme régulier</value></data>
+  <data name="Card_WeeklyDeltaTitle" xml:space="preserve"><value>RYTHME HEBDOMADAIRE</value></data>
+  <data name="Card_WeeklyRemainingSection" xml:space="preserve"><value>RESTE HEBDOMADAIRE</value></data>
+  <data name="Card_FableThisWeek" xml:space="preserve"><value>FABLE CETTE SEMAINE</value><comment>"Fable" is a model name; do not translate it.</comment></data>
+  <data name="Card_FableThisWeekWithReset" xml:space="preserve"><value>FABLE CETTE SEMAINE · Réinitialisation {0}</value><comment>{0} = reset date and time (Card_DateTimeFormat), for example Sat, Sep 26 · 6:00 AM.</comment></data>
+  <data name="Card_FableDeltaTitle" xml:space="preserve"><value>RYTHME FABLE</value></data>
+  <data name="Card_ChartWindowHint" xml:space="preserve"><value>Le graphique couvre la période hebdomadaire indiquée par le fournisseur. Le bleu représente les relevés enregistrés.</value></data>
+  <data name="Card_ResetUnavailable" xml:space="preserve"><value>Heure de réinitialisation indisponible</value></data>
+  <data name="Card_WindowUnavailable" xml:space="preserve"><value>Période de quota indisponible</value></data>
+  <data name="Card_PaceUnavailable" xml:space="preserve"><value>Rythme indisponible</value></data>
+  <data name="Card_WindowNotStarted" xml:space="preserve"><value>Aucune utilisation pour le moment · la période commence à votre première requête</value></data>
+  <data name="Card_NoUsageYet" xml:space="preserve"><value>Aucune utilisation</value><comment>Short form of Card_WindowNotStarted for the narrow Fable pace cell.</comment></data>
+  <data name="Card_ResetAfterFirstUse" xml:space="preserve"><value>Réinitialisation {0} après la première utilisation</value><comment>{0} = a duration phrase, Card_DurationDays or Card_DurationHours, for example "7 days".</comment></data>
+  <data name="Card_DurationHours_One" xml:space="preserve"><value>{0} heure</value><comment>{0} = whole number of hours.</comment></data>
+  <data name="Card_DurationHours_Other" xml:space="preserve"><value>{0} heures</value><comment>{0} = whole number of hours.</comment></data>
+  <data name="Card_DurationDays_One" xml:space="preserve"><value>{0} jour</value><comment>{0} = whole number of days.</comment></data>
+  <data name="Card_DurationDays_Other" xml:space="preserve"><value>{0} jours</value><comment>{0} = whole number of days.</comment></data>
+  <data name="Card_NoSamplesYet" xml:space="preserve"><value>Aucune observation réelle pour le moment</value></data>
+  <data name="Card_HistoryUnavailable" xml:space="preserve"><value>Historique d’utilisation indisponible ; les relevés en direct continuent</value></data>
+  <data name="Card_DockPreview" xml:space="preserve"><value>Aperçu de l’ancrage</value></data>
+  <data name="Card_Connecting" xml:space="preserve"><value>Connexion au fournisseur</value></data>
+  <data name="Card_Refresh" xml:space="preserve"><value>Actualiser</value></data>
+  <data name="Card_Undock" xml:space="preserve"><value>Désancrer</value></data>
+  <data name="Card_PlanType" xml:space="preserve"><value>Type d’offre : {0}</value><comment>{0} = the plan name as the provider reports it (for example max, pro); not translated.</comment></data>
+  <data name="Card_PreviousWeekTooltip" xml:space="preserve"><value>Semaine précédente</value></data>
+  <data name="Card_NextWeekTooltip" xml:space="preserve"><value>Semaine suivante</value></data>
+  <data name="Card_CurrentWeek" xml:space="preserve"><value>Maintenant</value></data>
+  <data name="Card_CurrentWeekTooltip" xml:space="preserve"><value>Revenir à la semaine actuelle</value></data>
+  <data name="Card_PastWindow" xml:space="preserve"><value>Semaine passée · {0} – {1}</value><comment>{0} = first day of the week shown, {1} = its last day, both in Card_CreditExpirationDatePattern.</comment></data>
+  <data name="Card_StatusLine" xml:space="preserve"><value>{0} · {1}</value><comment>The card's status line. {0} = status title (shown bold, for example "Live provider data"), {1} = its details sentence. Reorder or change the separator as needed.</comment></data>
+  <data name="Card_ResetAt" xml:space="preserve"><value>Réinitialisation {0}</value><comment>{0} = reset date and time (Card_DateTimeFormat).</comment></data>
+  <data name="Card_ResetAtWithTimeLeft" xml:space="preserve"><value>Réinitialisation {0} ({1})</value><comment>{0} = reset date and time (Card_DateTimeFormat), {1} = time left until the reset (Card_TimeLeftDays, Card_TimeLeftHours or Card_TimeLeftMinutes). Example: Resets Thu, Oct 1 · 6:00 AM (2.1 days).</comment></data>
+  <data name="Card_TimeLeftDays_One" xml:space="preserve"><value>{0} jour</value><comment>{0} = days left until the reset, with one decimal (for example 2.1).</comment></data>
+  <data name="Card_TimeLeftDays_Other" xml:space="preserve"><value>{0} jours</value><comment>{0} = days left until the reset, with one decimal (for example 2.1).</comment></data>
+  <data name="Card_TimeLeftHours_One" xml:space="preserve"><value>{0} heure</value><comment>{0} = hours left until the reset (under one day): whole hours on the weekly line, one decimal on the 5-hour line (for example 1.0).</comment></data>
+  <data name="Card_TimeLeftHours_Other" xml:space="preserve"><value>{0} heures</value><comment>{0} = hours left until the reset (under one day): whole hours on the weekly line, one decimal on the 5-hour line (for example 1.1).</comment></data>
+  <data name="Card_TimeLeftMinutes_One" xml:space="preserve"><value>{0} minute</value><comment>{0} = whole minutes left until the reset (under one hour).</comment></data>
+  <data name="Card_TimeLeftMinutes_Other" xml:space="preserve"><value>{0} minutes</value><comment>{0} = whole minutes left until the reset (under one hour).</comment></data>
+  <data name="Card_DateTimeFormat" xml:space="preserve"><value>{0} · {1}</value><comment>{0} = weekday and date (Card_WeekdayDatePattern), {1} = time in the user's regional short-time format.</comment></data>
+  <data name="Card_WeekdayDatePattern" xml:space="preserve"><value>ddd d MMM</value><comment>.NET date format for reset and reading dates, for example Sat, Sep 26.</comment></data>
+  <data name="Card_ChartDayPattern" xml:space="preserve"><value>ddd</value><comment>.NET date format for the chart's day labels; the app uppercases it. Keep it short: seven labels share the chart width.</comment></data>
+  <data name="Card_PacePercent" xml:space="preserve"><value>rythme de {0} %</value><comment>{0} = pace percent, a whole number: use relative to the allowance expected to be spent by now.</comment></data>
+  <data name="Card_PaceSuppressedMissingDuration" xml:space="preserve"><value>Rythme indisponible : durée de la période indisponible</value></data>
+  <data name="Card_PaceSuppressedMissingReset" xml:space="preserve"><value>Rythme indisponible : heure de réinitialisation indisponible</value></data>
+  <data name="Card_PaceSuppressedStale" xml:space="preserve"><value>Rythme indisponible : relevé obsolète</value></data>
+  <data name="Card_PaceSuppressedAuthentication" xml:space="preserve"><value>Rythme indisponible : connexion à vérifier</value></data>
+  <data name="Card_PaceSuppressedAccountChanged" xml:space="preserve"><value>Rythme indisponible : compte modifié</value></data>
+  <data name="Card_PaceSuppressedHistorical" xml:space="preserve"><value>Rythme indisponible : en attente d’un nouveau relevé</value></data>
+  <data name="Card_PaceSuppressedWindowNotStarted" xml:space="preserve"><value>Rythme indisponible : période pas encore commencée</value></data>
+  <data name="Card_PaceSuppressedWindowReset" xml:space="preserve"><value>Rythme indisponible : période réinitialisée</value></data>
+  <data name="Card_PaceSuppressedInsufficientElapsed" xml:space="preserve"><value>Rythme indisponible : période tout juste commencée</value></data>
+  <data name="Card_PaceSuppressedUnknown" xml:space="preserve"><value>Rythme indisponible : source indisponible</value></data>
+  <data name="Card_PacePercentUnavailableMissingDuration" xml:space="preserve"><value>pourcentage de rythme indisponible : durée de la période indisponible</value><comment>Follows a budget sentence after " · " (the {1} of Card_UnderBudget*/Card_OverBudget*/Card_OnBudget).</comment></data>
+  <data name="Card_PacePercentUnavailableMissingReset" xml:space="preserve"><value>pourcentage de rythme indisponible : heure de réinitialisation indisponible</value><comment>Follows a budget sentence after " · ".</comment></data>
+  <data name="Card_PacePercentUnavailableStale" xml:space="preserve"><value>pourcentage de rythme indisponible : relevé obsolète</value><comment>Follows a budget sentence after " · ".</comment></data>
+  <data name="Card_PacePercentUnavailableAuthentication" xml:space="preserve"><value>pourcentage de rythme indisponible : connexion à vérifier</value><comment>Follows a budget sentence after " · ".</comment></data>
+  <data name="Card_PacePercentUnavailableAccountChanged" xml:space="preserve"><value>pourcentage de rythme indisponible : compte modifié</value><comment>Follows a budget sentence after " · ".</comment></data>
+  <data name="Card_PacePercentUnavailableHistorical" xml:space="preserve"><value>pourcentage de rythme indisponible : en attente d’un nouveau relevé</value><comment>Follows a budget sentence after " · ".</comment></data>
+  <data name="Card_PacePercentUnavailableWindowNotStarted" xml:space="preserve"><value>pourcentage de rythme indisponible : période pas encore commencée</value><comment>Follows a budget sentence after " · ".</comment></data>
+  <data name="Card_PacePercentUnavailableWindowReset" xml:space="preserve"><value>pourcentage de rythme indisponible : période réinitialisée</value><comment>Follows a budget sentence after " · ".</comment></data>
+  <data name="Card_PacePercentUnavailableInsufficientElapsed" xml:space="preserve"><value>pourcentage de rythme indisponible : période tout juste commencée</value><comment>Follows a budget sentence after " · ".</comment></data>
+  <data name="Card_PacePercentUnavailableUnknown" xml:space="preserve"><value>pourcentage de rythme indisponible : source indisponible</value><comment>Follows a budget sentence after " · ".</comment></data>
+  <data name="Card_OnBudget" xml:space="preserve"><value>Au rythme prévu · {0}</value><comment>{0} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment></data>
+  <data name="Card_UnderBudgetMinutes_One" xml:space="preserve"><value>{0} minute sous le rythme prévu · {1}</value><comment>{0} = whole minutes of allowance left above even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment></data>
+  <data name="Card_UnderBudgetMinutes_Other" xml:space="preserve"><value>{0} minutes sous le rythme prévu · {1}</value><comment>{0} = whole minutes of allowance left above even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment></data>
+  <data name="Card_UnderBudgetHours_One" xml:space="preserve"><value>{0} heure sous le rythme prévu · {1}</value><comment>{0} = hours with one decimal (for example 0.8 or 1.0), {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment></data>
+  <data name="Card_UnderBudgetHours_Other" xml:space="preserve"><value>{0} heures sous le rythme prévu · {1}</value><comment>{0} = hours with one decimal (for example 13.4), {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment></data>
+  <data name="Card_OverBudgetMinutes_One" xml:space="preserve"><value>{0} minute au-dessus du rythme prévu · {1}</value><comment>{0} = whole minutes of allowance used beyond even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment></data>
+  <data name="Card_OverBudgetMinutes_Other" xml:space="preserve"><value>{0} minutes au-dessus du rythme prévu · {1}</value><comment>{0} = whole minutes of allowance used beyond even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment></data>
+  <data name="Card_OverBudgetHours_One" xml:space="preserve"><value>{0} heure au-dessus du rythme prévu · {1}</value><comment>{0} = hours with one decimal, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment></data>
+  <data name="Card_OverBudgetHours_Other" xml:space="preserve"><value>{0} heures au-dessus du rythme prévu · {1}</value><comment>{0} = hours with one decimal, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment></data>
+  <data name="Card_Reading" xml:space="preserve"><value>Lecture de l’utilisation actuelle</value></data>
+  <data name="Card_ProviderReady" xml:space="preserve"><value>Données du fournisseur en direct</value></data>
+  <data name="Card_StaleTitle" xml:space="preserve"><value>Le dernier relevé du fournisseur est obsolète</value></data>
+  <data name="Card_HistoricalTitle" xml:space="preserve"><value>Relevé du fournisseur enregistré</value></data>
+  <data name="Card_MissingApplication" xml:space="preserve"><value>Application du fournisseur manquante</value></data>
+  <data name="Card_NeedsSignIn" xml:space="preserve"><value>Connexion requise</value></data>
+  <data name="Card_AuthenticationExpired" xml:space="preserve"><value>Connexion expirée</value></data>
+  <data name="Card_RateLimited" xml:space="preserve"><value>Le fournisseur demande une pause</value></data>
+  <data name="Card_ProviderOffline" xml:space="preserve"><value>Fournisseur hors ligne</value></data>
+  <data name="Card_UnsupportedAccount" xml:space="preserve"><value>Type de compte non pris en charge</value></data>
+  <data name="Card_SchemaChanged" xml:space="preserve"><value>Réponse du fournisseur modifiée</value></data>
+  <data name="Card_QuotaGuardDetails" xml:space="preserve"><value>Glideslope a cessé de consulter ce fournisseur pour protéger votre quota. Redémarrez Glideslope pour réessayer.</value><comment>Follows Card_SchemaChanged when the provider's tool answered in a way that could have spent quota; only a restart clears it.</comment></data>
+  <data name="Card_NoResponse" xml:space="preserve"><value>Aucune réponse de {0}</value><comment>Status title when the provider's command-line tool gave no answer in time. {0} = provider name, for example Gemini.</comment></data>
+  <data name="Card_NoResponseDetails" xml:space="preserve"><value>Appuyez sur Actualiser. Si le problème persiste, essayez de redémarrer Glideslope.</value><comment>Follows Card_NoResponse. "Refresh" is the card's Refresh button (Card_Refresh).</comment></data>
+  <data name="Card_ProviderUnavailable" xml:space="preserve"><value>Données du fournisseur indisponibles</value></data>
+  <data name="Card_ConnectingDetails" xml:space="preserve"><value>En attente de la première lecture de ce fournisseur. Aucune valeur de quota n’est inventée.</value></data>
+  <data name="Card_ReadingDetails" xml:space="preserve"><value>Lecture de l’utilisation actuelle du compte connecté chez le fournisseur.</value></data>
+  <data name="Card_StaleDetails" xml:space="preserve"><value>Affichage du dernier relevé réel. Le rythme est masqué jusqu’à la réussite d’un nouveau relevé.</value></data>
+  <data name="Card_HistoricalDetails" xml:space="preserve"><value>Affichage d’un relevé enregistré. Le rythme est masqué jusqu’à la réussite d’un nouveau relevé.</value></data>
+  <data name="Card_HistoryScopeUnavailable" xml:space="preserve"><value>Le quota en direct est disponible. L’historique du compte est limité à cette session de l’application, car une portée de compte stable n’a pas pu être enregistrée.</value></data>
+  <data name="Card_ObservedAt" xml:space="preserve"><value>Dernière lecture : {0}</value><comment>{0} = date and time of the last reading (Card_DateTimeFormat).</comment></data>
+  <data name="Card_MissingApplicationDetails" xml:space="preserve"><value>Installez l’application officielle ou l’outil en ligne de commande du fournisseur, puis réessayez.</value></data>
+  <data name="Card_NeedsSignInDetails" xml:space="preserve"><value>Connectez-vous dans l’application officielle du fournisseur, puis réessayez.</value></data>
+  <data name="Card_AuthenticationExpiredDetails" xml:space="preserve"><value>Actualisez la connexion officielle au fournisseur, puis réessayez. Glideslope ne demande jamais votre mot de passe.</value></data>
+  <data name="Card_RateLimitedUntil" xml:space="preserve"><value>Le fournisseur autorise une nouvelle lecture après {0}.</value><comment>{0} = a time of day in the user's regional short-time format.</comment></data>
+  <data name="Card_RateLimitedDetails" xml:space="preserve"><value>Le fournisseur a demandé à Glideslope d’attendre avant une nouvelle lecture.</value></data>
+  <data name="Card_OfflineDetails" xml:space="preserve"><value>Vérifiez la connexion et réessayez. Les cartes des autres fournisseurs continuent de fonctionner.</value></data>
+  <data name="Card_UnsupportedAccountDetails" xml:space="preserve"><value>Ce compte connecté ne fournit pas le quota d’abonnement pris en charge.</value></data>
+  <data name="Card_SchemaChangedDetails" xml:space="preserve"><value>Les données du fournisseur n’ont pas pu être lues de manière sûre. Reconnectez-vous au fournisseur et réessayez.</value></data>
+  <data name="Card_ProviderUnavailableDetails" xml:space="preserve"><value>Les données en direct de ce fournisseur ne sont pas encore connectées.</value></data>
+  <data name="Card_ChartSampleTooltip" xml:space="preserve"><value>Observé {0} : {1} restant · âge du relevé {2}</value><comment>{0} = date and time of the reading (Card_DateTimeFormat), {1} = percent remaining, {2} = an age phrase (Card_AgeDays, Card_AgeHours or Card_AgeMinutes).</comment></data>
+  <data name="Card_AgeDays_One" xml:space="preserve"><value>{0} jour</value><comment>{0} = whole number of days.</comment></data>
+  <data name="Card_AgeDays_Other" xml:space="preserve"><value>{0} jours</value><comment>{0} = whole number of days.</comment></data>
+  <data name="Card_AgeHours_One" xml:space="preserve"><value>{0} heure</value><comment>{0} = hours with one decimal.</comment></data>
+  <data name="Card_AgeHours_Other" xml:space="preserve"><value>{0} heures</value><comment>{0} = hours with one decimal.</comment></data>
+  <data name="Card_AgeMinutes_One" xml:space="preserve"><value>{0} minute</value><comment>{0} = whole number of minutes.</comment></data>
+  <data name="Card_AgeMinutes_Other" xml:space="preserve"><value>{0} minutes</value><comment>{0} = whole number of minutes.</comment></data>
+</root>

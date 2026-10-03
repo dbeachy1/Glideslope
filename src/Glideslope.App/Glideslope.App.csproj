@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <ApplicationIcon>..\..\assets\glideslope-icon.ico</ApplicationIcon>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Glideslope.App</AssemblyName>
+    <!-- The card title and package scripts read the application version from this project. -->
+    <Version>2.7.0</Version>
+    <!-- Windows displays these names in Task Manager and the startup-apps list. -->
+    <AssemblyTitle>Glideslope</AssemblyTitle>
+    <Product>Glideslope</Product>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Glideslope.Core\Glideslope.Core.csproj" />
+    <ProjectReference Include="..\Glideslope.Domain\Glideslope.Domain.csproj" />
+    <ProjectReference Include="..\Glideslope.Monitoring\Glideslope.Monitoring.csproj" />
+    <ProjectReference Include="..\Glideslope.Providers\Glideslope.Providers.csproj" />
+    <ProjectReference Include="..\Glideslope.Storage\Glideslope.Storage.csproj" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\glideslope-mark.svg" Link="Assets\glideslope-mark.svg" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Shared icon asset for the executable, windows, and tray. -->
+    <None Include="..\..\assets\glideslope-icon.png" Link="Assets\glideslope-icon.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\assets\glideslope-icon.ico" Link="Assets\glideslope-icon.ico" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Distribute Glideslope's own notices and the complete Windows/Linux dependency notice bundle
+         beside the executable, outside the single-file bundle. -->
+    <None Include="..\..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <None Include="..\..\NOTICE" Link="NOTICE" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <None Include="..\..\TRADEMARKS.md" Link="TRADEMARKS.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+    <None Include="..\..\THIRD-PARTY-NOTICES.txt" Link="THIRD-PARTY-NOTICES.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,15 @@
+Glideslope
+Copyright 2026 Douglas Beachy
+
+The Glideslope source code is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The following are NOT licensed under the Apache License. They are copyright Douglas Beachy, all rights reserved:
+
+  - assets/glideslope-mark.svg
+  - assets/glideslope-icon.ico
+  - assets/glideslope-icon.png
+  - mockups/glideslope-icon.ico
+  - mockups/glideslope-icon.png
+
+"Glideslope" and the Glideslope mark are trademarks of Douglas Beachy. The Apache License grants no rights to
+them (section 6). See TRADEMARKS.md for what that means for forks.

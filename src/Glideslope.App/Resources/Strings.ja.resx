@@ -1,0 +1,685 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Name" xml:space="preserve">
+    <value>Glideslope</value>
+  </data>
+  <data name="Tray_Show" xml:space="preserve">
+    <value>Glideslopeを表示</value>
+  </data>
+  <data name="Tray_Exit" xml:space="preserve">
+    <value>終了</value>
+  </data>
+  <data name="Tray_ToolTip" xml:space="preserve">
+    <value>Glideslope</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Glideslopeの設定</value>
+  </data>
+  <data name="Settings_Heading" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Settings_EnabledProviders" xml:space="preserve">
+    <value>有効なプロバイダー</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>外観</value>
+  </data>
+  <data name="Settings_ThemeSystem" xml:space="preserve">
+    <value>システムのテーマに従う</value>
+  </data>
+  <data name="Settings_ThemeDark" xml:space="preserve">
+    <value>ダークテーマ</value>
+  </data>
+  <data name="Settings_ThemeLight" xml:space="preserve">
+    <value>ライトテーマ</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>言語</value>
+    <comment>Settings row label for application wording. A saved choice takes effect after restarting Glideslope.</comment>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>システム言語</value>
+    <comment>First option in the application language selector; follows the operating system's display language on each launch.</comment>
+  </data>
+  <data name="Settings_LanguageRestart" xml:space="preserve">
+    <value>言語の変更を適用するには、Glideslopeを再起動してください。</value>
+    <comment>Help text under the language selector. It must clearly say the saved language change applies after restarting the app.</comment>
+  </data>
+  <data name="Settings_CardSize" xml:space="preserve">
+    <value>カードサイズ</value>
+    <comment>Settings row label beside a slider from 70 % to 150 % that scales every card.</comment>
+  </data>
+  <data name="Settings_MiniCardSize" xml:space="preserve">
+    <value>ミニカードサイズ</value>
+    <comment>Settings row label beside a slider from 70 % to 150 % that scales mini cards, directly under Card size.</comment>
+  </data>
+  <data name="Settings_LogFile" xml:space="preserve">
+    <value>ログファイル</value>
+    <comment>Settings label above the full path of the app's log file, shown as a link.</comment>
+  </data>
+  <data name="Settings_OpenLogFolder" xml:space="preserve">
+    <value>ログが保存されているフォルダーを開く</value>
+    <comment>Tooltip on the log file path link in Settings.</comment>
+  </data>
+  <data name="Settings_StartInMiniMode" xml:space="preserve">
+    <value>ミニモードで起動</value>
+    <comment>Checkbox directly under Mini card size. When checked, every card opens mini at the next launch; otherwise cards open full. Card modes are not saved at shutdown.</comment>
+  </data>
+  <data name="Settings_CtrlPeek" xml:space="preserve">
+    <value>ミニカードにカーソルを合わせ、Ctrlを押している間はフル表示</value>
+    <comment>Checkbox directly under Start in mini mode, on by default. While enabled, holding Ctrl over a hovered mini card shows it full until Ctrl is released, the pointer leaves, or a mouse button goes down.</comment>
+  </data>
+  <data name="Settings_AlwaysOnTop" xml:space="preserve">
+    <value>カードを常に他のウィンドウより前面に表示</value>
+  </data>
+  <data name="Settings_SnapToScreenEdge" xml:space="preserve">
+    <value>カード同士や画面端にスナップ</value>
+  </data>
+  <data name="Settings_ResetPositions" xml:space="preserve">
+    <value>ウィンドウ位置をリセット</value>
+  </data>
+  <data name="Settings_RefreshInterval" xml:space="preserve">
+    <value>更新間隔（{0}～{1}分）</value>
+    <comment>{0} = the smallest allowed interval (5), {1} = the largest (30), both in minutes.</comment>
+  </data>
+  <data name="Settings_RetentionDays" xml:space="preserve">
+    <value>使用履歴を保持（{0}～{1}日）</value>
+    <comment>{0} = the fewest days that can be kept (7), {1} = the most (365).</comment>
+  </data>
+  <data name="Settings_AtLeastOneProvider" xml:space="preserve">
+    <value>少なくとも1つのプロバイダーを有効にしてください。</value>
+  </data>
+  <data name="Settings_StartAtSignIn" xml:space="preserve">
+    <value>サインイン時に起動</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Settings_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Settings_ApplyFailedUnavailable" xml:space="preserve">
+    <value>設定を適用できませんでした：利用できません。メッセージを確認して、もう一度お試しください。</value>
+  </data>
+  <data name="Settings_ApplyFailedNotOwned" xml:space="preserve">
+    <value>設定を適用できませんでした：認識されません。メッセージを確認して、もう一度お試しください。</value>
+  </data>
+  <data name="Settings_ApplyFailedStale" xml:space="preserve">
+    <value>設定を適用できませんでした：ランチャーが古くなっています。メッセージを確認して、もう一度お試しください。</value>
+  </data>
+  <data name="Settings_ApplyFailedLauncherMissing" xml:space="preserve">
+    <value>設定を適用できませんでした：ランチャーを利用できません。メッセージを確認して、もう一度お試しください。</value>
+  </data>
+  <data name="Settings_ApplyFailedRevisionConflict" xml:space="preserve">
+    <value>設定を適用できませんでした：設定が別の場所で変更されました。メッセージを確認して、もう一度お試しください。</value>
+  </data>
+  <data name="Settings_ApplyFailedHistoryUnavailable" xml:space="preserve">
+    <value>設定を適用できませんでした：使用履歴を利用できないため、保持期間を適用できませんでした。メッセージを確認して、もう一度お試しください。</value>
+  </data>
+  <data name="Settings_ApplyFailedHistoryPruneFailed" xml:space="preserve">
+    <value>設定を適用できませんでした：古い使用履歴を削除できませんでした。メッセージを確認して、もう一度お試しください。</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableUnavailable" xml:space="preserve">
+    <value>サインイン時の起動を有効にできませんでした（利用不可）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableNotOwned" xml:space="preserve">
+    <value>サインイン時の起動を有効にできませんでした（認識されません）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableStale" xml:space="preserve">
+    <value>サインイン時の起動を有効にできませんでした（ランチャーが古くなっています）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotEnableLauncherMissing" xml:space="preserve">
+    <value>サインイン時の起動を有効にできませんでした（ランチャーを利用できません）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableUnavailable" xml:space="preserve">
+    <value>サインイン時の起動を無効にできませんでした（利用不可）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableNotOwned" xml:space="preserve">
+    <value>サインイン時の起動を無効にできませんでした（認識されません）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableStale" xml:space="preserve">
+    <value>サインイン時の起動を無効にできませんでした（ランチャーが古くなっています）。</value>
+  </data>
+  <data name="Settings_StartupCouldNotDisableLauncherMissing" xml:space="preserve">
+    <value>サインイン時の起動を無効にできませんでした（ランチャーを利用できません）。</value>
+  </data>
+  <data name="Provider_Codex" xml:space="preserve">
+    <value>Codex</value>
+  </data>
+  <data name="Provider_Claude" xml:space="preserve">
+    <value>Claude</value>
+  </data>
+  <data name="Provider_Gemini" xml:space="preserve">
+    <value>Gemini</value>
+  </data>
+  <data name="Card_Title" xml:space="preserve">
+    <value>Glideslope — {0}</value>
+    <comment>Window title. {0} = provider name (Codex, Claude or Gemini; never translated).</comment>
+  </data>
+  <data name="Card_MinimumHeight" xml:space="preserve">
+    <value>740</value>
+    <comment>A number, not text: the smallest card height in pixels (at card size 100 %) that fits this language at the 790-pixel minimum width. English 680; text about 30 % longer needs about 790.</comment>
+  </data>
+  <data name="Card_SettingsTooltip" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Card_ResetSizeTooltip" xml:space="preserve">
+    <value>サイズをリセット</value>
+  </data>
+  <data name="Card_MiniModeTooltip" xml:space="preserve">
+    <value>ミニモード</value>
+    <comment>Tooltip and accessible name of the title-row toggle while the card is full; clicking switches its group to mini.</comment>
+  </data>
+  <data name="Card_FullModeTooltip" xml:space="preserve">
+    <value>フルモード</value>
+    <comment>Tooltip and accessible name of the title-row toggle while the card is mini; clicking switches its group to full.</comment>
+  </data>
+  <data name="Card_RemainingTooltip" xml:space="preserve">
+    <value>残り{0}</value>
+    <comment>{0} = the weekly remaining percentage. Tooltip and accessible name of the mini card's remaining bar.</comment>
+  </data>
+  <data name="Card_Size" xml:space="preserve">
+    <value>カードサイズ</value>
+    <comment>Tooltip of the title-row button that opens the card size slider, and the heading inside it.</comment>
+  </data>
+  <data name="Card_AppNameVersion" xml:space="preserve">
+    <value>Glideslope {0}</value>
+    <comment>{0} = version number, for example 1.1.0. "Glideslope" is the product name.</comment>
+  </data>
+  <data name="Card_MinimizeTooltip" xml:space="preserve">
+    <value>すべてのカードを最小化</value>
+    <comment>Tooltip for the header button that minimizes every card together.</comment>
+  </data>
+  <data name="Card_CloseTooltip" xml:space="preserve">
+    <value>{0}カードを閉じる</value>
+    <comment>{0} = provider name (Codex, Claude or Gemini).</comment>
+  </data>
+  <data name="Card_FooterNoSynthetic" xml:space="preserve">
+    <value>ペースはプロバイダーが報告するリセット予定に基づきます。グラフには記録された読み取り値のみを表示します。</value>
+  </data>
+  <data name="Card_WeeklyRemaining" xml:space="preserve">
+    <value>週間の残り</value>
+  </data>
+  <data name="Card_CreditExpires" xml:space="preserve">
+    <value>利用枠リセットの有効期限</value>
+  </data>
+  <data name="Card_CreditExpiration" xml:space="preserve">
+    <value>{1}（{0}） · {2}</value>
+    <comment>{0} = uppercase weekday (Card_CreditWeekdayPattern), {1} = date (Card_CreditExpirationDatePattern), {2} = Card_CreditExpiresIn or Card_CreditExpiresToday. Example: THU Oct 22 (in 26 days).</comment>
+  </data>
+  <data name="Card_CreditWeekdayPattern" xml:space="preserve">
+    <value>ddd</value>
+    <comment>.NET date format for the credit box weekday; the app uppercases it.</comment>
+  </data>
+  <data name="Card_CreditExpirationDatePattern" xml:space="preserve">
+    <value>M'月'd'日'</value>
+    <comment>.NET date format for the credit box date and the "Past week" dates. Never add an ordinal suffix.</comment>
+  </data>
+  <data name="Card_CreditExpiresIn_One" xml:space="preserve">
+    <value>{0}日後</value>
+    <comment>{0} = number of days until the usage reset expires.</comment>
+  </data>
+  <data name="Card_CreditExpiresIn_Other" xml:space="preserve">
+    <value>{0}日後</value>
+    <comment>{0} = number of days until the usage reset expires.</comment>
+  </data>
+  <data name="Card_CreditExpiresToday" xml:space="preserve">
+    <value>今日</value>
+  </data>
+  <data name="Card_CreditExpirationUnknown" xml:space="preserve">
+    <value>有効期限を確認できません</value>
+  </data>
+  <data name="Card_NoticeSignInHeading" xml:space="preserve">
+    <value>サインインが必要です</value>
+  </data>
+  <data name="Card_NoticeSignInClaude" xml:space="preserve">
+    <value>claudeを実行して /login を使用してください。</value>
+    <comment>"claude" and "/login" are commands; do not translate them.</comment>
+  </data>
+  <data name="Card_NoticeSignInCodex" xml:space="preserve">
+    <value>codexを実行してサインインしてください。</value>
+    <comment>"codex" is a command; do not translate it.</comment>
+  </data>
+  <data name="Card_NoticeSignInGemini" xml:space="preserve">
+    <value>agyを実行してサインインしてください。</value>
+    <comment>"agy" is a command; do not translate it.</comment>
+  </data>
+  <data name="Card_NoticeMissingHeading" xml:space="preserve">
+    <value>CLIが見つかりません</value>
+  </data>
+  <data name="Card_NoticeMissingClaude" xml:space="preserve">
+    <value>Claude Codeをインストールしてください。</value>
+  </data>
+  <data name="Card_NoticeMissingCodex" xml:space="preserve">
+    <value>Codex CLIをインストールしてください。</value>
+  </data>
+  <data name="Card_NoticeMissingGemini" xml:space="preserve">
+    <value>Antigravity（agy）をインストールしてください。</value>
+  </data>
+  <data name="Card_CreditTooltip_NoClick_One" xml:space="preserve">
+    <value>利用枠リセットが{0}回あります。</value>
+    <comment>{0} = count. This sentence is used at zero or one credit, when the credit flyout is unavailable.</comment>
+  </data>
+  <data name="Card_CreditTooltip_NoClick_Other" xml:space="preserve">
+    <value>利用枠リセットが{0}回あります。</value>
+    <comment>{0} = count. This sentence is used at zero or one credit, when the credit flyout is unavailable.</comment>
+  </data>
+  <data name="Card_CreditTooltip_Click_One" xml:space="preserve">
+    <value>利用枠リセットは合計{0}回です。クリックすると残りの{1}件を表示します。</value>
+    <comment>{0} = total usage resets; {1} = those listed when clicked ({0} minus one). This sentence is used only above one credit, when the credit flyout is available. Noun grammar still follows the language's plural category.</comment>
+  </data>
+  <data name="Card_CreditTooltip_Click_Other" xml:space="preserve">
+    <value>利用枠リセットは合計{0}回です。クリックすると残りの{1}件を表示します。</value>
+    <comment>{0} = total usage resets; {1} = those listed when clicked ({0} minus one). This sentence is used only above one credit, when the credit flyout is available. Noun grammar still follows the language's plural category.</comment>
+  </data>
+  <data name="Card_CreditUndisclosed_One" xml:space="preserve">
+    <value>有効期限不明の追加利用枠リセット{0}回</value>
+    <comment>{0} = number of usage resets whose expiration the provider does not report.</comment>
+  </data>
+  <data name="Card_CreditUndisclosed_Other" xml:space="preserve">
+    <value>有効期限不明の追加利用枠リセット{0}回</value>
+    <comment>{0} = number of usage resets whose expiration the provider does not report.</comment>
+  </data>
+  <data name="Card_FiveHourDelta" xml:space="preserve">
+    <value>5時間のペース</value>
+  </data>
+  <data name="Card_FiveHourRemaining" xml:space="preserve">
+    <value>5時間の残り</value>
+  </data>
+  <data name="Card_WeeklyGlideSlope" xml:space="preserve">
+    <value>週間 GLIDESLOPE</value>
+  </data>
+  <data name="Card_ObservedLegend" xml:space="preserve">
+    <value>実測</value>
+  </data>
+  <data name="Card_EvenPaceLegend" xml:space="preserve">
+    <value>均等なペース</value>
+  </data>
+  <data name="Card_WeeklyDeltaTitle" xml:space="preserve">
+    <value>週間ペース</value>
+  </data>
+  <data name="Card_WeeklyRemainingSection" xml:space="preserve">
+    <value>週間の残り</value>
+  </data>
+  <data name="Card_FableThisWeek" xml:space="preserve">
+    <value>今週のFABLE</value>
+    <comment>"Fable" is a model name; do not translate it.</comment>
+  </data>
+  <data name="Card_FableThisWeekWithReset" xml:space="preserve">
+    <value>今週のFABLE · リセット {0}</value>
+    <comment>{0} = reset date and time (Card_DateTimeFormat), for example Sat, Sep 26 · 6:00 AM.</comment>
+  </data>
+  <data name="Card_FableDeltaTitle" xml:space="preserve">
+    <value>FABLEのペース</value>
+  </data>
+  <data name="Card_ChartWindowHint" xml:space="preserve">
+    <value>グラフはプロバイダーが報告した週間の期間を表示します。青色は記録済みのサンプルです。</value>
+  </data>
+  <data name="Card_ResetUnavailable" xml:space="preserve">
+    <value>リセット時刻を確認できません</value>
+  </data>
+  <data name="Card_WindowUnavailable" xml:space="preserve">
+    <value>利用枠の期間を確認できません</value>
+  </data>
+  <data name="Card_PaceUnavailable" xml:space="preserve">
+    <value>ペースを確認できません</value>
+  </data>
+  <data name="Card_WindowNotStarted" xml:space="preserve">
+    <value>まだ使用されていません · 期間は最初のリクエスト時に始まります</value>
+  </data>
+  <data name="Card_NoUsageYet" xml:space="preserve">
+    <value>まだ使用されていません</value>
+    <comment>Short form of Card_WindowNotStarted for the narrow Fable pace cell.</comment>
+  </data>
+  <data name="Card_ResetAfterFirstUse" xml:space="preserve">
+    <value>初回使用から{0}後にリセット</value>
+    <comment>{0} = a duration phrase, Card_DurationDays or Card_DurationHours, for example "7 days".</comment>
+  </data>
+  <data name="Card_DurationHours_One" xml:space="preserve">
+    <value>{0}時間</value>
+    <comment>{0} = whole number of hours.</comment>
+  </data>
+  <data name="Card_DurationHours_Other" xml:space="preserve">
+    <value>{0}時間</value>
+    <comment>{0} = whole number of hours.</comment>
+  </data>
+  <data name="Card_DurationDays_One" xml:space="preserve">
+    <value>{0}日</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_DurationDays_Other" xml:space="preserve">
+    <value>{0}日</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_NoSamplesYet" xml:space="preserve">
+    <value>実際の観測値はまだありません</value>
+  </data>
+  <data name="Card_HistoryUnavailable" xml:space="preserve">
+    <value>使用履歴を利用できません。ライブ読み取りは続行します</value>
+  </data>
+  <data name="Card_DockPreview" xml:space="preserve">
+    <value>ドックのプレビュー</value>
+  </data>
+  <data name="Card_Connecting" xml:space="preserve">
+    <value>プロバイダーに接続中</value>
+  </data>
+  <data name="Card_Refresh" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Card_Undock" xml:space="preserve">
+    <value>ドック解除</value>
+  </data>
+  <data name="Card_PlanType" xml:space="preserve">
+    <value>プランの種類：{0}</value>
+    <comment>{0} = the plan name as the provider reports it (for example max, pro); not translated.</comment>
+  </data>
+  <data name="Card_PreviousWeekTooltip" xml:space="preserve">
+    <value>前の週</value>
+  </data>
+  <data name="Card_NextWeekTooltip" xml:space="preserve">
+    <value>次の週</value>
+  </data>
+  <data name="Card_CurrentWeek" xml:space="preserve">
+    <value>現在</value>
+  </data>
+  <data name="Card_CurrentWeekTooltip" xml:space="preserve">
+    <value>今週に戻る</value>
+  </data>
+  <data name="Card_PastWindow" xml:space="preserve">
+    <value>過去の週 · {0}～{1}</value>
+    <comment>{0} = first day of the week shown, {1} = its last day, both in Card_CreditExpirationDatePattern.</comment>
+  </data>
+  <data name="Card_StatusLine" xml:space="preserve">
+    <value>{0} · {1}</value>
+    <comment>The card's status line. {0} = status title (shown bold, for example "Live provider data"), {1} = its details sentence. Reorder or change the separator as needed.</comment>
+  </data>
+  <data name="Card_ResetAt" xml:space="preserve">
+    <value>{0}にリセット</value>
+    <comment>{0} = reset date and time (Card_DateTimeFormat).</comment>
+  </data>
+  <data name="Card_ResetAtWithTimeLeft" xml:space="preserve">
+    <value>{0}にリセット（{1}）</value>
+    <comment>{0} = reset date and time (Card_DateTimeFormat), {1} = time left until the reset (Card_TimeLeftDays, Card_TimeLeftHours or Card_TimeLeftMinutes). Example: Resets Thu, Oct 1 · 6:00 AM (2.1 days).</comment>
+  </data>
+  <data name="Card_TimeLeftDays_One" xml:space="preserve">
+    <value>{0}日</value>
+    <comment>{0} = days left until the reset, with one decimal (for example 2.1).</comment>
+  </data>
+  <data name="Card_TimeLeftDays_Other" xml:space="preserve">
+    <value>{0}日</value>
+    <comment>{0} = days left until the reset, with one decimal (for example 2.1).</comment>
+  </data>
+  <data name="Card_TimeLeftHours_One" xml:space="preserve">
+    <value>{0}時間</value>
+    <comment>{0} = hours left until the reset (under one day): whole hours on the weekly line, one decimal on the 5-hour line (for example 1.0).</comment>
+  </data>
+  <data name="Card_TimeLeftHours_Other" xml:space="preserve">
+    <value>{0}時間</value>
+    <comment>{0} = hours left until the reset (under one day): whole hours on the weekly line, one decimal on the 5-hour line (for example 1.1).</comment>
+  </data>
+  <data name="Card_TimeLeftMinutes_One" xml:space="preserve">
+    <value>{0}分</value>
+    <comment>{0} = whole minutes left until the reset (under one hour).</comment>
+  </data>
+  <data name="Card_TimeLeftMinutes_Other" xml:space="preserve">
+    <value>{0}分</value>
+    <comment>{0} = whole minutes left until the reset (under one hour).</comment>
+  </data>
+  <data name="Card_DateTimeFormat" xml:space="preserve">
+    <value>{0} · {1}</value>
+    <comment>{0} = weekday and date (Card_WeekdayDatePattern), {1} = time in the user's regional short-time format.</comment>
+  </data>
+  <data name="Card_WeekdayDatePattern" xml:space="preserve">
+    <value>M'月'd'日'（ddd）</value>
+    <comment>.NET date format for reset and reading dates, for example Sat, Sep 26.</comment>
+  </data>
+  <data name="Card_ChartDayPattern" xml:space="preserve">
+    <value>ddd</value>
+    <comment>.NET date format for the chart's day labels; the app uppercases it. Keep it short: seven labels share the chart width.</comment>
+  </data>
+  <data name="Card_PacePercent" xml:space="preserve">
+    <value>ペース{0}%</value>
+    <comment>{0} = pace percent, a whole number: use relative to the allowance expected to be spent by now.</comment>
+  </data>
+  <data name="Card_PaceSuppressedMissingDuration" xml:space="preserve">
+    <value>ペースを確認できません：期間の長さが不明です</value>
+  </data>
+  <data name="Card_PaceSuppressedMissingReset" xml:space="preserve">
+    <value>ペースを確認できません：リセット時刻が不明です</value>
+  </data>
+  <data name="Card_PaceSuppressedStale" xml:space="preserve">
+    <value>ペースを確認できません：読み取り値が古くなっています</value>
+  </data>
+  <data name="Card_PaceSuppressedAuthentication" xml:space="preserve">
+    <value>ペースを確認できません：サインインの確認が必要です</value>
+  </data>
+  <data name="Card_PaceSuppressedAccountChanged" xml:space="preserve">
+    <value>ペースを確認できません：アカウントが変更されました</value>
+  </data>
+  <data name="Card_PaceSuppressedHistorical" xml:space="preserve">
+    <value>ペースを確認できません：新しい読み取り値を待っています</value>
+  </data>
+  <data name="Card_PaceSuppressedWindowNotStarted" xml:space="preserve">
+    <value>ペースを確認できません：期間がまだ始まっていません</value>
+  </data>
+  <data name="Card_PaceSuppressedWindowReset" xml:space="preserve">
+    <value>ペースを確認できません：期間がリセットされました</value>
+  </data>
+  <data name="Card_PaceSuppressedInsufficientElapsed" xml:space="preserve">
+    <value>ペースを確認できません：期間が始まったばかりです</value>
+  </data>
+  <data name="Card_PaceSuppressedUnknown" xml:space="preserve">
+    <value>ペースを確認できません：データ元を利用できません</value>
+  </data>
+  <data name="Card_PacePercentUnavailableMissingDuration" xml:space="preserve">
+    <value>ペース率を確認できません：期間の長さが不明です</value>
+    <comment>Follows a budget sentence after " · " (the {1} of Card_UnderBudget*/Card_OverBudget*/Card_OnBudget).</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableMissingReset" xml:space="preserve">
+    <value>ペース率を確認できません：リセット時刻が不明です</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableStale" xml:space="preserve">
+    <value>ペース率を確認できません：読み取り値が古くなっています</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableAuthentication" xml:space="preserve">
+    <value>ペース率を確認できません：サインインの確認が必要です</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableAccountChanged" xml:space="preserve">
+    <value>ペース率を確認できません：アカウントが変更されました</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableHistorical" xml:space="preserve">
+    <value>ペース率を確認できません：新しい読み取り値を待っています</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableWindowNotStarted" xml:space="preserve">
+    <value>ペース率を確認できません：期間がまだ始まっていません</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableWindowReset" xml:space="preserve">
+    <value>ペース率を確認できません：期間がリセットされました</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableInsufficientElapsed" xml:space="preserve">
+    <value>ペース率を確認できません：期間が始まったばかりです</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_PacePercentUnavailableUnknown" xml:space="preserve">
+    <value>ペース率を確認できません：データ元を利用できません</value>
+    <comment>Follows a budget sentence after " · ".</comment>
+  </data>
+  <data name="Card_OnBudget" xml:space="preserve">
+    <value>均等ペースどおり · {0}</value>
+    <comment>{0} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetMinutes_One" xml:space="preserve">
+    <value>均等ペースに対し{0}分余裕 · {1}</value>
+    <comment>{0} = whole minutes of allowance left above even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetMinutes_Other" xml:space="preserve">
+    <value>均等ペースに対し{0}分余裕 · {1}</value>
+    <comment>{0} = whole minutes of allowance left above even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetHours_One" xml:space="preserve">
+    <value>均等ペースに対し{0}時間余裕 · {1}</value>
+    <comment>{0} = hours with one decimal (for example 0.8 or 1.0), {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_UnderBudgetHours_Other" xml:space="preserve">
+    <value>均等ペースに対し{0}時間余裕 · {1}</value>
+    <comment>{0} = hours with one decimal (for example 13.4), {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetMinutes_One" xml:space="preserve">
+    <value>均等ペースを{0}分超過 · {1}</value>
+    <comment>{0} = whole minutes of allowance used beyond even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetMinutes_Other" xml:space="preserve">
+    <value>均等ペースを{0}分超過 · {1}</value>
+    <comment>{0} = whole minutes of allowance used beyond even pace, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetHours_One" xml:space="preserve">
+    <value>均等ペースを{0}時間超過 · {1}</value>
+    <comment>{0} = hours with one decimal, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_OverBudgetHours_Other" xml:space="preserve">
+    <value>均等ペースを{0}時間超過 · {1}</value>
+    <comment>{0} = hours with one decimal, {1} = Card_PacePercent or a Card_PacePercentUnavailable* phrase.</comment>
+  </data>
+  <data name="Card_Reading" xml:space="preserve">
+    <value>現在の使用量を読み取り中</value>
+  </data>
+  <data name="Card_ProviderReady" xml:space="preserve">
+    <value>プロバイダーの最新データ</value>
+  </data>
+  <data name="Card_StaleTitle" xml:space="preserve">
+    <value>前回のプロバイダー読み取り値は古くなっています</value>
+  </data>
+  <data name="Card_HistoricalTitle" xml:space="preserve">
+    <value>保存済みのプロバイダー読み取り値</value>
+  </data>
+  <data name="Card_MissingApplication" xml:space="preserve">
+    <value>プロバイダーアプリが見つかりません</value>
+  </data>
+  <data name="Card_NeedsSignIn" xml:space="preserve">
+    <value>サインインが必要です</value>
+  </data>
+  <data name="Card_AuthenticationExpired" xml:space="preserve">
+    <value>サインインの有効期限が切れました</value>
+  </data>
+  <data name="Card_RateLimited" xml:space="preserve">
+    <value>プロバイダーから待機を求められました</value>
+  </data>
+  <data name="Card_ProviderOffline" xml:space="preserve">
+    <value>プロバイダーがオフラインです</value>
+  </data>
+  <data name="Card_UnsupportedAccount" xml:space="preserve">
+    <value>このアカウントの種類はサポートされていません</value>
+  </data>
+  <data name="Card_SchemaChanged" xml:space="preserve">
+    <value>プロバイダーの応答が変更されました</value>
+  </data>
+  <data name="Card_QuotaGuardDetails" xml:space="preserve">
+    <value>利用枠を保護するため、Glideslopeはこのプロバイダーの読み取りを停止しました。もう一度試すにはGlideslopeを再起動してください。</value>
+    <comment>Follows Card_SchemaChanged when the provider's tool answered in a way that could have spent quota; only a restart clears it.</comment>
+  </data>
+  <data name="Card_NoResponse" xml:space="preserve">
+    <value>{0}から応答がありません</value>
+    <comment>Status title when the provider's command-line tool gave no answer in time. {0} = provider name, for example Gemini.</comment>
+  </data>
+  <data name="Card_NoResponseDetails" xml:space="preserve">
+    <value>「更新」を押してください。問題が続く場合はGlideslopeを再起動してください。</value>
+    <comment>Follows Card_NoResponse. "Refresh" is the card's Refresh button (Card_Refresh).</comment>
+  </data>
+  <data name="Card_ProviderUnavailable" xml:space="preserve">
+    <value>プロバイダーデータを利用できません</value>
+  </data>
+  <data name="Card_ConnectingDetails" xml:space="preserve">
+    <value>このプロバイダーからの最初の読み取りを待っています。利用枠の値を推測することはありません。</value>
+  </data>
+  <data name="Card_ReadingDetails" xml:space="preserve">
+    <value>サインイン中のプロバイダーアカウントから現在の使用量を読み取っています。</value>
+  </data>
+  <data name="Card_StaleDetails" xml:space="preserve">
+    <value>最後に取得した実際の読み取り値を表示しています。新しい読み取りに成功するまでペースは表示されません。</value>
+  </data>
+  <data name="Card_HistoricalDetails" xml:space="preserve">
+    <value>保存された読み取り値を表示しています。新しい読み取りに成功するまでペースは表示されません。</value>
+  </data>
+  <data name="Card_HistoryScopeUnavailable" xml:space="preserve">
+    <value>現在の利用枠は取得できます。アカウントを継続して識別する情報を保存できなかったため、使用履歴は今回のアプリ起動中に限られます。</value>
+  </data>
+  <data name="Card_ObservedAt" xml:space="preserve">
+    <value>最終読み取り {0}</value>
+    <comment>{0} = date and time of the last reading (Card_DateTimeFormat).</comment>
+  </data>
+  <data name="Card_MissingApplicationDetails" xml:space="preserve">
+    <value>プロバイダーの公式アプリまたはコマンドラインツールをインストールしてから、もう一度お試しください。</value>
+  </data>
+  <data name="Card_NeedsSignInDetails" xml:space="preserve">
+    <value>プロバイダーの公式アプリからサインインして、もう一度お試しください。</value>
+  </data>
+  <data name="Card_AuthenticationExpiredDetails" xml:space="preserve">
+    <value>プロバイダーの公式アプリで再度サインインして、もう一度お試しください。Glideslopeがパスワードを尋ねることはありません。</value>
+  </data>
+  <data name="Card_RateLimitedUntil" xml:space="preserve">
+    <value>プロバイダーは{0}以降に次の読み取りを許可します。</value>
+    <comment>{0} = a time of day in the user's regional short-time format.</comment>
+  </data>
+  <data name="Card_RateLimitedDetails" xml:space="preserve">
+    <value>プロバイダーから、次の読み取りまで待つようGlideslopeに求められました。</value>
+  </data>
+  <data name="Card_OfflineDetails" xml:space="preserve">
+    <value>接続を確認して、もう一度お試しください。他のプロバイダーカードは個別に動作を続けます。</value>
+  </data>
+  <data name="Card_UnsupportedAccountDetails" xml:space="preserve">
+    <value>このサインイン中のアカウントでは、対応するサブスクリプション利用枠を取得できません。</value>
+  </data>
+  <data name="Card_SchemaChangedDetails" xml:space="preserve">
+    <value>プロバイダーデータを安全に読み取れませんでした。プロバイダーに再度ログインしてからお試しください。</value>
+  </data>
+  <data name="Card_ProviderUnavailableDetails" xml:space="preserve">
+    <value>このプロバイダーのライブデータにはまだ接続されていません。</value>
+  </data>
+  <data name="Card_ChartSampleTooltip" xml:space="preserve">
+    <value>{0}の観測値：残り{1} · サンプルの経過時間 {2}</value>
+    <comment>{0} = date and time of the reading (Card_DateTimeFormat), {1} = percent remaining, {2} = an age phrase (Card_AgeDays, Card_AgeHours or Card_AgeMinutes).</comment>
+  </data>
+  <data name="Card_AgeDays_One" xml:space="preserve">
+    <value>{0}日</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_AgeDays_Other" xml:space="preserve">
+    <value>{0}日</value>
+    <comment>{0} = whole number of days.</comment>
+  </data>
+  <data name="Card_AgeHours_One" xml:space="preserve">
+    <value>{0}時間</value>
+    <comment>{0} = hours with one decimal.</comment>
+  </data>
+  <data name="Card_AgeHours_Other" xml:space="preserve">
+    <value>{0}時間</value>
+    <comment>{0} = hours with one decimal.</comment>
+  </data>
+  <data name="Card_AgeMinutes_One" xml:space="preserve">
+    <value>{0}分</value>
+    <comment>{0} = whole number of minutes.</comment>
+  </data>
+  <data name="Card_AgeMinutes_Other" xml:space="preserve">
+    <value>{0}分</value>
+    <comment>{0} = whole number of minutes.</comment>
+  </data>
+</root>

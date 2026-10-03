@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RestorePackagesPath>$(MSBuildThisFileDirectory)..\..\.nuget\packages</RestorePackagesPath>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Tools.InnoSetup" Version="6.7.3" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

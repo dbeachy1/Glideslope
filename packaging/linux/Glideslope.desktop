@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Glideslope
+Comment=Subscription coding usage monitor
+Exec=/usr/lib/glideslope/glideslope-launcher.sh
+TryExec=/usr/lib/glideslope/glideslope-launcher.sh
+Icon=glideslope
+Terminal=false
+Categories=Utility;
