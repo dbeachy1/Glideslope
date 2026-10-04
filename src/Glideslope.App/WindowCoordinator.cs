@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -64,6 +65,7 @@ internal sealed partial class WindowCoordinator : IAsyncDisposable
     // Shown in Settings; null in builds that write no file log.
     private readonly string? _logFilePath;
     private readonly Action<AppSettings>? _applyLocale;
+    private string _appliedLanguageChoice = "auto";
     // Live mode per provider id; mode is selected at launch and is not persisted.
     private readonly CardModes _modes = new();
 
@@ -159,6 +161,7 @@ internal sealed partial class WindowCoordinator : IAsyncDisposable
         var load = await _settingsStore.LoadAsync().ConfigureAwait(true);
         _settings = load.Settings;
         _applyLocale?.Invoke(_settings);
+        _appliedLanguageChoice = _settings.LanguageChoice;
         _tray.RefreshLocalizedText();
         // Preserve the store state separately from subsequent in-memory layout changes.
         _persisted = load.Settings.Clone();
@@ -423,7 +426,14 @@ internal sealed partial class WindowCoordinator : IAsyncDisposable
         _ = DisableProviderAsync(window.ProviderId);
     }
 
-    private async Task ExitAsync()
+    private Task ExitAsync(bool restart = false) => RestartLifecycle.RunAsync(
+        restart,
+        _launcherPath,
+        Process.Start,
+        ExitCoreAsync,
+        _diagnostics);
+
+    private async Task ExitCoreAsync()
     {
         await using (var intentLease = await _intentGate.EnterAsync().ConfigureAwait(true))
         {

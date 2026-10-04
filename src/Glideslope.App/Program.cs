@@ -26,11 +26,16 @@ internal static class Program
         var diagnostics = new CompositeDiagnosticSink(
             new ConsoleDiagnosticSink(),
             new FileDiagnosticSink(AppLogFile.PathFor(paths.Get()), proofLogEvent is null ? null : () => proofLogEvent.Set()));
+
         if (!proof.Succeeded)
         {
             diagnostics.Record(new DiagnosticEvent(proof.IssueCode ?? "proof_root_invalid", Status: "launch_rejected"));
             return 2;
         }
+
+        var restartHandoff = RestartLifecycle.WaitForParentExit(args, diagnostics);
+        if (restartHandoff != 0)
+            return restartHandoff;
 
         if (proofLogEvent is not null)
         {

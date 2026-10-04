@@ -29,6 +29,9 @@
   <data name="Settings_Language" xml:space="preserve"><value>Idioma</value><comment>Settings row label for application wording. A saved choice takes effect after restarting Glideslope.</comment></data>
   <data name="Settings_LanguageSystem" xml:space="preserve"><value>Idioma del sistema</value><comment>First option in the application language selector; follows the operating system's display language on each launch.</comment></data>
   <data name="Settings_LanguageRestart" xml:space="preserve"><value>El cambio de idioma se aplicará al reiniciar Glideslope.</value><comment>Help text under the language selector. It must clearly say the saved language change applies after restarting the app.</comment></data>
+  <data name="Settings_LanguageSavedRestart" xml:space="preserve"><value>Idioma guardado. Reinicia Glideslope para aplicarlo.</value></data>
+  <data name="Settings_RestartNow" xml:space="preserve"><value>Reiniciar ahora</value></data>
+  <data name="Settings_RestartFailed" xml:space="preserve"><value>No se pudo reiniciar Glideslope. Ciérralo y vuelve a abrirlo para aplicar el idioma.</value></data>
   <data name="Settings_CardSize" xml:space="preserve"><value>Tamaño de las tarjetas</value><comment>Settings row label beside a slider from 70 % to 150 % that scales every card.</comment></data>
   <data name="Settings_MiniCardSize" xml:space="preserve"><value>Tamaño de las tarjetas mini</value><comment>Settings row label beside a slider from 70 % to 150 % that scales mini cards, directly under Card size.</comment></data>
   <data name="Settings_LogFile" xml:space="preserve"><value>Archivo de registro</value><comment>Settings label above the full path of the app's log file, shown as a link.</comment></data>

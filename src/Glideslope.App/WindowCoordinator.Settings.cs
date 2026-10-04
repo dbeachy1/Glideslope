@@ -102,7 +102,8 @@ internal sealed partial class WindowCoordinator
             SetSettingsWindowScaleBaseline(CardMode.Mini, CardScale.PercentFor(_settings, CardMode.Mini));
             var settings = new SettingsWindow(_settings.Clone(), registration,
                 ApplySettingsAsync, startupChoicePending: _startupChoicePending,
-                resetPositions: () => _ = ResetCardPositionsAsync(), diagnostics: _diagnostics, logFilePath: _logFilePath);
+                resetPositions: () => _ = ResetCardPositionsAsync(), diagnostics: _diagnostics, logFilePath: _logFilePath,
+                restart: RestartForLanguageAsync, activeLanguageChoice: _appliedLanguageChoice);
             _settingsWindow = settings;
             settings.Closed += (_, _) =>
             {
@@ -115,6 +116,13 @@ internal sealed partial class WindowCoordinator
         {
             _settingsOpening = false;
         }
+    }
+
+    private Task RestartForLanguageAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_launcherPath) || !File.Exists(_launcherPath))
+            throw new InvalidOperationException("restart_launcher_unavailable");
+        return ExitAsync(restart: true);
     }
 
     /// <summary>

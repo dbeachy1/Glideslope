@@ -117,6 +117,7 @@ internal static class SettingsBehaviorProof
         SavedWithRegistrationWarningShowsOnlyTheWarning();
         RetentionRangeMatchesValidation();
         SettingsFitsThePseudoLocale();
+        RestartOfferFitsEveryLanguage();
 
         var current = AppSettings.CreateDefault();
         current.StartAtSignIn = true;
@@ -587,6 +588,35 @@ internal static class SettingsBehaviorProof
         finally
         {
             window.Close();
+        }
+    }
+
+    private static void RestartOfferFitsEveryLanguage()
+    {
+        foreach (var language in AppSettings.SupportedLanguageChoices.Where(choice => choice != "auto"))
+        {
+            var culture = CultureInfo.GetCultureInfo(language);
+            using var localized = LocalizedText.OverrideForSpecs(culture, culture);
+            var saved = AppSettings.CreateDefault();
+            saved.LanguageChoice = "es";
+            var window = new SettingsWindow(saved, new StartupRegistrationState(false),
+                (_, _, _) => Task.FromResult(new SettingsSaveResult(true)),
+                restart: () => Task.CompletedTask, activeLanguageChoice: "auto");
+            try
+            {
+                window.Show();
+                window.UpdateLayout();
+                var client = new Rect(0, 0, window.ClientSize.Width, window.ClientSize.Height);
+                var button = BoundsInWindow(window.RestartControl, window);
+                Assert(window.RestartControl.IsVisible && client.Contains(button),
+                    $"{language}: Restart now fits inside Settings ({button}, client {client})");
+                Assert(client.Contains(BoundsInWindow(window.MessageArea, window)),
+                    $"{language}: the saved-language message fits inside Settings");
+            }
+            finally
+            {
+                window.Close();
+            }
         }
     }
 

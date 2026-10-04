@@ -230,6 +230,64 @@ internal static class SettingsWindowRevisionProof
         {
             if (!stagedClosed) staged.Close();
         }
+
+        RunLanguageRestartOffer();
+    }
+
+    private static void RunLanguageRestartOffer()
+    {
+        var current = AppSettings.CreateDefault();
+        var saves = 0;
+        var restarts = 0;
+        Task<SettingsSaveResult> Save(AppSettings requested, long revision, bool retentionChanged)
+        {
+            saves++;
+            Assert(requested.LanguageChoice == "es" && revision == 0 && !retentionChanged,
+                "the language selection is staged in the ordinary settings save");
+            return Task.FromResult(saves == 1
+                ? new SettingsSaveResult(false, "settings_revision_conflict")
+                : new SettingsSaveResult(true, CommittedRevision: 1));
+        }
+
+        var window = new SettingsWindow(current, new StartupRegistrationState(false), Save,
+            restart: () => { restarts++; return Task.CompletedTask; });
+        var closed = false;
+        window.Closed += (_, _) => closed = true;
+        try
+        {
+            window.LanguageSelector.SelectedIndex = Array.IndexOf(AppSettings.SupportedLanguageChoices.ToArray(), "es");
+            window.SaveControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert(!closed && !window.RestartControl.IsVisible && restarts == 0,
+                "a rejected language save does not offer a restart");
+
+            window.SaveControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert(!closed && window.RestartControl.IsVisible &&
+                   window.RestartControl.Content as string == LocalizedText.SettingsRestartNow &&
+                   window.MessageArea.Children.OfType<TextBlock>().Any(text =>
+                       text.Text == LocalizedText.SettingsLanguageSavedRestart && text.IsVisible),
+                "a committed language change stays open with a saved notice and restart button");
+            window.RestartControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert(restarts == 1, "the restart button invokes the supplied restart action once");
+        }
+        finally
+        {
+            if (!closed) window.Close();
+        }
+
+        var saved = current.Clone();
+        saved.LanguageChoice = "es";
+        saved.Revision = 1;
+        var reopened = new SettingsWindow(saved, new StartupRegistrationState(false), Save,
+            restart: () => Task.CompletedTask, activeLanguageChoice: "auto");
+        try
+        {
+            Assert(reopened.RestartControl.IsVisible,
+                "reopening Settings before a restart still offers to apply the saved language");
+        }
+        finally
+        {
+            reopened.Close();
+        }
     }
 
     /// <summary>The coordinator's DisableProviderAsync commit: the production selection policy, then a

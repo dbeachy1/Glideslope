@@ -57,6 +57,9 @@
     <value>Перезапустите Glideslope, чтобы применить смену языка.</value>
     <comment>Help text under the language selector. It must clearly say the saved language change applies after restarting the app.</comment>
   </data>
+  <data name="Settings_LanguageSavedRestart" xml:space="preserve"><value>Язык сохранён. Перезапустите Glideslope, чтобы применить его.</value></data>
+  <data name="Settings_RestartNow" xml:space="preserve"><value>Перезапустить сейчас</value></data>
+  <data name="Settings_RestartFailed" xml:space="preserve"><value>Не удалось перезапустить Glideslope. Закройте и снова откройте приложение, чтобы применить язык.</value></data>
   <data name="Settings_CardSize" xml:space="preserve">
     <value>Размер карточки</value>
     <comment>Settings row label beside a slider from 70 % to 150 % that scales every card.</comment>

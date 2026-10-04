@@ -5,8 +5,8 @@ allowance. It has one card each for **Claude Code**, **OpenAI Codex** and **Goog
 and each card answers one question: am I ahead of or behind an even pace toward my next reset? English is the
 original language; the interface has AI translations in Spanish, French, German, Italian, Brazilian Portuguese,
 Japanese, Simplified Chinese, Korean, Russian, Indonesian, and Traditional Chinese.
-Glideslope selects a supported system language when it starts; you can choose a language in Settings and restart
-to apply it.
+Glideslope selects a supported system language when it starts. To change it, choose a language in Settings, click
+Save, then click Restart now to apply it.
 
 If you're a native speaker and spot a translation that sounds wrong, please open a GitHub issue with the exact
 text you saw and the exact wording you recommend. I'll review the correction and include it in a patch release.

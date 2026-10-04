@@ -73,6 +73,9 @@ internal static class LocalizedText
     public static string SettingsLanguage => Get("Settings_Language");
     public static string SettingsLanguageSystem => Get("Settings_LanguageSystem");
     public static string SettingsLanguageRestart => Get("Settings_LanguageRestart");
+    public static string SettingsLanguageSavedRestart => Get("Settings_LanguageSavedRestart");
+    public static string SettingsRestartNow => Get("Settings_RestartNow");
+    public static string SettingsRestartFailed => Get("Settings_RestartFailed");
 
     public static string ProviderName(string providerId) => providerId switch
     {

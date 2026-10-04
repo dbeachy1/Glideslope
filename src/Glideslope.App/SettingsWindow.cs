@@ -49,10 +49,14 @@ internal sealed class SettingsWindow : Window
     internal HyperlinkButton? LogFileLinkControl => _logFileLink;
     private readonly TextBlock _error;
     private readonly TextBlock _startupStatus;
+    private readonly TextBlock _languageSaved;
     private readonly Func<AppSettings, long, bool, Task<SettingsSaveResult>> _save;
+    private readonly Func<Task>? _restart;
+    private readonly string _activeLanguageChoice;
     private readonly IDiagnosticSink _diagnostics;
     private readonly Button _saveButton;
     private readonly Button _cancelButton;
+    private readonly Button _restartButton;
     private readonly StackPanel _buttonRow;
     private readonly StackPanel _messageArea;
     private readonly Button _resetPositions;
@@ -65,6 +69,7 @@ internal sealed class SettingsWindow : Window
     internal CheckBox SnapToScreenEdgeControl => _snapToScreenEdge;
     internal Button ResetPositionsControl => _resetPositions;
     internal Button SaveControl => _saveButton;
+    internal Button RestartControl => _restartButton;
     internal Button CancelControl => _cancelButton;
     internal StackPanel ButtonRow => _buttonRow;
     internal ScrollViewer ScrollControl => _scroll;
@@ -102,12 +107,16 @@ internal sealed class SettingsWindow : Window
         bool startupChoicePending = false,
         Action? resetPositions = null,
         IDiagnosticSink? diagnostics = null,
-        string? logFilePath = null)
+        string? logFilePath = null,
+        Func<Task>? restart = null,
+        string? activeLanguageChoice = null)
     {
         var committed = current.Clone();
         committed.StartAtSignIn = startup.IsRegistered;
         _commits = new SettingsCommitTracker(committed);
         _save = save;
+        _restart = restart;
+        _activeLanguageChoice = activeLanguageChoice ?? current.LanguageChoice;
         _diagnostics = diagnostics ?? new NullDiagnosticSink();
 
         Title = LocalizedText.SettingsTitle;
@@ -265,12 +274,15 @@ internal sealed class SettingsWindow : Window
         // Keep startup and save messages outside the scroll area; collapsed empty messages preserve balanced spacing.
         _startupStatus = new TextBlock { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 0), IsVisible = false };
         _error = new TextBlock { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 0), IsVisible = false };
+        _languageSaved = new TextBlock { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 0), IsVisible = false };
         CollapseWhenEmpty(_startupStatus);
         CollapseWhenEmpty(_error);
+        CollapseWhenEmpty(_languageSaved);
         SetStartupState(startup, startupChoicePending);
         _messageArea = new StackPanel { Spacing = 0, Margin = new Thickness(28, 0, 28, 0) };
         _messageArea.Children.Add(_startupStatus);
         _messageArea.Children.Add(_error);
+        _messageArea.Children.Add(_languageSaved);
 
         _buttonRow = new StackPanel
         {
@@ -283,6 +295,10 @@ internal sealed class SettingsWindow : Window
         _cancelButton.Click += (_, _) => Close();
         _saveButton = new Button { Content = LocalizedText.SettingsSave, Padding = new Thickness(16, 8) };
         _saveButton.Click += async (_, _) => await SaveAsync().ConfigureAwait(true);
+        _restartButton = new Button { Content = LocalizedText.SettingsRestartNow, Padding = new Thickness(16, 8), IsVisible = false };
+        _restartButton.Click += async (_, _) => await RestartAsync().ConfigureAwait(true);
+        UpdateRestartOffer(current.LanguageChoice);
+        _buttonRow.Children.Add(_restartButton);
         _buttonRow.Children.Add(_cancelButton);
         _buttonRow.Children.Add(_saveButton);
         var root = new Grid { RowDefinitions = RowDefinitions.Parse("*,Auto,Auto") };
@@ -295,6 +311,29 @@ internal sealed class SettingsWindow : Window
         Content = root;
         ActualThemeVariantChanged += (_, _) => ApplyWindowTheme();
         ApplyWindowTheme();
+    }
+
+    private void UpdateRestartOffer(string committedLanguageChoice)
+    {
+        var restartNeeded = committedLanguageChoice != _activeLanguageChoice;
+        _languageSaved.Text = restartNeeded ? LocalizedText.SettingsLanguageSavedRestart : string.Empty;
+        _restartButton.IsVisible = restartNeeded && _restart is not null;
+    }
+
+    private async Task RestartAsync()
+    {
+        if (_restart is null || !_restartButton.IsEnabled) return;
+        _restartButton.IsEnabled = false;
+        try
+        {
+            await _restart().ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _diagnostics.Record(new DiagnosticEvent("settings_restart_failed", Status: ex.GetType().Name));
+            _error.Text = LocalizedText.SettingsRestartFailed;
+            _restartButton.IsEnabled = true;
+        }
     }
 
     private async Task SaveAsync()
@@ -348,6 +387,9 @@ internal sealed class SettingsWindow : Window
     /// <summary>What Settings shows after the save delegate returns.</summary>
     private void ShowSaveResult(AppSettings requested, SettingsSaveResult result)
     {
+        if (result.CommittedRevision is not null)
+            UpdateRestartOffer(requested.LanguageChoice);
+
         if (result.Succeeded && result.WarningCode is { } warning)
         {
             // Settings were applied; registration failed, so show its warning without reporting a settings failure.
@@ -359,15 +401,15 @@ internal sealed class SettingsWindow : Window
 
         if (result.Succeeded)
         {
-            _diagnostics.Record(new DiagnosticEvent("settings_save_shown", Status: $"closed,revision={result.CommittedRevision}"));
-            Close();
+            _error.Text = string.Empty;
+            _diagnostics.Record(new DiagnosticEvent("settings_save_shown", Status:
+                $"{(_restartButton.IsVisible ? "restart_offered" : "closed")},revision={result.CommittedRevision}"));
+            if (!_restartButton.IsVisible) Close();
             return;
         }
 
-        // A failed save applies nothing: every staged control keeps showing what the user
-        // typed so they can retry, but _settings (and therefore the cards/theme/etc.) never
-        // changed, since WindowCoordinator only assigns its live state after a successful
-        // SettingsStore write.
+        // Keep the staged controls for retry. A failure with a committed revision can happen
+        // after the settings write (for example, while applying history retention).
         _error.Text = LocalizedText.SettingsApplyFailed(result.IssueCode);
         _diagnostics.Record(new DiagnosticEvent("settings_save_shown", Status: $"failed,code={result.IssueCode ?? "none"}"));
     }

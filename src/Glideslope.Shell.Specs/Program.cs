@@ -68,6 +68,14 @@ internal static class Program
             CardPresentationProof.RunLocalizedLayoutAcceptanceProof();
             return 0;
         }
+        if (args.Length > 0 && string.Equals(args[0], "--language-settings-proof", StringComparison.Ordinal))
+        {
+            await RestartLifecycleProof.RunAsync().ConfigureAwait(false);
+            LocalizationResourceProof.Run();
+            CardPresentationProof.Run();
+            LocalizationResourceProof.RunSatelliteResourceValidation();
+            return 0;
+        }
 
         if (args.Length > 0 && string.Equals(args[0], "--instance-child", StringComparison.Ordinal))
             return await RunInstanceChildWorkerAsync(args).ConfigureAwait(false);
