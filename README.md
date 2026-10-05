@@ -41,8 +41,9 @@ text you saw and the exact wording you recommend. I'll review the correction and
 - **Adjustable card size.** Click "Aa" on a full or mini card to open its size slider (70 % to 150 %);
   ↺ resets it to 100 %. Settings also has separate **Card size** and **Mini card size** sliders, so you can
   set the zoom for each mode independently.
-- **Tray.** Glideslope keeps running in the tray. Start at sign-in starts it hidden in the tray. The tray menu
-  shows the cards or exits.
+- **Tray.** Glideslope keeps running in the tray. Start at sign-in normally starts it hidden; with **Start in
+  mini mode** enabled, mini cards appear immediately. If the tray is unavailable, startup shows the cards as a
+  fallback. The tray menu shows the cards or exits.
 - Settings (⚙): which providers to show, theme (system, dark, light), always on top, refresh interval (5 to 30
   minutes), how long to keep history, and where the log file is.
 

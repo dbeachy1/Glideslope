@@ -211,17 +211,20 @@ internal sealed partial class WindowCoordinator : IAsyncDisposable
         _diagnostics.Record(new DiagnosticEvent("startup_registration_observed", Status: registration.IsRegistered ? "registered" : "not_registered"));
         _startupChoicePending = OperatingSystem.IsLinux() && !_settings.StartupChoiceCompleted && intent == ActivationIntent.Manual;
         _tray.SetVisible(true);
-        if (intent == ActivationIntent.Autostart && _tray.IsUsable)
+        if (ShouldStartHidden(intent, _tray.IsUsable, _settings.StartInMiniMode))
         {
             _runningHidden = true;
             _diagnostics.Record(new DiagnosticEvent("autostart_hidden", Status: "tray_verified"));
             return;
         }
-        if (intent == ActivationIntent.Autostart)
+        if (intent == ActivationIntent.Autostart && !_tray.IsUsable)
             _diagnostics.Record(new DiagnosticEvent("autostart_visible_fallback", Status: "tray_viability_unproven"));
         ShowAll();
         if (_startupChoicePending) _ = OpenSettingsAsync();
     }
+
+    internal static bool ShouldStartHidden(ActivationIntent intent, bool trayIsUsable, bool startInMiniMode) =>
+        intent == ActivationIntent.Autostart && trayIsUsable && !startInMiniMode;
 
     /// <summary>
     /// Waits for settings and layout restoration before showing cards in response to an activation. The wait runs

@@ -59,6 +59,11 @@ internal static class Program
 
         if (args.Length > 0 && string.Equals(args[0], "--desktop-inventory", StringComparison.Ordinal))
             return DesktopInventoryProof.Run();
+        if (args.Length > 0 && string.Equals(args[0], "--startup-visibility", StringComparison.Ordinal))
+        {
+            StartupVisibilitySpecs.Run();
+            return 0;
+        }
         if (args.Length > 0 && string.Equals(args[0], "--settings-provider-id-migration-proof", StringComparison.Ordinal))
             return await SettingsProviderIdMigrationProof.RunStandaloneAsync().ConfigureAwait(false);
         if (args.Length > 0 && string.Equals(args[0], "--linux-tray-lifecycle-proof", StringComparison.Ordinal))
@@ -124,6 +129,8 @@ internal static class Program
             InstanceIntentAndClosePolicy();
             Announce("startup activation queue");
             await StartupActivationQueue();
+            Announce("startup visibility");
+            StartupVisibilitySpecs.Run();
             Announce("serialized save exit");
             await SerializedSaveExit();
             Announce("settings window revision");
