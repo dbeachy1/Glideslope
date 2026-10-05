@@ -134,6 +134,46 @@ internal static partial class CardPresentationProof
                 "multiple real credits expose known detail rows and any undisclosed aggregate");
             Assert(window.CreditCountToolTip.Contains("Click to see", StringComparison.Ordinal),
                 "multiple credits advertise the available details flyout");
+            foreach (var theme in new[] { ThemeVariant.Dark, ThemeVariant.Light })
+            {
+                window.RequestedThemeVariant = theme;
+                using (window.CaptureRenderedFrame() ?? throw new InvalidOperationException($"credit_flyout_host_{theme}_render_failed")) { }
+                var themedFlyout = window.CreateCreditDetailsFlyoutForCurrentInventory()
+                    ?? throw new InvalidOperationException($"credit_flyout_{theme}_missing");
+                var rows = themedFlyout.Items.OfType<MenuItem>().ToArray();
+                Assert(rows.Length > 0 && rows.All(row => !row.IsEnabled && row.Opacity == 1 &&
+                       row.Background is SolidColorBrush { Color: var rowBackground } && rowBackground == Color.Parse("#1D2635") &&
+                       row.Foreground is SolidColorBrush { Color: var rowForeground } && rowForeground == Colors.White &&
+                       row.Header is TextBlock { Foreground: SolidColorBrush { Color: var headerForeground } } && headerForeground == Colors.White),
+                    $"credit detail rows in {theme} remain disabled with fully opaque white text on a dark background");
+                Assert(themedFlyout.FlyoutPresenterTheme is ControlTheme { BasedOn: not null, TargetType: var targetType } presenterTheme &&
+                       targetType == typeof(MenuFlyoutPresenter) &&
+                       presenterTheme.Setters.OfType<Setter>().Any(setter => setter.Property == TemplatedControl.BackgroundProperty &&
+                           setter.Value is SolidColorBrush { Color: var presenterBackground } && presenterBackground == Color.Parse("#1D2635")),
+                    $"credit detail presenter uses its dark background theme in {theme}");
+                // A real menu presenter exercises disabled-row templates even when headless popups cannot attach.
+                var menuPresenter = new MenuFlyoutPresenter
+                {
+                    ItemsSource = themedFlyout.Items,
+                    Theme = themedFlyout.FlyoutPresenterTheme
+                };
+                var popupHost = new Window { Width = 500, Height = 120, RequestedThemeVariant = theme, Content = menuPresenter };
+                try
+                {
+                    popupHost.Show();
+                    using (popupHost.CaptureRenderedFrame() ?? throw new InvalidOperationException($"credit_presenter_{theme}_render_failed")) { }
+                    Assert(menuPresenter.Background is SolidColorBrush { Color: var renderedBackground } &&
+                           renderedBackground == Color.Parse("#1D2635") &&
+                           menuPresenter.GetVisualDescendants().OfType<MenuItem>().Count() == rows.Length,
+                        $"credit detail presenter in {theme} renders every row on the dark background");
+                    Assert(rows.All(row => row.Header is TextBlock header && header.Bounds.Width > 0 && header.Bounds.Height > 0 &&
+                           header.Foreground is SolidColorBrush { Color: var renderedForeground } && renderedForeground == Colors.White &&
+                           header.GetVisualAncestors().Prepend(header).All(visual => visual.Opacity == 1)),
+                        $"credit detail text in {theme} stays opaque white through the disabled menu template");
+                }
+                finally { popupHost.Close(); }
+            }
+            window.RequestedThemeVariant = ThemeVariant.Default;
 
             using (LocalizedText.OverrideForSpecs(CultureInfo.GetCultureInfo("ru"), CultureInfo.GetCultureInfo("ru"),
                        new LocalizationResourceProof.RussianCreditTooltipResources()))

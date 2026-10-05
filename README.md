@@ -1,5 +1,7 @@
 # Glideslope™
 
+**Downloads:** [Signed Windows 11 x64 installer (2.8.2)](https://github.com/dbeachy1/Glideslope/releases/download/v2.8.2/Glideslope-Setup-2.8.2-x64.exe) · [Linux x64 Debian package (2.8.0)](https://github.com/dbeachy1/Glideslope/releases/download/v2.8.0/glideslope_2.8.0_amd64.deb)
+
 Glideslope is a small desktop app for Windows 11 and Linux that shows how fast you are using your AI coding
 allowance. It has one card each for **Claude Code**, **OpenAI Codex** and **Google Antigravity** (the Gemini card),
 and each card answers one question: am I ahead of or behind an even pace toward my next reset? English is the
@@ -78,7 +80,7 @@ services, as they do when you run them yourself.
 ## Installing on Linux
 
 Releases that include Linux builds have a `.deb` package for 64-bit Ubuntu and other Debian-based systems. It
-includes its own .NET runtime, so nothing else needs installing. Version 2.8.1 is a Windows-only update and does not
+includes its own .NET runtime, so nothing else needs installing. Versions 2.8.1 and 2.8.2 are Windows-only updates and do not
 include a `.deb`; use a Linux release that includes one. Download it, then:
 
 ```bash
@@ -96,7 +98,7 @@ raise windows, so snapping cards together and bringing them to the front are the
 
 ## Installing on Windows
 
-Download the signed [Glideslope 2.8.1 Windows installer](https://github.com/dbeachy1/Glideslope/releases/download/v2.8.1/Glideslope-Setup-2.8.1-x64.exe)
+Download the signed [Glideslope 2.8.2 Windows installer](https://github.com/dbeachy1/Glideslope/releases/download/v2.8.2/Glideslope-Setup-2.8.2-x64.exe)
 for Windows 11 x64. It installs for your user only (no admin rights) and offers start at sign-in. Earlier Windows
 releases through 2.8.0 were unsigned.
 

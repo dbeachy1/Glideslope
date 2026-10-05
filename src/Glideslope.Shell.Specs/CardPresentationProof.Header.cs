@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Shapes;
 using Avalonia.Headless;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -60,8 +61,11 @@ internal static partial class CardPresentationProof
                     $"title row {width}x{height} {theme}: version text is 4 logical px below the shared center (expected {expectedVersionCenter:0.00}, got {versionCenter:0.00}; {report})");
                 Assert(measured.All(m => m.Bounds.Width > 0 && m.Bounds.Height > 0), $"title row {width}x{height}: every title-row child is laid out ({report})");
                 var expectedDot = theme == ThemeVariant.Light ? Color.Parse("#596B80") : Color.Parse("#FFFFFF");
-                Assert(window.TitleDotControl is TextBlock { Foreground: SolidColorBrush dotBrush } && dotBrush.Color == expectedDot,
+                Assert(window.TitleDotControl is Ellipse { Fill: SolidColorBrush dotBrush, Width: 4, Height: 4 } && dotBrush.Color == expectedDot,
                     $"title row {width}x{height} {theme}: the dot color is {expectedDot}");
+                var dotBounds = measured.Single(m => m.Name == "dot").Bounds;
+                Assert(Math.Abs(dotBounds.Center.Y - centers.Average()) <= 1 && Math.Abs(dotBounds.Width - 4) <= 0.1 && Math.Abs(dotBounds.Height - 4) <= 0.1,
+                    $"title row {width}x{height} {theme}: the dot is a 4 px circle centered on its peers ({dotBounds})");
                 var nowBounds = measured[5].Bounds;
                 Assert(Math.Abs(window.PreviousWeekControl.Bounds.Height - window.SettingsControl.Bounds.Height) < 0.5 &&
                        Math.Abs(nowBounds.Height - window.SettingsControl.Bounds.Height) < 0.5 && nowBounds.Width >= 44 - 0.5,

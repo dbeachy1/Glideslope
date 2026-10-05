@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Controls.Shapes;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -29,7 +30,7 @@ internal sealed partial class ProviderUsageCardWindow : Window, ICardLayoutWindo
     private static readonly string AppVersion = typeof(ProviderUsageCardWindow).Assembly.GetName().Version?.ToString(3) ?? "0.0.0";
     private readonly string _providerId;
     private readonly TextBlock _titleName;
-    private readonly TextBlock _titleDot;
+    private readonly Ellipse _titleDot;
     private readonly TextBlock _titleVersion;
     // The offset is 0 for the current week and increases for older stored weeks; the count is the number
     // available in the current bucket. A count below 2 leaves nothing to browse.
@@ -213,7 +214,7 @@ internal sealed partial class ProviderUsageCardWindow : Window, ICardLayoutWindo
         _titleName = titleText;
         title.Children.Add(titleText);
         // The title row contains the provider name, app name and version, and history buttons.
-        var titleDot = new TextBlock { Text = "•", FontSize = CardTextFloor, Foreground = Brushes.White, VerticalAlignment = VerticalAlignment.Center };
+        var titleDot = new Ellipse { Width = 4, Height = 4, Fill = Brushes.White, VerticalAlignment = VerticalAlignment.Center };
         _titleDot = titleDot;
         Grid.SetColumn(titleDot, 1);
         title.Children.Add(titleDot);
@@ -672,14 +673,14 @@ internal sealed partial class ProviderUsageCardWindow : Window, ICardLayoutWindo
         {
             if (visual is TextBlock block)
             {
-                if (ReferenceEquals(block, _titleDot)) block.Foreground = Brush(dark ? "#FFFFFF" : "#596B80");
-                else if (ReferenceEquals(block, _titleVersion)) block.Foreground = Brush(dark ? "#94A1B7" : "#596B80");
+                if (ReferenceEquals(block, _titleVersion)) block.Foreground = Brush(dark ? "#94A1B7" : "#596B80");
                 // Match the title control directly because its font size changes in mini mode.
                 else if (ReferenceEquals(block, _titleName)) block.Foreground = Brush(titleColor);
                 else if (ReferenceEquals(block, _weeklyRemaining)) block.Foreground = Brush(dark ? "#E9D66B" : "#806B00");
                 else if (block.Foreground is null || block.Foreground == Brushes.Black) block.Foreground = Brush(dark ? "#F5F7FB" : "#172438");
             }
         }
+        _titleDot.Fill = Brush(dark ? "#FFFFFF" : "#596B80");
         // Tint the mode toggle with the provider color while keeping its glyph legible in both themes.
         _modeToggle.Background = Brush(_providerId switch
         {

@@ -1,6 +1,9 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.VisualTree;
 using Glideslope.Domain;
 using Glideslope.Monitoring;
@@ -147,17 +150,37 @@ internal sealed class CreditStrip
     {
         if (inventory.AvailableCount <= 1) return null;
         var flyout = new MenuFlyout();
+        if (Application.Current?.TryGetResource(typeof(MenuFlyoutPresenter), ThemeVariant.Dark, out var presenterTheme) == true &&
+            presenterTheme is ControlTheme darkPresenterTheme)
+            flyout.FlyoutPresenterTheme = new ControlTheme(typeof(MenuFlyoutPresenter))
+            {
+                BasedOn = darkPresenterTheme,
+                Setters =
+                {
+                    new Setter(TemplatedControl.BackgroundProperty, Brush("#1D2635")),
+                    new Setter(TemplatedControl.BorderBrushProperty, Brush("#354154"))
+                }
+            };
         foreach (var detail in inventory.AdditionalDetails)
         {
             var text = detail.ExpiresAtUtc is { } expires
                 ? LocalizedText.CreditExpiration(expires.ToLocalTime(), DateTimeOffset.Now)
                 : LocalizedText.CardCreditExpirationUnknown;
-            flyout.Items.Add(new MenuItem { Header = text, IsEnabled = false });
+            flyout.Items.Add(CreditDetailItem(text));
         }
         if (inventory.UndisclosedCount > 0)
-            flyout.Items.Add(new MenuItem { Header = LocalizedText.CreditUndisclosed(inventory.UndisclosedCount), IsEnabled = false });
+            flyout.Items.Add(CreditDetailItem(LocalizedText.CreditUndisclosed(inventory.UndisclosedCount)));
         return flyout;
     }
+
+    private static MenuItem CreditDetailItem(string text) => new()
+    {
+        Header = new TextBlock { Text = text, Foreground = Brush("#FFFFFF") },
+        Foreground = Brush("#FFFFFF"),
+        Background = Brush("#1D2635"),
+        Opacity = 1,
+        IsEnabled = false
+    };
 
     /// <summary>Colors the strip (background, border and text) for the notice, the credit box or the blank
     /// state left by <see cref="Update"/>, and the credit-count button's fill. Call after every update.</summary>
