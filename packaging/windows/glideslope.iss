@@ -3,6 +3,9 @@
 #define AppPublisher "Glideslope"
 #define AppVersion GetEnv("GLIDESLOPE_APP_VERSION")
 #define PublishDir GetEnv("GLIDESLOPE_PUBLISH_DIR")
+#if GetEnv("GLIDESLOPE_SIGNED_BUILD") == "1"
+  #define SignedUninstallerDir GetEnv("GLIDESLOPE_SIGNED_UNINSTALLER_DIR")
+#endif
 
 #if AppVersion == ""
   #error "GLIDESLOPE_APP_VERSION must come from Glideslope.App.csproj."
@@ -33,6 +36,11 @@ UninstallDisplayIcon={app}\Assets\glideslope-icon.ico
 CloseApplications=no
 UsePreviousAppDir=no
 WizardStyle=modern
+#if GetEnv("GLIDESLOPE_SIGNED_BUILD") == "1"
+SignTool=azurecodesign
+SignedUninstaller=yes
+SignedUninstallerDir={#SignedUninstallerDir}
+#endif
 
 [Tasks]
 ; Offered on a first install only. On an upgrade the choice already lives in

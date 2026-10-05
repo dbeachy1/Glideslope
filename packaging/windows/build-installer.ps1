@@ -1,8 +1,24 @@
 param(
-    [string] $OutputDirectory = '..\..\artifacts\packages\windows'
+    [string] $OutputDirectory = '..\..\artifacts\packages\windows',
+    [string] $SignToolPath,
+    [string] $DlibPath,
+    [string] $MetadataPath
 )
 
 $ErrorActionPreference = 'Stop'
+$signingValues = @($SignToolPath, $DlibPath, $MetadataPath)
+$signedBuild = @($signingValues | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }).Count -gt 0
+if ($signedBuild -and @($signingValues | Where-Object { [string]::IsNullOrWhiteSpace($_) }).Count -gt 0) {
+    throw 'Signed builds require all three parameters: SignToolPath, DlibPath, and MetadataPath.'
+}
+if ($signedBuild) {
+    foreach ($path in $signingValues) {
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required signing file is missing: $path" }
+    }
+    $SignToolPath = [IO.Path]::GetFullPath($SignToolPath)
+    $DlibPath = [IO.Path]::GetFullPath($DlibPath)
+    $MetadataPath = [IO.Path]::GetFullPath($MetadataPath)
+}
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $appProject = Join-Path $repoRoot 'src\Glideslope.App\Glideslope.App.csproj'
 $buildProject = Join-Path $PSScriptRoot 'Glideslope.InstallerBuild.csproj'
@@ -22,6 +38,8 @@ $ownerMarker = [guid]::NewGuid().ToString('N')
 $markerPath = Join-Path $tempRoot '.owner'
 $savedVersion = $env:GLIDESLOPE_APP_VERSION
 $savedPublishDir = $env:GLIDESLOPE_PUBLISH_DIR
+$savedSignedBuild = $env:GLIDESLOPE_SIGNED_BUILD
+$savedSignedUninstallerDir = $env:GLIDESLOPE_SIGNED_UNINSTALLER_DIR
 try {
     New-Item -ItemType Directory -Path $tempRoot | Out-Null
     Set-Content -LiteralPath $markerPath -Value $ownerMarker -NoNewline
@@ -57,9 +75,39 @@ try {
         if (Test-Path -LiteralPath $path) { throw "Refusing to overwrite existing package artifact: $path" }
     }
 
+    if ($signedBuild) {
+        # This publish is single-file for managed application code. Its only Glideslope-owned PE is
+        # the app executable; neighboring native DLLs belong to dependencies and keep their signatures.
+        $ownedExecutable = Join-Path $publishDir 'Glideslope.App.exe'
+        if (-not (Test-Path -LiteralPath $ownedExecutable -PathType Leaf)) { throw "Glideslope app executable is missing: $ownedExecutable" }
+        & (Join-Path $PSScriptRoot 'Invoke-WindowsArtifactSigning.ps1') -Action Sign `
+            -SignToolPath $SignToolPath -DlibPath $DlibPath -MetadataPath $MetadataPath -Files @($ownedExecutable)
+        $signingHelper = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'Invoke-WindowsArtifactSigning.ps1'))
+        $powerShellExe = [IO.Path]::GetFullPath((Join-Path $PSHOME 'powershell.exe'))
+        if (-not (Test-Path -LiteralPath $powerShellExe -PathType Leaf)) {
+            $powerShellExe = [IO.Path]::GetFullPath((Join-Path $PSHOME 'pwsh.exe'))
+        }
+        if (-not (Test-Path -LiteralPath $powerShellExe -PathType Leaf)) { throw 'Could not locate PowerShell to run the Inno signing callback.' }
+        $signedUninstallerDir = Join-Path $tempRoot 'signed-uninstaller'
+        New-Item -ItemType Directory -Path $signedUninstallerDir | Out-Null
+        $env:GLIDESLOPE_SIGNED_BUILD = '1'
+        $env:GLIDESLOPE_SIGNED_UNINSTALLER_DIR = $signedUninstallerDir
+        $powerShellForInno = $powerShellExe.Replace('$', '$$')
+        $helperForInno = $signingHelper.Replace('$', '$$')
+        $signToolForInno = $SignToolPath.Replace('$', '$$')
+        $dlibForInno = $DlibPath.Replace('$', '$$')
+        $metadataForInno = $MetadataPath.Replace('$', '$$')
+        $signCommand = '$q' + $powerShellForInno + '$q -NoProfile -File $q' + $helperForInno + '$q -Action Sign -SignToolPath $q' + $signToolForInno + '$q -DlibPath $q' + $dlibForInno + '$q -MetadataPath $q' + $metadataForInno + '$q -Files $f'
+        $arguments = @('/Qp', "/O$outputRoot", "/FGlideslope-Setup-$appVersion-x64", "/Sazurecodesign=$signCommand", $installerScript)
+    }
+    else {
+        $env:GLIDESLOPE_SIGNED_BUILD = $null
+        $env:GLIDESLOPE_SIGNED_UNINSTALLER_DIR = $null
+        $arguments = @('/Qp', "/O$outputRoot", "/FGlideslope-Setup-$appVersion-x64", $installerScript)
+    }
+
     $env:GLIDESLOPE_APP_VERSION = $appVersion
     $env:GLIDESLOPE_PUBLISH_DIR = $publishDir
-    $arguments = @('/Qp', "/O$outputRoot", "/FGlideslope-Setup-$appVersion-x64", $installerScript)
     $startInfo = [Diagnostics.ProcessStartInfo]::new()
     $startInfo.FileName = $compiler
     $startInfo.WorkingDirectory = $tempRoot
@@ -70,6 +118,8 @@ try {
     foreach ($argument in $arguments) { [void] $startInfo.ArgumentList.Add($argument) }
     $process = [Diagnostics.Process]::Start($startInfo)
     if ($null -eq $process) { throw 'Could not start the pinned Inno Setup compiler.' }
+    $compilerStdoutTask = $process.StandardOutput.ReadToEndAsync()
+    $compilerStderrTask = $process.StandardError.ReadToEndAsync()
     $compilerPid = $process.Id
     $compilerStarted = $process.StartTime.ToUniversalTime()
     if (-not $process.WaitForExit(120000)) {
@@ -83,11 +133,17 @@ try {
         throw 'Inno Setup compilation exceeded 120 seconds.'
     }
     $compilerExitCode = $process.ExitCode
-    $compilerStdout = $process.StandardOutput.ReadToEnd()
-    $compilerStderr = $process.StandardError.ReadToEnd()
+    $compilerStdout = $compilerStdoutTask.GetAwaiter().GetResult()
+    $compilerStderr = $compilerStderrTask.GetAwaiter().GetResult()
     $process.Dispose()
     if ($compilerExitCode -ne 0) { throw "Inno Setup returned exit code $compilerExitCode. Output: $compilerStdout $compilerStderr" }
     if (-not (Test-Path -LiteralPath $outputFile -PathType Leaf)) { throw "Inno Setup did not produce the expected installer: $outputFile" }
+
+    if ($signedBuild) {
+        & (Join-Path $PSScriptRoot 'Invoke-WindowsArtifactSigning.ps1') -Action Verify `
+            -SignToolPath $SignToolPath -DlibPath $DlibPath -MetadataPath $MetadataPath -Files @($outputFile)
+        if ($LASTEXITCODE -ne 0) { throw 'Setup or uninstaller signature verification failed.' }
+    }
 
     # Windows SDK reference publishes may copy dependency symbols into the frozen output;
     # the package manifest and installer intentionally exclude all PDBs.
@@ -109,6 +165,8 @@ try {
 finally {
     $env:GLIDESLOPE_APP_VERSION = $savedVersion
     $env:GLIDESLOPE_PUBLISH_DIR = $savedPublishDir
+    $env:GLIDESLOPE_SIGNED_BUILD = $savedSignedBuild
+    $env:GLIDESLOPE_SIGNED_UNINSTALLER_DIR = $savedSignedUninstallerDir
     if (Test-Path -LiteralPath $tempRoot) {
         $canonicalTemp = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\') + '\'
         $canonicalRoot = [IO.Path]::GetFullPath($tempRoot)

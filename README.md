@@ -76,8 +76,9 @@ services, as they do when you run them yourself.
 
 ## Installing on Linux
 
-Each [release](https://github.com/dbeachy1/Glideslope/releases) has a `.deb` package for 64-bit Ubuntu and other
-Debian-based systems. It includes its own .NET runtime, so nothing else needs installing. Download it, then:
+Releases that include Linux builds have a `.deb` package for 64-bit Ubuntu and other Debian-based systems. It
+includes its own .NET runtime, so nothing else needs installing. Version 2.8.1 is a Windows-only update and will not
+include a `.deb`; use a Linux release that includes one. Download it, then:
 
 ```bash
 sudo apt install ./glideslope_<version>_amd64.deb
@@ -94,9 +95,9 @@ raise windows, so snapping cards together and bringing them to the front are the
 
 ## Installing on Windows
 
-Each [release](https://github.com/dbeachy1/Glideslope/releases) from 2.2.0 on has `Glideslope-Setup-<version>-x64.exe`
-for Windows 11 x64. Run it. It installs for your user only (no admin rights) and offers start at sign-in. The
-installer is not code-signed yet, so Windows SmartScreen may warn; choose **More info**, then **Run anyway**.
+The signed Windows installer for version 2.8.1 is being prepared. Earlier Windows releases through 2.8.0 were
+unsigned. When available, `Glideslope-Setup-2.8.1-x64.exe` will be for Windows 11 x64. It installs for your user
+only (no admin rights) and offers start at sign-in.
 
 To build the installer yourself you need the .NET 10 SDK; the Inno Setup compiler comes from a pinned NuGet package.
 From the repository root in PowerShell:
@@ -106,6 +107,21 @@ From the repository root in PowerShell:
 ```
 
 It writes `artifacts\packages\windows\Glideslope-Setup-<version>-x64.exe`.
+
+For a signed build, pass all three external Azure Artifact Signing inputs. The workstation must already have its
+authenticated signing provider configured; keep the metadata and signing components outside Git:
+
+```powershell
+.\packaging\windows\build-installer.ps1 `
+  -SignToolPath '<Windows SDK>\bin\<version>\x64\signtool.exe' `
+  -DlibPath '<Azure Artifact Signing package>\x64\Azure.CodeSigning.Dlib.dll' `
+  -MetadataPath '<private signing configuration>\metadata.json'
+```
+
+Signed mode fails before building if any input is missing. It signs and verifies the Glideslope app executable,
+then Inno Setup signs Setup and its uninstaller with SHA-256 and an RFC 3161 timestamp. The script verifies the
+signatures before it writes the SHA-256 file and package manifest. Omit all three parameters for an unsigned local
+build. See [`packaging/windows/README.md`](packaging/windows/README.md) for the signed-build inputs and verification.
 
 ## Building and testing
 
