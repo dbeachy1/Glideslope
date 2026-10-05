@@ -77,7 +77,7 @@ services, as they do when you run them yourself.
 ## Installing on Linux
 
 Releases that include Linux builds have a `.deb` package for 64-bit Ubuntu and other Debian-based systems. It
-includes its own .NET runtime, so nothing else needs installing. Version 2.8.1 is a Windows-only update and will not
+includes its own .NET runtime, so nothing else needs installing. Version 2.8.1 is a Windows-only update and does not
 include a `.deb`; use a Linux release that includes one. Download it, then:
 
 ```bash
@@ -95,9 +95,13 @@ raise windows, so snapping cards together and bringing them to the front are the
 
 ## Installing on Windows
 
-The signed Windows installer for version 2.8.1 is being prepared. Earlier Windows releases through 2.8.0 were
-unsigned. When available, `Glideslope-Setup-2.8.1-x64.exe` will be for Windows 11 x64. It installs for your user
-only (no admin rights) and offers start at sign-in.
+Download the signed [Glideslope 2.8.1 Windows installer](https://github.com/dbeachy1/Glideslope/releases/download/v2.8.1/Glideslope-Setup-2.8.1-x64.exe)
+for Windows 11 x64. It installs for your user only (no admin rights) and offers start at sign-in. Earlier Windows
+releases through 2.8.0 were unsigned.
+
+Windows SmartScreen may still warn about a new signed installer while its reputation builds. Click **More info**
+to check that the publisher is **Douglas Beachy** and confirm you downloaded it from this project's official release.
+See [Microsoft's SmartScreen guidance](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation).
 
 To build the installer yourself you need the .NET 10 SDK; the Inno Setup compiler comes from a pinned NuGet package.
 From the repository root in PowerShell:
