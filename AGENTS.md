@@ -40,3 +40,12 @@ desktop content. Doug's intentionally public contact email is allowed in commits
 the Glideslope app itself are allowed, including its displayed usage figures. Check that screenshots do not expose
 credentials or unrelated personal content. Doug approved the four original README screenshots. Apply the same check
 to release assets before uploading them.
+
+## Visual QA
+
+For visible UI fixes, capture and inspect screenshots of the affected production controls before accepting or
+releasing the change. Geometry assertions supplement this inspection; they do not prove visible text alignment.
+For title-header changes, run `scripts/Verify-CardHeader.ps1` from the repository root and inspect its PNGs in
+both themes at normal and representative smaller/larger card scales. Confirm the dot against the visible version
+text, including the app icon and neighboring controls. Retain the screenshots with the candidate's verification
+artifacts. Do not claim screenshot verification without opening and examining the images.

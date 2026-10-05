@@ -198,7 +198,7 @@ internal sealed partial class ProviderUsageCardWindow : Window, ICardLayoutWindo
         var header = new Grid { ColumnDefinitions = ColumnDefinitions.Parse("Auto,*,Auto") };
         _mark = new GlideslopeMark(providerId) { Width = 35, Height = 35, IsVisible = showMark };
         header.Children.Add(_mark);
-        // Window design §15.4: the provider name, dot, version and week buttons share one vertical center.
+        // The provider name and week buttons share a center; the smaller version text and dot sit below it.
         // Columns Auto,Auto,*,Auto: name, dot, version, then the week buttons (§15.2).
         var title = new Grid
         {
@@ -213,8 +213,8 @@ internal sealed partial class ProviderUsageCardWindow : Window, ICardLayoutWindo
         var titleText = new TextBlock { Text = LocalizedText.ProviderName(providerId), FontSize = 29, FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center };
         _titleName = titleText;
         title.Children.Add(titleText);
-        // The title row contains the provider name, app name and version, and history buttons.
-        var titleDot = new Ellipse { Width = 4, Height = 4, Fill = Brushes.White, VerticalAlignment = VerticalAlignment.Center };
+        // Align the separator with the smaller version text, which sits below the row center.
+        var titleDot = new Ellipse { Width = 4, Height = 4, Fill = Brushes.White, VerticalAlignment = VerticalAlignment.Center, RenderTransform = new TranslateTransform(0, TitleVersionOpticalOffsetY) };
         _titleDot = titleDot;
         Grid.SetColumn(titleDot, 1);
         title.Children.Add(titleDot);

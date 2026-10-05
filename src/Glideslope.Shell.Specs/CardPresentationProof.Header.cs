@@ -24,8 +24,8 @@ namespace Glideslope.Shell.Specs;
 internal static partial class CardPresentationProof
 {
     /// <summary>
-    /// Window design §15.4: at the default 940x680 and minimum card sizes, the provider name, dot and week
-    /// buttons share a vertical center within 1.5 px in both themes. The version text is 4 logical px lower,
+    /// Window design §15.4: at the default 940x680 and minimum card sizes, the provider name and week
+    /// buttons share a vertical center within 1.5 px in both themes. The version text and dot are 4 logical px lower,
     /// scaled with the card. Theme changes also recolor the dot from white in dark mode to neutral gray in light
     /// mode. Every child's bounds are printed on failure.
     /// </summary>
@@ -52,9 +52,9 @@ internal static partial class CardPresentationProof
                 var measured = children.Select(child => (child.Name, Bounds: window.BoundsWithinCard(child.Control))).ToArray();
                 var report = string.Join("; ", measured.Select(m => $"{m.Name} {m.Bounds} center y={m.Bounds.Center.Y:0.00}"));
                 Console.WriteLine($"title row {window.ProviderId} {width}x{height} {theme}: {report}");
-                var centers = measured.Where(m => m.Name != "version").Select(m => m.Bounds.Center.Y).ToArray();
+                var centers = measured.Where(m => m.Name != "version" && m.Name != "dot").Select(m => m.Bounds.Center.Y).ToArray();
                 Assert(centers.Max() - centers.Min() <= 1.5,
-                    $"title row {width}x{height} {theme}: provider name, dot and week buttons share a vertical center within 1.5 px ({report})");
+                    $"title row {width}x{height} {theme}: provider name and week buttons share a vertical center within 1.5 px ({report})");
                 var versionCenter = measured.Single(m => m.Name == "version").Bounds.Center.Y;
                 var expectedVersionCenter = centers.Average() + ProviderUsageCardWindow.TitleVersionOpticalOffsetY;
                 Assert(Math.Abs(versionCenter - expectedVersionCenter) <= 1.5,
@@ -64,8 +64,8 @@ internal static partial class CardPresentationProof
                 Assert(window.TitleDotControl is Ellipse { Fill: SolidColorBrush dotBrush, Width: 4, Height: 4 } && dotBrush.Color == expectedDot,
                     $"title row {width}x{height} {theme}: the dot color is {expectedDot}");
                 var dotBounds = measured.Single(m => m.Name == "dot").Bounds;
-                Assert(Math.Abs(dotBounds.Center.Y - centers.Average()) <= 1 && Math.Abs(dotBounds.Width - 4) <= 0.1 && Math.Abs(dotBounds.Height - 4) <= 0.1,
-                    $"title row {width}x{height} {theme}: the dot is a 4 px circle centered on its peers ({dotBounds})");
+                Assert(Math.Abs(dotBounds.Center.Y - versionCenter) <= 1.5 && Math.Abs(dotBounds.Width - 4) <= 0.1 && Math.Abs(dotBounds.Height - 4) <= 0.1,
+                    $"title row {width}x{height} {theme}: the dot is a 4 px circle aligned with the version text ({dotBounds})");
                 var nowBounds = measured[5].Bounds;
                 Assert(Math.Abs(window.PreviousWeekControl.Bounds.Height - window.SettingsControl.Bounds.Height) < 0.5 &&
                        Math.Abs(nowBounds.Height - window.SettingsControl.Bounds.Height) < 0.5 && nowBounds.Width >= 44 - 0.5,
@@ -108,7 +108,7 @@ internal static partial class CardPresentationProof
                         ("next week", window.NextWeekControl), ("now", window.CurrentWeekControl)
                     };
                     var measured = controls.Select(child => (child.Name, Bounds: window.BoundsWithinCard(child.Control))).ToArray();
-                    var commonCenters = measured.Where(child => child.Name != "version").Select(child => child.Bounds.Center.Y).ToArray();
+                    var commonCenters = measured.Where(child => child.Name != "version" && child.Name != "dot").Select(child => child.Bounds.Center.Y).ToArray();
                     var versionCenter = measured.Single(child => child.Name == "version").Bounds.Center.Y;
                     var expectedVersionCenter = commonCenters.Average() + ProviderUsageCardWindow.TitleVersionOpticalOffsetY;
                     Assert(commonCenters.Max() - commonCenters.Min() <= 1.5 && Math.Abs(versionCenter - expectedVersionCenter) <= 1.5,
