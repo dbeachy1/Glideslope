@@ -40,6 +40,7 @@ internal sealed class WindowsTrayService : ITrayService
     private const uint NIF_ICON = 0x00000002;
     private const uint NIF_TIP = 0x00000004;
     private const uint NIF_STATE = 0x00000008;
+    private const uint NIF_SHOWTIP = 0x00000080;
 
     private const uint NIS_HIDDEN = 0x00000001;
     private const uint NOTIFYICON_VERSION_4 = 4;
@@ -222,7 +223,8 @@ internal sealed class WindowsTrayService : ITrayService
     {
         if (_disposed || _windowHandle == 0 || _iconHandle == 0 || _iconAdded) return;
 
-        var data = CreateNotifyIconData(NIF_MESSAGE | NIF_ICON | NIF_TIP | NIF_STATE);
+        // Version 4 suppresses the standard hover tooltip unless NIF_SHOWTIP is set.
+        var data = CreateNotifyIconData(NIF_MESSAGE | NIF_ICON | NIF_TIP | NIF_STATE | NIF_SHOWTIP);
         data.dwStateMask = NIS_HIDDEN;
         data.dwState = _visible ? 0u : NIS_HIDDEN;
         if (!Shell_NotifyIcon(NIM_ADD, ref data))
