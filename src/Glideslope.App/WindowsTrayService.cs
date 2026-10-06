@@ -161,7 +161,8 @@ internal sealed class WindowsTrayService : ITrayService
             return;
         }
 
-        var data = CreateNotifyIconData(NIF_STATE);
+        // Visibility updates must preserve version 4's standard tooltip policy and title.
+        var data = CreateNotifyIconData(NIF_STATE | NIF_TIP | NIF_SHOWTIP);
         data.dwStateMask = NIS_HIDDEN;
         data.dwState = visible ? 0u : NIS_HIDDEN;
         if (!Shell_NotifyIcon(NIM_MODIFY, ref data))
