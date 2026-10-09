@@ -57,8 +57,8 @@ internal sealed partial class WindowCoordinator
     /// offset = step == 0 ? 0 : clamp(current + step, 0, count − 1), reads windows[count − 1 − offset] over
     /// its whole span, and shows it with SetHistoryView. Offset 0 is always the live slot; when its identity is
     /// null because the window has not started, that slot is empty and stored windows begin at offset 1. With no
-    /// weekly bucket, no history store, or nothing
-    /// stored, the buttons are disabled through SetHistoryView with count 0. A failure logs
+    /// weekly bucket or no history store, the buttons are disabled through SetHistoryView with count 0.
+    /// With no stored windows, only the live slot remains and its buttons are disabled. A failure logs
     /// history_window_view_failed and leaves the view unchanged.
     /// </summary>
     private async void OnHistoryWindowStepRequested(ProviderUsageCardWindow window, int step)

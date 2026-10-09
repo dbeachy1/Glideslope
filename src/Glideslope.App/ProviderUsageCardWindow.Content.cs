@@ -151,8 +151,7 @@ internal sealed partial class ProviderUsageCardWindow
             : LocalizedText.CardFableThisWeek;
 
     /// <summary>Window design §15.2: the status line. While a stored week other than the current one is shown it
-    /// reads "Past week · {start} – {reset}" in place of the live status (§17 rule 4: with no current window
-    /// that can be offset 0); otherwise the live status applies.</summary>
+    /// reads "Past week · {start} – {reset}" in place of the live status; offset 0 always uses the live status.</summary>
     private void ApplyStatusLine()
     {
         if (_viewedHistoryWindow is { } viewed)
