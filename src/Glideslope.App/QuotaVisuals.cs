@@ -239,7 +239,8 @@ internal sealed class WeeklyHistoryChart : Control
             // The projection uses the same weekly burn rate from reset start through the latest real sample.
             var band = ProjectionBand(projection, projectionWindow);
             var projectionColor = PaceColors.For(IsDark, band);
-            var projectionPen = new Pen(new SolidColorBrush(Color.Parse(projectionColor)), TraceThickness,
+            // Dots need a wider stroke to carry comparable visual weight to the solid history trace.
+            var projectionPen = new Pen(new SolidColorBrush(Color.Parse(projectionColor)), TraceThickness * 2,
                 dashStyle: DashStyle.Dot, lineCap: PenLineCap.Round);
             var startPoint = At(0, 1);
             var endPoint = At(endFraction, RemainingAt(projectionWindow, projection, endAt));
