@@ -78,6 +78,116 @@ internal static partial class CardPresentationProof
             Assert(!card.ChartControl.HasProjection, "browsing a past week suppresses the current projection");
         }
         finally { card.CloseProgrammatically(); }
+
+        AssertZeroUsageOverlayPresentation();
+    }
+
+    private static void AssertZeroUsageOverlayPresentation()
+    {
+        var now = DateTimeOffset.UtcNow;
+        AccountSnapshot Weekly(double remaining, bool started, DateTimeOffset nominalStart) =>
+            new(ProviderIds.Codex, "zero-usage-proof", "Synthetic", now, now, "zero-usage-proof",
+                [new QuotaBucket("weekly", QuotaBucketRole.Weekly, remaining, TimeSpan.FromDays(7),
+                    nominalStart.AddDays(7), "zero-usage-proof", windowStarted: started)]);
+
+        var startedSnapshot = Weekly(1.0, started: true, nominalStart: now.AddHours(-6));
+        var started = State(startedSnapshot);
+        var pending = State(Weekly(1.0, started: false, nominalStart: now));
+        var window = new ProviderUsageCardWindow(ProviderIds.Codex, showMark: false, _ => { });
+        try
+        {
+            window.UpdateState(started);
+            var currentWindow = window.CurrentHistoryWindow ?? throw new InvalidOperationException("zero_usage_started_window_missing");
+            window.Show();
+            window.SetUsageProjectionHeld(true);
+            Assert(!window.ChartControl.HasProjection && window.ChartControl.ShowsZeroUsageOverlay,
+                "a fresh started 100% week shows the zero-usage overlay without creating a finite projection");
+
+            var past = new UsageWindowIdentity(currentWindow.AccountScope, currentWindow.ProviderId, currentWindow.BucketId,
+                currentWindow.NominalStartUtc.AddDays(-7), currentWindow.NominalStartUtc, currentWindow.SourceSemantics);
+            window.SetHistoryView(past, [], TimeSpan.FromMinutes(5), true, offset: 1, count: 2);
+            Assert(!window.ChartControl.ShowsZeroUsageOverlay, "browsing a past week hides the zero-usage overlay");
+            window.SetHistoryView(currentWindow, [], TimeSpan.FromMinutes(5), true, offset: 0, count: 2);
+            Assert(window.ChartControl.ShowsZeroUsageOverlay, "returning from past history restores the current zero-usage overlay");
+
+            window.UpdateState(started with { Freshness = SnapshotFreshness.Stale });
+            Assert(!window.ChartControl.ShowsZeroUsageOverlay, "a stale 100% snapshot suppresses the zero-usage overlay");
+
+            window.UpdateState(State(Weekly(0.95, started: true, nominalStart: now.AddHours(-6))));
+            Assert(window.ChartControl.HasProjection && !window.ChartControl.ShowsZeroUsageOverlay,
+                "real usage returns to the existing finite projection and hides the zero-usage overlay");
+
+            window.UpdateState(State(Weekly(1.0, started: true, nominalStart: now)));
+            Assert(!window.ChartControl.HasProjection && window.ChartControl.ShowsZeroUsageOverlay,
+                "a fresh zero-usage snapshot at the exact window start shows the flat overlay");
+
+            window.UpdateState(pending);
+            Assert(window.CurrentHistoryWindow is null && window.ChartControl.ShowsZeroUsageOverlay,
+                "a fresh pending 100% week shows the zero-usage overlay without a current identity");
+            window.SetUsageProjectionHeld(false);
+            Assert(!window.ChartControl.IsProjectionHeld, "releasing Shift hides the pending zero-usage overlay");
+        }
+        finally { window.CloseProgrammatically(); }
+    }
+
+    public static void RunZeroUsageOverlayProof()
+    {
+        AppBuilder.Configure<PresentationTestApp>()
+            .UseSkia()
+            .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
+            .SetupWithoutStarting();
+        using var english = LocalizedText.OverrideForSpecs(CultureInfo.GetCultureInfo("en-US"), CultureInfo.GetCultureInfo("en-US"));
+        AssertZeroUsageOverlayPresentation();
+    }
+
+    public static void CaptureZeroUsageOverlayScreenshots(string outputDirectory)
+    {
+        AppBuilder.Configure<PresentationTestApp>()
+            .UseSkia()
+            .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
+            .SetupWithoutStarting();
+        using var english = LocalizedText.OverrideForSpecs(CultureInfo.GetCultureInfo("en-US"), CultureInfo.GetCultureInfo("en-US"));
+        Directory.CreateDirectory(outputDirectory);
+        var now = DateTimeOffset.UtcNow;
+        var states = new[]
+        {
+            (Name: "started-100", Snapshot: new AccountSnapshot(ProviderIds.Codex, "zero-usage-proof", "Synthetic", now, now,
+                "zero-usage-proof", [new QuotaBucket("weekly", QuotaBucketRole.Weekly, 1.0, TimeSpan.FromDays(7),
+                    now.AddDays(1), "zero-usage-proof")])),
+            (Name: "pending-100", Snapshot: new AccountSnapshot(ProviderIds.Codex, "zero-usage-proof", "Synthetic", now, now,
+                "zero-usage-proof", [new QuotaBucket("weekly", QuotaBucketRole.Weekly, 1.0, TimeSpan.FromDays(7),
+                    now.AddDays(7), "zero-usage-proof", windowStarted: false)]))
+        };
+        foreach (var scenario in states)
+        foreach (var theme in new[] { ThemeVariant.Dark, ThemeVariant.Light })
+        foreach (var size in new[]
+                 {
+                     (Name: "normal", Width: ProviderUsageCardWindow.DefaultCardWidth, Height: ProviderUsageCardWindow.DefaultCardHeight),
+                     (Name: "minimum", Width: CardLayoutTiers.MinWidth, Height: CardLayoutTiers.MinHeight)
+                 })
+        {
+            var card = new ProviderUsageCardWindow(ProviderIds.Codex, showMark: false, _ => { })
+            {
+                RequestedThemeVariant = theme,
+                Width = size.Width,
+                Height = size.Height
+            };
+            try
+            {
+                card.UpdateState(State(scenario.Snapshot));
+                card.Show();
+                card.SetUsageProjectionHeld(true);
+                if (!card.ChartControl.ShowsZeroUsageOverlay || !card.ChartControl.IsProjectionHeld)
+                    throw new InvalidOperationException($"zero_usage_overlay_not_held_{scenario.Name}_{size.Name}_{theme}");
+                using var bitmap = card.CaptureRenderedFrame()
+                    ?? throw new InvalidOperationException($"zero_usage_overlay_render_failed_{scenario.Name}_{size.Name}_{theme}");
+                var filename = $"codex-zero-usage-{scenario.Name}-{size.Name}-{theme}.png";
+                var path = Path.Combine(outputDirectory, filename);
+                bitmap.Save(path, PngBitmapEncoderOptions.Default);
+                Console.WriteLine($"Captured {path}");
+            }
+            finally { card.CloseProgrammatically(); }
+        }
     }
 
     public static void CaptureUsageProjectionScreenshots(string outputDirectory)

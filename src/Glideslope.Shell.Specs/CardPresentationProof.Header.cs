@@ -9,6 +9,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
 using Glideslope.App;
@@ -23,7 +24,7 @@ namespace Glideslope.Shell.Specs;
 // grips. Governed by window design §5.1, §5.6, §15.2-§15.6 and §17, and the Claude CLI source design §2.
 internal static partial class CardPresentationProof
 {
-    public static void RunHistoryResetProof()
+    public static void RunHistoryResetProof(string? screenshotOutputDirectory = null)
     {
         AppBuilder.Configure<PresentationTestApp>()
             .UseSkia()
@@ -31,7 +32,7 @@ internal static partial class CardPresentationProof
             .SetupWithoutStarting();
         using var english = LocalizedText.OverrideForSpecs(System.Globalization.CultureInfo.GetCultureInfo("en-US"),
             System.Globalization.CultureInfo.GetCultureInfo("en-US"));
-        AssertBrowsingWithoutCurrentWindow();
+        AssertBrowsingWithoutCurrentWindow(screenshotOutputDirectory);
     }
 
     /// <summary>
@@ -249,18 +250,34 @@ internal static partial class CardPresentationProof
     /// and returns to an empty live chart on Now. Covers both launch while pending and reset from started to
     /// pending, then verifies a newly started window receives only its own samples.
     /// </summary>
-    private static void AssertBrowsingWithoutCurrentWindow()
+    private static void AssertBrowsingWithoutCurrentWindow(string? screenshotOutputDirectory = null)
     {
-        var now = DateTimeOffset.UtcNow;
+        var utcNow = DateTimeOffset.UtcNow;
+        var now = new DateTimeOffset(utcNow.UtcDateTime.Ticks / TimeSpan.TicksPerMinute * TimeSpan.TicksPerMinute, TimeSpan.Zero);
         var english = System.Globalization.CultureInfo.GetCultureInfo("en-US");
         var interval = TimeSpan.FromMinutes(5);
         var window = new ProviderUsageCardWindow(ProviderIds.Codex, showMark: false, _ => { });
         var steps = new List<int>();
         void OnStep(ProviderUsageCardWindow sender, int step) => steps.Add(step);
+        void CaptureStage(string name)
+        {
+            if (screenshotOutputDirectory is null) return;
+            Directory.CreateDirectory(screenshotOutputDirectory);
+            foreach (var theme in new[] { ThemeVariant.Dark, ThemeVariant.Light })
+            {
+                window.RequestedThemeVariant = theme;
+                using var bitmap = window.CaptureRenderedFrame()
+                    ?? throw new InvalidOperationException($"history_reset_{name}_{theme}_render_failed");
+                var filename = $"codex-weekly-reset-{name}-{theme}.png";
+                var path = System.IO.Path.Combine(screenshotOutputDirectory, filename);
+                bitmap.Save(path, PngBitmapEncoderOptions.Default);
+                Console.WriteLine($"Captured {path}");
+            }
+        }
         window.HistoryWindowStepRequested += OnStep;
         try
         {
-            QuotaBucket NotStarted() => new("weekly", QuotaBucketRole.Weekly, 1.0, TimeSpan.FromDays(7), now.AddDays(7),
+            QuotaBucket NotStarted() => new("weekly", QuotaBucketRole.Weekly, 1.0, TimeSpan.FromDays(7), now.AddDays(7).AddMinutes(1),
                 "synthetic.shell.spec", windowStarted: false);
             AccountSnapshot IdleSnapshot() => new(ProviderIds.Codex, "synthetic-shell-spec-scope", "Synthetic", now, now,
                 "synthetic.shell.spec", [NotStarted()]);
@@ -289,29 +306,65 @@ internal static partial class CardPresentationProof
             Assert(steps.SequenceEqual([0]), $"repeated not-started polls ask for nothing more (got {string.Join(",", steps)})");
             Assert(Status() == Live(idle), $"before any stored week arrives the status line is live (got '{Status()}')");
 
-            var newest = new UsageWindowIdentity("synthetic-shell-spec-scope", ProviderIds.Codex, "weekly",
-                now.AddDays(-8), now.AddDays(-1), "synthetic.shell.spec");
-            var pastStatus = $"Past week · {newest.NominalStartUtc.ToLocalTime().ToString("MMM d", english)} – {newest.ResetAtUtc.ToLocalTime().AddDays(-1).ToString("MMM d", english)}";
-            window.SetHistoryView(null, [], interval, true, offset: 0, count: 3);
+            var depletedReset = now.AddMinutes(1);
+            var depletedBucket = new QuotaBucket("weekly", QuotaBucketRole.Weekly, 0.04, TimeSpan.FromDays(7),
+                depletedReset, "synthetic.shell.spec");
+            var depletedSnapshot = new AccountSnapshot(ProviderIds.Codex, "synthetic-shell-spec-scope", "Synthetic", now, now,
+                "synthetic.shell.spec", [depletedBucket]);
+            var depleted = State(depletedSnapshot);
+            var depletedWindow = UsageWindowIdentityFactory.From(depletedSnapshot, depletedBucket)
+                ?? throw new InvalidOperationException("synthetic_depleted_window_missing");
+            var depletedSamples = new[]
+            {
+                new UsageObservation(depletedWindow, depletedWindow.NominalStartUtc.AddDays(1), 0.82),
+                new UsageObservation(depletedWindow, now, 0.04)
+            };
+            window.UpdateState(depleted);
+            Assert(window.SetHistory(depletedWindow, depletedSamples, interval, historyAvailable: true, windowCount: 1),
+                "the depleted live week is shown before reset");
+            Assert(window.ChartControl.HistorySampleCount == 2, "the pre-reset chart shows two real synthetic observations");
+            CaptureStage("old-depleted-before-reset");
+
+            var pastStatus = $"Past week · {depletedWindow.NominalStartUtc.ToLocalTime().ToString("MMM d", english)} – {depletedWindow.ResetAtUtc.ToLocalTime().AddDays(-1).ToString("MMM d", english)}";
+            window.UpdateState(idle);
+            Assert(steps.Last() == 0, "reset to pending requests the current live slot");
+            window.SetHistoryView(null, [], interval, true, offset: 0, count: 2);
             AssertButtons(true, false, false, "at the empty pending live slot");
             Assert(Status() == Live(idle), $"the pending current slot keeps live status (got '{Status()}')");
             Assert(!window.ChartControl.HasProjection, "the pending current slot has no old-window projection");
             Assert(window.ChartControl.HistorySampleCount == 0, "the pending current chart contains no prior-week samples");
+            Assert(!window.ChartControl.IsProjectionHeld && !window.ChartControl.ShowsZeroUsageOverlay,
+                "the reset card stays clear while Shift is released");
+            CaptureStage("reset-pending-empty-live");
             steps.Clear();
             window.PreviousWeekControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Assert(steps.SequenceEqual([1]), "previous week from pending requests offset 1");
-            window.SetHistoryView(newest, [new UsageObservation(newest, newest.NominalStartUtc.AddHours(1), 0.8)], interval, true, offset: 1, count: 3);
-            AssertButtons(true, true, true, "showing the newest stored week at offset 1");
-            Assert(Status() == pastStatus, $"the newest stored week reads as past at offset 1 (got '{Status()}')");
+            window.SetHistoryView(depletedWindow, depletedSamples, interval, true, offset: 1, count: 2);
+            AssertButtons(false, true, true, "showing the only stored week at offset 1");
+            Assert(Status() == pastStatus, $"the depleted pre-reset week reads as past at offset 1 (got '{Status()}')");
+            Assert(window.ChartControl.HistorySampleCount == 2, "browsing old history shows its two stored observations");
+            CaptureStage("previous-browses-old-history");
             Assert(!window.SetHistory(null, [], interval, historyAvailable: true), "the live path does not overwrite a stored week on view");
             Assert(Status() == pastStatus, "the live path leaves the past-week line alone");
+            Assert(window.CurrentWeekControl.IsEnabled, "Now is enabled while the previous week is shown");
+            steps.Clear();
+            window.CurrentWeekControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert(steps.SequenceEqual([0]), "clicking Now requests offset 0");
+            window.SetHistoryView(null, [], interval, true, offset: 0, count: 2);
+            Assert(Status() == Live(idle) && window.ChartControl.HistorySampleCount == 0 && !window.ChartControl.HasProjection,
+                "the returned Now selection restores the empty live chart and status");
+            CaptureStage("now-returns-empty-live");
 
             // Two quick ‹ clicks queue a target of 2 (the coordinator's bookkeeping), then the window starts.
             window.PreviousWeekControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             window.HistoryBrowsePendingOffset = 2;
             var sequenceBefore = window.HistoryBrowseSequence;
             steps.Clear();
-            var started = State(Snapshot(now, [], providerId: ProviderIds.Codex));
+            var freshBucket = new QuotaBucket("weekly", QuotaBucketRole.Weekly, 0.63, TimeSpan.FromDays(7),
+                now.AddDays(6), "synthetic.shell.spec");
+            var freshSnapshot = new AccountSnapshot(ProviderIds.Codex, "synthetic-shell-spec-scope", "Synthetic", now, now,
+                "synthetic.shell.spec", [freshBucket]);
+            var started = State(freshSnapshot);
             window.UpdateState(started);
             Assert(window.CurrentHistoryWindow is not null, "a started window has an identity again");
             Assert(steps.Count == 0, $"the window starting is loaded by the live path, not by a step request (got {string.Join(",", steps)})");
@@ -319,23 +372,26 @@ internal static partial class CardPresentationProof
                 $"the window starting resets the offset and the queued browse target (offset {window.HistoryWindowOffset}, pending {window.HistoryBrowsePendingOffset})");
             Assert(Status() == Live(started), $"the window starting restores the live status (got '{Status()}')");
             Assert(window.SetHistory(window.CurrentHistoryWindow,
-                [new UsageObservation(window.CurrentHistoryWindow!, now, 0.99)], interval,
-                historyAvailable: true, windowCount: 4), "the live history applies to the newly started window");
-            Assert(window.ChartControl.HistorySampleCount == 1,
-                "the newly started window chart contains only its fresh-window observation");
-            AssertButtons(true, false, false, "at offset 0 of 4 after the window started");
+                [new UsageObservation(window.CurrentHistoryWindow!, now.AddHours(-6), 0.88),
+                 new UsageObservation(window.CurrentHistoryWindow!, now, 0.63)], interval,
+                historyAvailable: true, windowCount: 2), "the live history applies to the newly started window");
+            Assert(window.ChartControl.HistorySampleCount == 2,
+                "the newly started window chart contains only its two fresh-window observations");
+            CaptureStage("fresh-started-week");
+            AssertButtons(true, false, false, "at offset 0 of 2 after the window started");
 
             // Back to not started (a rollover with no usage yet), a stored week on view, then the bucket goes away.
             steps.Clear();
             window.UpdateState(State(IdleSnapshot()));
             Assert(steps.SequenceEqual([0]), $"a rollover to a not-started window asks for step 0 (got {string.Join(",", steps)})");
-            window.SetHistoryView(null, [], interval, true, offset: 0, count: 4);
+            window.SetHistoryView(null, [], interval, true, offset: 0, count: 2);
             Assert(Status() == Live(idle) && !window.ChartControl.HasProjection && window.ChartControl.HistorySampleCount == 0,
                 "a started-to-pending reset clears the chart to an empty current view and restores live status");
             window.PreviousWeekControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Assert(steps.Last() == 1, "previous week after reset again requests the newest stored week at offset 1");
-            window.SetHistoryView(newest, [], interval, true, offset: 1, count: 4);
+            window.SetHistoryView(depletedWindow, depletedSamples, interval, true, offset: 1, count: 2);
             Assert(Status() == pastStatus, "the newest stored week shows again as a past week");
+            AssertButtons(false, true, true, "showing the only stored week after reset");
             steps.Clear();
             var noWeekly = State(new AccountSnapshot(ProviderIds.Codex, "synthetic-shell-spec-scope", "Synthetic", now, now,
                 "synthetic.shell.spec", [Bucket("codex.short", QuotaBucketRole.Short, now)]));

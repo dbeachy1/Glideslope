@@ -190,14 +190,27 @@ internal sealed partial class ProviderUsageCardWindow
     {
         var freshness = _state?.Freshness ?? SnapshotFreshness.RestoredHistorical;
         UsageProjection? projection = null;
+        var showZeroUsageOverlay = false;
         if (_viewedHistoryWindow is null && freshness == SnapshotFreshness.Fresh && _state?.Status == ProviderStatus.Ready &&
-            _state.Snapshot is { } snapshot && _currentHistoryWindow is { } currentWindow &&
-            snapshot.Buckets.FirstOrDefault(bucket => bucket.Role == QuotaBucketRole.Weekly) is { } weekly &&
-            snapshot.ObservedAtUtc >= currentWindow.NominalStartUtc && snapshot.ObservedAtUtc < currentWindow.ResetAtUtc)
+            _state.Snapshot is { } snapshot &&
+            snapshot.Buckets.FirstOrDefault(bucket => bucket.Role == QuotaBucketRole.Weekly) is { } weekly)
         {
-            var currentObservation = new UsageObservation(currentWindow, snapshot.ObservedAtUtc, weekly.RemainingFraction);
-            projection = UsageProjectionCalculator.Calculate(currentWindow, currentObservation, freshness, DateTimeOffset.UtcNow);
+            if (_currentHistoryWindow is { } currentWindow &&
+                snapshot.ObservedAtUtc >= currentWindow.NominalStartUtc && snapshot.ObservedAtUtc < currentWindow.ResetAtUtc)
+            {
+                var now = DateTimeOffset.UtcNow;
+                if (now >= currentWindow.NominalStartUtc && now < currentWindow.ResetAtUtc)
+                {
+                    var currentObservation = new UsageObservation(currentWindow, snapshot.ObservedAtUtc, weekly.RemainingFraction);
+                    projection = UsageProjectionCalculator.Calculate(currentWindow, currentObservation, freshness, now);
+                    showZeroUsageOverlay = weekly.RemainingFraction == 1.0 && projection is null;
+                }
+            }
+            else if (weekly.RemainingFraction == 1.0 && !weekly.WindowStarted && _currentHistoryWindow is null)
+            {
+                showZeroUsageOverlay = true;
+            }
         }
-        _chart.SetProjection(projection, freshness);
+        _chart.SetProjection(projection, freshness, showZeroUsageOverlay);
     }
 }

@@ -94,6 +94,7 @@ internal sealed class WeeklyHistoryChart : Control
     private ChartSeries _series = new([], []);
     private UsageProjection? _projection;
     private SnapshotFreshness _projectionFreshness = SnapshotFreshness.RestoredHistorical;
+    private bool _showZeroUsageOverlay;
     private bool _projectionHeld;
     private Point? _pointer;
     private bool _historyAvailable = true;
@@ -110,6 +111,7 @@ internal sealed class WeeklyHistoryChart : Control
     public bool IsDark { get; set; } = true;
     public TimeSpan SamplingInterval { get; set; } = TimeSpan.FromMinutes(5);
     internal bool HasProjection => _projection is not null;
+    internal bool ShowsZeroUsageOverlay => _projectionHeld && _projectionFreshness == SnapshotFreshness.Fresh && _showZeroUsageOverlay;
     internal bool IsProjectionHeld => _projectionHeld;
     internal int HistorySampleCount => _series.Samples.Length;
 
@@ -129,10 +131,11 @@ internal sealed class WeeklyHistoryChart : Control
         InvalidateVisual();
     }
 
-    public void SetProjection(UsageProjection? projection, SnapshotFreshness freshness)
+    public void SetProjection(UsageProjection? projection, SnapshotFreshness freshness, bool showZeroUsageOverlay = false)
     {
         _projection = projection;
         _projectionFreshness = freshness;
+        _showZeroUsageOverlay = showZeroUsageOverlay;
         InvalidateVisual();
     }
 
@@ -230,6 +233,29 @@ internal sealed class WeeklyHistoryChart : Control
         if (_series.Samples.IsEmpty)
             DrawText(context, LocalizedText.ChartEmptyState(_window is not null && !_historyAvailable), left + 4,
                 top + plotHeight / 2 - 7, IsDark ? "#94A1B7" : "#596B80", EmptyStateFontSize);
+
+        if (_projectionHeld && _projectionFreshness == SnapshotFreshness.Fresh && _showZeroUsageOverlay)
+        {
+            var color = PaceColors.For(IsDark, PaceBand.StrongCushion);
+            var overlayPen = new Pen(new SolidColorBrush(Color.Parse(color)), TraceThickness * 2,
+                dashStyle: DashStyle.Dot, lineCap: PenLineCap.Round);
+            var lineStart = At(0, 1);
+            var lineEnd = At(1, 1);
+            context.DrawLine(overlayPen, lineStart, lineEnd);
+
+            const double labelPadding = 3;
+            var text = MakeText(LocalizedText.CardNoUsageYet, color, EmptyStateFontSize);
+            var plot = new Rect(left, top, plotWidth, plotHeight);
+            text.MaxTextWidth = Math.Max(1, plotWidth - labelPadding * 2);
+            var labelBounds = FindProjectionLabelBounds(lineStart, lineEnd,
+                new Size(Math.Min(text.Width, plotWidth - labelPadding * 2) + labelPadding * 2,
+                    text.Height + labelPadding * 2), plot);
+            if (labelBounds is { } bounds)
+            {
+                context.DrawRectangle(new SolidColorBrush(Color.Parse(IsDark ? "#171D29" : "#F6F8FC")), null, bounds);
+                context.DrawText(text, new Point(bounds.X + labelPadding, bounds.Y + labelPadding));
+            }
+        }
 
         if (_window is { } projectionWindow && start is { } projectionStart && reset is { } projectionReset &&
             _projectionHeld && _projectionFreshness == SnapshotFreshness.Fresh && _projection is { } projection &&
