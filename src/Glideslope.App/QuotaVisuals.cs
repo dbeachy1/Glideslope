@@ -97,6 +97,7 @@ internal sealed class WeeklyHistoryChart : Control
     private bool _projectionHeld;
     private Point? _pointer;
     private bool _historyAvailable = true;
+    private bool _reportedProjectionLabelNoFit;
 
     /// <summary>Font size for custom-drawn day labels, kept at the card's text floor.</summary>
     internal const double DayLabelFontSize = 16;
@@ -248,24 +249,46 @@ internal sealed class WeeklyHistoryChart : Control
 
             var label = ProjectionLabel(projection, projectionReset);
             var text = MakeText(label, projectionColor, EmptyStateFontSize);
-            var labelMaxWidth = plotWidth / 2;
-            text.MaxTextWidth = labelMaxWidth;
-            var labelWidth = Math.Min(text.Width, labelMaxWidth);
-            var lineMidpointX = (startPoint.X + endPoint.X) / 2;
-            var labelX = Math.Clamp(lineMidpointX - labelWidth / 2, left, left + plotWidth - labelWidth);
-            double LineY(double x) => startPoint.Y + (endPoint.Y - startPoint.Y) *
-                Math.Clamp((x - startPoint.X) / Math.Max(1, endPoint.X - startPoint.X), 0, 1);
-            var aboveLine = LineY(labelX) - text.Height - 4;
-            var belowLine = LineY(labelX + labelWidth) + 4;
-            var labelY = aboveLine >= top
-                ? Math.Min(aboveLine, top + plotHeight - text.Height)
-                : Math.Clamp(belowLine, top, Math.Max(top, top + plotHeight - text.Height));
             const double labelPadding = 3;
+            var plot = new Rect(left, top, plotWidth, plotHeight);
+            var widthFractions = new[] { 0.5, 0.4, 1d / 3, 0.25 };
+            Rect? labelBounds = null;
+            foreach (var widthFraction in widthFractions)
+            {
+                var labelMaxWidth = plotWidth * widthFraction;
+                text.MaxTextWidth = labelMaxWidth;
+                var labelWidth = Math.Min(text.Width, labelMaxWidth);
+                labelBounds = FindProjectionLabelBounds(startPoint, endPoint,
+                    new Size(labelWidth + labelPadding * 2, text.Height + labelPadding * 2), plot, allowCenteredFallback: false);
+                if (labelBounds is not null) break;
+            }
+            if (labelBounds is null)
+            {
+                foreach (var widthFraction in widthFractions)
+                {
+                    var labelMaxWidth = plotWidth * widthFraction;
+                    text.MaxTextWidth = labelMaxWidth;
+                    var labelWidth = Math.Min(text.Width, labelMaxWidth);
+                    labelBounds = FindProjectionLabelBounds(startPoint, endPoint,
+                        new Size(labelWidth + labelPadding * 2, text.Height + labelPadding * 2), plot,
+                        allowCenteredFallback: true);
+                    if (labelBounds is not null) break;
+                }
+            }
+            if (labelBounds is null)
+            {
+                if (!_reportedProjectionLabelNoFit)
+                {
+                    System.Diagnostics.Trace.TraceWarning(
+                        $"Projection label omitted because no 16 px in-plot placement clears the line (plot {plot.Width:0.#}x{plot.Height:0.#}).");
+                    _reportedProjectionLabelNoFit = true;
+                }
+                return;
+            }
+            _reportedProjectionLabelNoFit = false;
             var plotBackground = new SolidColorBrush(Color.Parse(IsDark ? "#171D29" : "#F6F8FC"));
-            context.DrawRectangle(plotBackground, null,
-                new Rect(labelX - labelPadding, labelY - labelPadding,
-                    labelWidth + labelPadding * 2, text.Height + labelPadding * 2));
-            context.DrawText(text, new Point(labelX, labelY));
+            context.DrawRectangle(plotBackground, null, labelBounds.Value);
+            context.DrawText(text, new Point(labelBounds.Value.X + labelPadding, labelBounds.Value.Y + labelPadding));
         }
     }
 
@@ -305,6 +328,67 @@ internal sealed class WeeklyHistoryChart : Control
         if (runOutTicks <= 0) return 0;
         return Math.Clamp(1 - (instant - window.NominalStartUtc).Ticks / (double)runOutTicks, 0, 1);
     }
+
+    /// <summary>Places the padded label beside the visible segment midpoint while keeping its background clear of the dotted stroke.</summary>
+    internal static Rect? FindProjectionLabelBounds(Point start, Point end, Size paddedLabelSize, Rect plot,
+        bool allowCenteredFallback = true)
+    {
+        const double strokeClearance = TraceThickness + 4;
+        var midpoint = new Point((start.X + end.X) / 2, (start.Y + end.Y) / 2);
+        var deltaX = end.X - start.X;
+        var deltaY = end.Y - start.Y;
+        if (Math.Abs(deltaY) > 0.001)
+        {
+            var lineLength = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+            var sideOffset = (strokeClearance * lineLength + Math.Abs(deltaX) * paddedLabelSize.Height / 2) /
+                             Math.Abs(deltaY) + 0.5;
+            var sideY = midpoint.Y - paddedLabelSize.Height / 2;
+            var right = new Rect(midpoint.X + sideOffset, sideY, paddedLabelSize.Width, paddedLabelSize.Height);
+            if (Contains(plot, right) && ProjectionLabelClearsSegment(right, start, end)) return right;
+            var left = new Rect(midpoint.X - sideOffset - paddedLabelSize.Width, sideY, paddedLabelSize.Width, paddedLabelSize.Height);
+            if (Contains(plot, left) && ProjectionLabelClearsSegment(left, start, end)) return left;
+        }
+
+        if (!allowCenteredFallback) return null;
+
+        // A shallow segment may leave no room for a midpoint-aligned side box. Place the box above or
+        // below the midpoint, whichever has a clear in-plot position closest to it.
+        var centered = new Rect(midpoint.X - paddedLabelSize.Width / 2, midpoint.Y - paddedLabelSize.Height / 2,
+            paddedLabelSize.Width, paddedLabelSize.Height);
+        if (centered.Width > plot.Width || centered.Height > plot.Height || centered.Left < plot.Left || centered.Right > plot.Right)
+            return null;
+        var overlapLeft = Math.Max(centered.Left, Math.Min(start.X, end.X));
+        var overlapRight = Math.Min(centered.Right, Math.Max(start.X, end.X));
+        var lineLowY = Math.Min(YAtX(overlapLeft), YAtX(overlapRight));
+        var lineHighY = Math.Max(YAtX(overlapLeft), YAtX(overlapRight));
+        var verticalClearance = strokeClearance * Math.Sqrt(deltaX * deltaX + deltaY * deltaY) /
+                                Math.Max(0.001, Math.Abs(deltaX)) + 0.5;
+        var above = centered.WithY(lineLowY - verticalClearance - centered.Height);
+        if (Contains(plot, above) && ProjectionLabelClearsSegment(above, start, end)) return above;
+        var below = centered.WithY(lineHighY + verticalClearance);
+        if (Contains(plot, below) && ProjectionLabelClearsSegment(below, start, end)) return below;
+        return null;
+
+        double YAtX(double x) => start.Y + (end.Y - start.Y) * ((x - start.X) / Math.Max(0.001, end.X - start.X));
+    }
+
+    internal static bool ProjectionLabelClearsSegment(Rect bounds, Point start, Point end)
+    {
+        var dx = end.X - start.X;
+        var dy = end.Y - start.Y;
+        var length = Math.Sqrt(dx * dx + dy * dy);
+        var distance = new[]
+        {
+            SignedDistance(new Point(bounds.Left, bounds.Top)), SignedDistance(new Point(bounds.Right, bounds.Top)),
+            SignedDistance(new Point(bounds.Right, bounds.Bottom)), SignedDistance(new Point(bounds.Left, bounds.Bottom))
+        };
+        return distance.All(value => value >= TraceThickness + 4) || distance.All(value => value <= -TraceThickness - 4);
+
+        double SignedDistance(Point point) => (dx * (point.Y - start.Y) - dy * (point.X - start.X)) / length;
+    }
+
+    private static bool Contains(Rect outer, Rect inner) => inner.Left >= outer.Left && inner.Top >= outer.Top &&
+        inner.Right <= outer.Right && inner.Bottom <= outer.Bottom;
 
     private static FormattedText MakeText(string value, string color, double size)
     {

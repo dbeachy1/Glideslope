@@ -32,6 +32,17 @@ internal static partial class CardPresentationProof
                LocalizedText.ChartProjectionAfterReset(TimeSpan.FromHours(120)).Contains("120.0 hours", StringComparison.Ordinal),
             "projection labels use localized runout date/duration and post-reset hours resources");
 
+        var projectionPlot = new Rect(8, 18, 720, 180);
+        AssertProjectionLabelPlacement(new Point(8, 18), new Point(180, 198), new Size(150, 28), projectionPlot,
+            true, "early steep projection");
+        AssertProjectionLabelPlacement(new Point(8, 18), new Point(700, 198), new Size(180, 28), projectionPlot,
+            true, "late runout projection");
+        AssertProjectionLabelPlacement(new Point(8, 18), new Point(700, 112), new Size(180, 28), projectionPlot,
+            true, "shallow beyond-reset projection");
+        var narrowPlot = new Rect(8, 18, 370, 150);
+        AssertProjectionLabelPlacement(new Point(8, 18), new Point(360, 168), new Size(165, 28), narrowPlot,
+            false, "narrow near-reset diagonal");
+
         var now = DateTimeOffset.UtcNow;
         var liveStart = now.AddDays(-6);
         var liveReset = liveStart.AddDays(7);
@@ -78,51 +89,78 @@ internal static partial class CardPresentationProof
         using var english = LocalizedText.OverrideForSpecs(CultureInfo.GetCultureInfo("en-US"), CultureInfo.GetCultureInfo("en-US"));
         Directory.CreateDirectory(outputDirectory);
         var now = DateTimeOffset.UtcNow;
-        var start = now.AddDays(-6);
-        var reset = start.AddDays(7);
-        var cases = new[]
+        var scenarios = new[]
         {
-            ("default", 100, 940d, 680d, 0.1),
-            ("narrow", 100, CardLayoutTiers.MinWidth, 680d, 0.1),
-            ("small", CardScale.MinimumPercent, ProviderUsageCardWindow.DefaultCardWidth * 0.7, ProviderUsageCardWindow.DefaultCardHeight * 0.7, 0.1),
-            ("near-reset", 100, 940d, 680d, 25d / 169),
-            ("beyond-reset-large", CardScale.MaximumPercent, ProviderUsageCardWindow.DefaultCardWidth * 1.5, ProviderUsageCardWindow.DefaultCardHeight * 1.5, 0.5)
+            (Name: "early-steep", ElapsedDays: 1d, Remaining: 0.2, Scale: 100, Width: 940d, Height: 680d),
+            (Name: "early-steep-narrow", ElapsedDays: 1d, Remaining: 0.2, Scale: 100, Width: 790d, Height: 680d),
+            (Name: "near-reset-narrow", ElapsedDays: 6d, Remaining: 0.05, Scale: 100, Width: 790d, Height: 680d),
+            (Name: "near-reset-scaled", ElapsedDays: 6d, Remaining: 0.05, Scale: 80, Width: 790d, Height: 680d),
+            (Name: "beyond-reset", ElapsedDays: 6d, Remaining: 0.5, Scale: 100, Width: 940d, Height: 680d)
         };
-
-        foreach (var (name, percent, width, height, remaining) in cases)
+        var providers = new[] { ProviderIds.Claude, ProviderIds.Codex };
+        foreach (var providerId in providers)
+        foreach (var scenario in scenarios)
         foreach (var theme in new[] { ThemeVariant.Dark, ThemeVariant.Light })
         {
-            var bucket = new QuotaBucket("weekly", QuotaBucketRole.Weekly, remaining, TimeSpan.FromDays(7), reset, "projection-proof");
-            var snapshot = new AccountSnapshot(ProviderIds.Claude, "projection-proof", "Synthetic", now, now,
-                "projection-proof", [bucket]);
+            var start = now.AddDays(-scenario.ElapsedDays);
+            var reset = start.AddDays(7);
+            var buckets = new List<QuotaBucket>
+            {
+                new("weekly", QuotaBucketRole.Weekly, scenario.Remaining, TimeSpan.FromDays(7), reset, "projection-proof")
+            };
+            if (providerId == ProviderIds.Codex)
+                buckets.Add(new QuotaBucket("short", QuotaBucketRole.Short, 0.42, TimeSpan.FromHours(5), now.AddHours(2), "projection-proof"));
+            var snapshot = new AccountSnapshot(providerId, "projection-proof", "Synthetic", now, now,
+                "projection-proof", buckets);
+            var bucket = buckets[0];
             var identity = UsageWindowIdentityFactory.From(snapshot, bucket)!;
-            var card = new ProviderUsageCardWindow(ProviderIds.Claude, showMark: false, _ => { })
+            var card = new ProviderUsageCardWindow(providerId, showMark: false, _ => { })
             {
                 RequestedThemeVariant = theme
             };
             try
             {
-                var scale = percent / 100d;
+                var scale = scenario.Scale / 100d;
                 card.MinWidth = CardLayoutTiers.MinWidth * scale;
                 card.MinHeight = CardLayoutTiers.MinHeight * scale;
-                card.ApplyCardScale(percent);
-                card.Width = width;
-                card.Height = height;
+                card.ApplyCardScale(scenario.Scale);
+                card.Width = scenario.Width;
+                card.Height = scenario.Height;
                 card.UpdateState(State(snapshot));
                 card.SetHistory(identity,
                 [
-                    new UsageObservation(identity, start.AddDays(1), 0.85),
-                    new UsageObservation(identity, now, remaining)
+                    new UsageObservation(identity, start.AddHours(scenario.ElapsedDays * 24 / 2), (1 + scenario.Remaining) / 2),
+                    new UsageObservation(identity, now, scenario.Remaining)
                 ], TimeSpan.FromMinutes(5));
                 card.Show();
                 card.SetUsageProjectionHeld(true);
                 using var bitmap = card.CaptureRenderedFrame() ?? throw new InvalidOperationException("usage_projection_screenshot_render_failed");
-                var filename = $"usage-projection-{name}-{theme}.png";
+                var filename = $"usage-projection-{providerId}-{scenario.Name}-{theme}.png";
                 bitmap.Save(Path.Combine(outputDirectory, filename), PngBitmapEncoderOptions.Default);
                 Console.WriteLine($"Captured {filename}");
             }
             finally { card.CloseProgrammatically(); }
         }
+    }
+
+    private static void AssertProjectionLabelPlacement(Point start, Point end, Size size, Rect plot,
+        bool expectMidpointSide, string description)
+    {
+        var bounds = WeeklyHistoryChart.FindProjectionLabelBounds(start, end, size, plot);
+        Assert(bounds is { } placed, $"{description} has an in-plot projection label placement");
+        var label = bounds!.Value;
+        Assert(label.Left >= plot.Left && label.Top >= plot.Top && label.Right <= plot.Right && label.Bottom <= plot.Bottom,
+            $"{description} keeps the complete padded label inside the plot");
+        Assert(WeeklyHistoryChart.ProjectionLabelClearsSegment(label, start, end),
+            $"{description} keeps the label background clear of the dotted stroke");
+        var midpoint = new Point((start.X + end.X) / 2, (start.Y + end.Y) / 2);
+        if (expectMidpointSide)
+            Assert(Math.Abs(label.Top + label.Height / 2 - midpoint.Y) < 1e-9 &&
+                   (Math.Abs(label.Right - midpoint.X) > 0 || Math.Abs(label.Left - midpoint.X) > 0),
+                $"{description} puts the label beside the segment midpoint");
+        else
+            Assert(Math.Abs(label.Left + label.Width / 2 - midpoint.X) < 1e-9 && label.Top < midpoint.Y,
+                $"{description} uses the nearest clear position above the midpoint when a side box cannot fit");
     }
 
     private static void Near(double actual, double expected, string message)
