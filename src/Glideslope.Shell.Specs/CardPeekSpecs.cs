@@ -26,6 +26,7 @@ internal static class CardPeekSpecs
         PlacementPinsWhenLargerThanTheWorkArea();
         SizeUsesRememberedFullSizeOrDefault();
         HeadlessCardSwallowsAPressAndHidesUndockWhilePeeking();
+        ShiftModifiersTrackPressAndRelease();
         TunnelHandlerSwallowsPressesOnGripsAndButtonsWhilePeeking();
         ControllerStartThenEndRestoresExactly();
         ControllerEndsForLayoutBusy();
@@ -203,6 +204,32 @@ internal static class CardPeekSpecs
         }
     }
 
+    private static void ShiftModifiersTrackPressAndRelease()
+    {
+        var window = new ProviderUsageCardWindow(ProviderIds.Claude, showMark: false, _ => { });
+        try
+        {
+            var observed = new List<KeyModifiers>();
+            var platform = new CardLayoutPlatform(new SinglePeekMonitorBackend());
+            var controller = new CardPeekController(platform, probe: null, new RecordingSink(), _ => null,
+                _ => CardMode.Full, () => false, new ManualTimeProvider(DateTimeOffset.UtcNow));
+            window.PeekInputObserved += (_, modifiers, _) =>
+            {
+                observed.Add(modifiers);
+                controller.OnInputObserved(modifiers.HasFlag(KeyModifiers.Control), modifiers.HasFlag(KeyModifiers.Shift), false);
+            };
+            window.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.LeftShift, Source = window });
+            window.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.RightShift, Source = window });
+            window.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyUpEvent, Key = Key.LeftShift, Source = window });
+            window.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyUpEvent, Key = Key.RightShift, Source = window });
+            Assert(observed.Count == 4 && observed.Take(3).All(modifiers => modifiers.HasFlag(KeyModifiers.Shift)) &&
+                   !observed[^1].HasFlag(KeyModifiers.Shift),
+                "both physical Shift keys keep the modifier active until the last key is released");
+            Assert(!controller.ShiftHeld, "focused key events clear projection state on the final Shift release");
+        }
+        finally { window.Close(); }
+    }
+
     /// <summary>
     /// Design doc §10.4 (unlike the direct-dispatch test above, this drives real
     /// Avalonia routed events (Avalonia.Headless's MouseDown/MouseUp) through the actual visual tree, so it is
@@ -361,6 +388,12 @@ internal static class CardPeekSpecs
         var controller = new CardPeekController(platform, probe, sink, Context, _ => CardMode.Mini, () => false, clock);
         controller.UpdateSetting(true);
         controller.OnHoverEntered("codex");
+        probe.ShiftHeld = true;
+        controller.OnInputObserved(ctrlHeld: false, shiftHeld: false, anyButtonHeld: false);
+        Assert(controller.ShiftHeld, "the global probe reports Shift even when input events do not");
+        probe.ShiftHeld = false;
+        controller.OnInputObserved(ctrlHeld: false, shiftHeld: true, anyButtonHeld: false);
+        Assert(!controller.ShiftHeld, "the global probe's released state clears a missed Shift key event");
         Assert(controller.NeedsPolling, "hovering a mini card with the setting on needs the Windows poll");
         Assert(sink.Events.Count(e => e.Code == "card_peek_probe") == 1, "card_peek_probe is logged once per hover");
 
@@ -661,6 +694,7 @@ internal static class CardPeekSpecs
     private sealed class FakePeekProbe : IPeekInputProbe
     {
         public bool CtrlHeld { get; set; }
+        public bool ShiftHeld { get; set; }
         public bool AnyButtonHeld { get; set; }
         public PhysicalPoint? Cursor { get; set; }
     }

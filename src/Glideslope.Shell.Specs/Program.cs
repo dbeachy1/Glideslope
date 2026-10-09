@@ -79,6 +79,12 @@ internal static class Program
             CardPresentationProof.CaptureHeaderScreenshots(Path.GetFullPath(args[1]));
             return 0;
         }
+        if (args.Length == 2 && string.Equals(args[0], "--usage-projection-proof", StringComparison.Ordinal))
+        {
+            StartWatchdog(TimeSpan.FromMinutes(2));
+            CardPresentationProof.CaptureUsageProjectionScreenshots(Path.GetFullPath(args[1]));
+            return 0;
+        }
         if (args.Length > 0 && string.Equals(args[0], "--language-settings-proof", StringComparison.Ordinal))
         {
             await RestartLifecycleProof.RunAsync().ConfigureAwait(false);

@@ -346,6 +346,7 @@ internal sealed partial class WindowCoordinator : IAsyncDisposable
         }
         _runningHidden = false;
         UpdateTaskbarRepresentative();
+        UpdatePeekProbeTimer();
     }
 
     private async Task RetryProviderAsync(string providerId)
@@ -561,6 +562,7 @@ internal sealed partial class WindowCoordinator : IAsyncDisposable
     private void OnWindowPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (_closing) return;
+        if (e.Property.Name == nameof(Window.WindowState)) UpdatePeekProbeTimer();
         // Window.Position is a plain CLR property in Avalonia 12.1.3, not an AvaloniaProperty, so it
         // never appears here (design doc §1); OnWindowPositionChanged (WindowCoordinator.Gestures.cs) is what
         // observes a move.

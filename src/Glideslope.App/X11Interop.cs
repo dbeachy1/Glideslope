@@ -77,11 +77,13 @@ internal sealed class X11Connection : IDisposable
 /// </summary>
 internal sealed class X11PeekInputProbe(X11Connection connection) : IPeekInputProbe
 {
+    private const uint ShiftMask = 1 << 0;
     private const uint ControlMask = 1 << 2;
     private const uint Button1Mask = 1 << 8;
     private const uint Button3Mask = 1 << 10;
 
     public bool CtrlHeld => connection.QueryPointer(out _, out var mask) && (mask & ControlMask) != 0;
+    public bool ShiftHeld => connection.QueryPointer(out _, out var mask) && (mask & ShiftMask) != 0;
 
     // The physical left and right buttons, as the Windows probe reads them (a peek ends on either going down).
     public bool AnyButtonHeld => connection.QueryPointer(out _, out var mask) && (mask & (Button1Mask | Button3Mask)) != 0;

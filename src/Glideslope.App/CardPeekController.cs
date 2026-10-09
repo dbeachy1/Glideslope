@@ -18,11 +18,12 @@ internal interface IPeekableCardWindow : ICardModeWindow, ICardLayoutWindow
 
 /// <summary>
 /// Supplies the Windows or X11 input probe to the coordinator. If no probe is available, card hover, pointer and
-/// key events drive the decision. With a probe, it alone reports Ctrl and button state.
+/// key events drive the decision. With a probe, it reports global Ctrl, Shift and button state.
 /// </summary>
 internal interface IPeekInputProbe
 {
     bool CtrlHeld { get; }
+    bool ShiftHeld { get; }
     bool AnyButtonHeld { get; }
 
     /// <summary>
@@ -40,18 +41,21 @@ internal interface IPeekInputProbe
 }
 
 /// <summary>
-/// 2.1 Ctrl peek (2.1 design §4.2): the Windows probe, polled by WindowCoordinator's timer while a mini card
-/// is hovered or a peek is active and the setting is on (WindowCoordinator owns the timer; this class only
-/// answers three questions on demand, so CardPeekController can be driven by a fake in specs with no timer at
-/// all). GetAsyncKeyState is the same interop <see cref="PrimaryPointerButtonProbe"/> uses.
+/// 2.1 Ctrl peek (2.1 design §4.2): the Windows probe, polled by WindowCoordinator's shared timer while peek
+/// input or a visible full-card projection needs it. GetAsyncKeyState is the same interop
+/// <see cref="PrimaryPointerButtonProbe"/> uses.
 /// </summary>
 internal sealed class WindowsPeekInputProbe : IPeekInputProbe
 {
     private const int VirtualKeyControl = 0x11;
+    private const int VirtualKeyLeftShift = 0xA0;
+    private const int VirtualKeyRightShift = 0xA1;
     private const int VirtualKeyLeftButton = 0x01;
     private const int VirtualKeyRightButton = 0x02;
 
     public bool CtrlHeld => (GetAsyncKeyState(VirtualKeyControl) & 0x8000) != 0;
+    public bool ShiftHeld => (GetAsyncKeyState(VirtualKeyLeftShift) & 0x8000) != 0 ||
+                             (GetAsyncKeyState(VirtualKeyRightShift) & 0x8000) != 0;
 
     // 2.1 design §4.2: "the primary and secondary buttons (GetAsyncKeyState, the same interop as
     // PrimaryPointerButtonProbe)". Unlike PrimaryPointerButtonProbe (swap-aware: it reads whichever button the
@@ -112,6 +116,7 @@ internal sealed class CardPeekController
     private bool _settingOn;
     private string? _hoveredCard;
     private bool _ctrlHeld;
+    private bool _shiftHeld;
     private bool _anyButtonHeld;
     private PeekState? _peek;
     private bool _probeLoggedForHover;
@@ -142,6 +147,7 @@ internal sealed class CardPeekController
 
     /// <summary>The card currently shown full by a peek, or null.</summary>
     internal string? PeekingCard => _peek?.ProviderId;
+    internal bool ShiftHeld => _shiftHeld;
 
     /// <summary>2.1 design §5.4: the peeking card's pre-peek rect, for CaptureCardGeometry to report in place
     /// of its live (full-size) one. Null exactly when <see cref="PeekingCard"/> is null.</summary>
@@ -192,13 +198,18 @@ internal sealed class CardPeekController
 
     /// <summary>Updates input state after a card pointer or key event.</summary>
     internal void OnInputObserved(bool ctrlHeld, bool anyButtonHeld)
+        => OnInputObserved(ctrlHeld, false, anyButtonHeld);
+
+    internal void OnInputObserved(bool ctrlHeld, bool shiftHeld, bool anyButtonHeld)
     {
         // The probe is authoritative for current state. Preserve a button-down event so a press is handled immediately.
         if (_probe is not null)
         {
             ctrlHeld = _probe.CtrlHeld;
+            shiftHeld = _probe.ShiftHeld;
             anyButtonHeld = anyButtonHeld || _probe.AnyButtonHeld;
         }
+        _shiftHeld = shiftHeld;
         UpdateCtrlHeld(ctrlHeld);
         _anyButtonHeld = anyButtonHeld;
         Act(CardPeekDecision.Decide(BuildInputs()));
@@ -253,6 +264,7 @@ internal sealed class CardPeekController
         }
 
         var ctrlHeld = _probe.CtrlHeld;
+        _shiftHeld = _probe.ShiftHeld;
         var anyButtonHeld = _probe.AnyButtonHeld;
         var firstPollOfHover = !_pollLoggedForHover;
         _pollLoggedForHover = true;

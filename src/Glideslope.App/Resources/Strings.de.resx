@@ -76,7 +76,7 @@
   <data name="Card_AppNameVersion" xml:space="preserve"><value>Glideslope {0}</value><comment>{0} = version number, for example 1.1.0. "Glideslope" is the product name.</comment></data>
   <data name="Card_MinimizeTooltip" xml:space="preserve"><value>Alle Karten minimieren</value><comment>Tooltip for the header button that minimizes every card together.</comment></data>
   <data name="Card_CloseTooltip" xml:space="preserve"><value>{0}-Karte schließen</value><comment>{0} = provider name (Codex, Claude or Gemini).</comment></data>
-  <data name="Card_FooterNoSynthetic" xml:space="preserve"><value>Das Tempo richtet sich nach dem vom Anbieter gemeldeten Rücksetzplan. Die Diagrammlinien verwenden ausschließlich gespeicherte Messwerte.</value></data>
+  <data name="Card_FooterNoSynthetic" xml:space="preserve"><value>Das Tempo richtet sich nach dem vom Anbieter gemeldeten Rücksetzplan. Die blauen Diagrammlinien verwenden ausschließlich gespeicherte Messwerte.</value></data>
   <data name="Card_WeeklyRemaining" xml:space="preserve"><value>verbleibendes Wochenkontingent</value></data>
   <data name="Card_CreditExpires" xml:space="preserve"><value>NUTZUNGSZURÜCKSETZUNG LÄUFT AB</value></data>
   <data name="Card_CreditExpiration" xml:space="preserve"><value>{0} {1} ({2})</value><comment>{0} = uppercase weekday (Card_CreditWeekdayPattern), {1} = date (Card_CreditExpirationDatePattern), {2} = Card_CreditExpiresIn or Card_CreditExpiresToday. Example: THU Oct 22 (in 26 days).</comment></data>
@@ -206,6 +206,8 @@
   <data name="Card_SchemaChangedDetails" xml:space="preserve"><value>Die Daten des Anbieters konnten nicht sicher gelesen werden. Melde dich erneut beim Anbieter an und versuche es erneut.</value></data>
   <data name="Card_ProviderUnavailableDetails" xml:space="preserve"><value>Live-Daten dieses Anbieters sind noch nicht verbunden.</value></data>
   <data name="Card_ChartSampleTooltip" xml:space="preserve"><value>Gemessen {0}: {1} verbleibend · Alter des Messwerts {2}</value><comment>{0} = date and time of the reading (Card_DateTimeFormat), {1} = percent remaining, {2} = an age phrase (Card_AgeDays, Card_AgeHours or Card_AgeMinutes).</comment></data>
+  <data name="Card_ProjectionRunOut" xml:space="preserve"><value>Voraussichtlich aufgebraucht {0} · {1}</value><comment>{0} = localized weekday, date, and time; {1} = a localized decimal number of days or hours remaining.</comment></data>
+  <data name="Card_ProjectionAfterReset" xml:space="preserve"><value>Bei aktuellem Tempo reicht das Kontingent {0} über die Zurücksetzung hinaus</value><comment>{0} = localized decimal number of hours after the provider-reported weekly reset.</comment></data>
   <data name="Card_AgeDays_One" xml:space="preserve"><value>{0} Tag</value><comment>{0} = whole number of days.</comment></data>
   <data name="Card_AgeDays_Other" xml:space="preserve"><value>{0} Tage</value><comment>{0} = whole number of days.</comment></data>
   <data name="Card_AgeHours_One" xml:space="preserve"><value>{0} Stunde</value><comment>{0} = hours with one decimal.</comment></data>

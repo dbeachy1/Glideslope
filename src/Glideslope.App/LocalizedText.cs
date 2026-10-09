@@ -293,6 +293,15 @@ internal static class LocalizedText
     public static string ChartEmptyState(bool unavailable) => unavailable ? CardHistoryUnavailable : CardNoSamplesYet;
     public static string ChartSampleTooltip(DateTime localTime, double remaining, TimeSpan age) =>
         Format("Card_ChartSampleTooltip", ResetMoment(localTime), Percentage(remaining), FormatAge(age));
+    public static string ChartProjectionRunOut(DateTimeOffset runOut, TimeSpan left) =>
+        Format("Card_ProjectionRunOut", ResetMoment(runOut.ToLocalTime().LocalDateTime), ProjectionDuration(left));
+    public static string ChartProjectionAfterReset(TimeSpan afterReset) =>
+        Format("Card_ProjectionAfterReset", Plural("Card_AgeHours", Math.Round(afterReset.TotalHours, 1), 1,
+            Number(Math.Round(afterReset.TotalHours, 1), 1)));
+
+    private static string ProjectionDuration(TimeSpan left) => left.TotalDays >= 1
+        ? Plural("Card_AgeDays", Math.Round(left.TotalDays, 1), 1, Number(Math.Round(left.TotalDays, 1), 1))
+        : Plural("Card_AgeHours", Math.Round(left.TotalHours, 1), 1, Number(Math.Round(left.TotalHours, 1), 1));
 
     public static string PaceSummary(PaceResult pace, TimeSpan? duration, bool compact = false, double? remainingFraction = null)
     {

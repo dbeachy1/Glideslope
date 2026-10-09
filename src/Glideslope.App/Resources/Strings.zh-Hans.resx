@@ -210,7 +210,7 @@
     <comment>{0} = provider name (Codex, Claude or Gemini).</comment>
   </data>
   <data name="Card_FooterNoSynthetic" xml:space="preserve">
-    <value>节奏依据提供方报告的重置时间表。图表线条仅使用已记录的读数。</value>
+    <value>节奏依据提供方报告的重置时间表。图表中的蓝色线条仅使用已记录的读数。</value>
   </data>
   <data name="Card_WeeklyRemaining" xml:space="preserve">
     <value>每周剩余</value>
@@ -660,6 +660,14 @@
   <data name="Card_ChartSampleTooltip" xml:space="preserve">
     <value>观测时间 {0}：剩余 {1} · 距采样已过 {2}</value>
     <comment>{0} = date and time of the reading (Card_DateTimeFormat), {1} = percent remaining, {2} = an age phrase (Card_AgeDays, Card_AgeHours or Card_AgeMinutes).</comment>
+  </data>
+  <data name="Card_ProjectionRunOut" xml:space="preserve">
+    <value>预计耗尽时间：{0} · {1}</value>
+    <comment>{0} = localized weekday, date, and time; {1} = a localized decimal number of days or hours remaining.</comment>
+  </data>
+  <data name="Card_ProjectionAfterReset" xml:space="preserve">
+    <value>按当前速度，重置后还能维持 {0}</value>
+    <comment>{0} = localized decimal number of hours after the provider-reported weekly reset.</comment>
   </data>
   <data name="Card_AgeDays_One" xml:space="preserve">
     <value>{0} 天</value>

@@ -165,6 +165,7 @@ internal sealed partial class ProviderUsageCardWindow : Window, ICardLayoutWindo
     public event EventHandler? MinimizeRequested;
     // Track each Ctrl key so releasing one does not clear the other.
     private readonly HashSet<Key> _ctrlKeysDown = [];
+    private readonly HashSet<Key> _shiftKeysDown = [];
 
     public ProviderUsageCardWindow(string providerId, bool showMark, Action<string> retryRequested, IDiagnosticSink? diagnostics = null)
     {
@@ -565,6 +566,11 @@ internal sealed partial class ProviderUsageCardWindow : Window, ICardLayoutWindo
                 _ctrlKeysDown.Add(e.Key);
                 PeekInputObserved?.Invoke(this, e.KeyModifiers | KeyModifiers.Control, false);
             }
+            if (e.Key is Key.LeftShift or Key.RightShift)
+            {
+                _shiftKeysDown.Add(e.Key);
+                PeekInputObserved?.Invoke(this, e.KeyModifiers | KeyModifiers.Shift, false);
+            }
         };
         KeyUp += (_, e) =>
         {
@@ -574,9 +580,21 @@ internal sealed partial class ProviderUsageCardWindow : Window, ICardLayoutWindo
                 var modifiers = _ctrlKeysDown.Count > 0 ? e.KeyModifiers | KeyModifiers.Control : e.KeyModifiers & ~KeyModifiers.Control;
                 PeekInputObserved?.Invoke(this, modifiers, false);
             }
+            if (e.Key is Key.LeftShift or Key.RightShift)
+            {
+                _shiftKeysDown.Remove(e.Key);
+                var modifiers = _shiftKeysDown.Count > 0 ? e.KeyModifiers | KeyModifiers.Shift : e.KeyModifiers & ~KeyModifiers.Shift;
+                PeekInputObserved?.Invoke(this, modifiers, false);
+            }
         };
         // Clear key state when focus leaves because this window may not receive the corresponding KeyUp.
-        Deactivated += (_, _) => _ctrlKeysDown.Clear();
+        Deactivated += (_, _) =>
+        {
+            var hadModifier = _ctrlKeysDown.Count > 0 || _shiftKeysDown.Count > 0;
+            _ctrlKeysDown.Clear();
+            _shiftKeysDown.Clear();
+            if (hadModifier) PeekInputObserved?.Invoke(this, KeyModifiers.None, false);
+        };
         Closing += OnClosing;
         ActualThemeVariantChanged += (_, _) => ApplyTheme();
         Opened += (_, _) => ApplyTheme();

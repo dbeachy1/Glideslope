@@ -34,6 +34,7 @@ internal static partial class CardPresentationProof
         // Pin English wording and formats so the assertions are independent of the machine's culture.
         using var english = LocalizedText.OverrideForSpecs(CultureInfo.GetCultureInfo("en-US"), CultureInfo.GetCultureInfo("en-US"));
         AssertWidestEnglishResetLineFits();
+        AssertUsageProjectionPresentation();
 
         var now = DateTimeOffset.UtcNow;
         var window = new ProviderUsageCardWindow(ProviderIds.Claude, showMark: false, _ => { });

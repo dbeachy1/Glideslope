@@ -1,5 +1,6 @@
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Glideslope.Core;
 using Glideslope.Domain;
 
 namespace Glideslope.App;
@@ -46,6 +47,7 @@ internal sealed partial class ProviderUsageCardWindow
         if (_viewedHistoryWindow is not null) return;   // window design §15.2 / §17 rule 4: a past week on view is kept
         _chart.SamplingInterval = samplingInterval;
         _chart.SetSeries(window, samples);
+        RefreshUsageProjection();
     }
 
     /// <summary>The live path's history for the current weekly window. It is ignored
@@ -66,6 +68,7 @@ internal sealed partial class ProviderUsageCardWindow
         if (_viewedHistoryWindow is not null) return false;
         _chart.SamplingInterval = samplingInterval;
         _chart.SetSeries(window, samples, historyAvailable);
+        RefreshUsageProjection();
         return true;
     }
 
@@ -88,6 +91,7 @@ internal sealed partial class ProviderUsageCardWindow
         _viewedHistoryWindow = window is not null && window != _currentHistoryWindow ? window : null;
         _chart.SamplingInterval = samplingInterval;
         _chart.SetSeries(window, samples, historyAvailable);
+        RefreshUsageProjection();
         RefreshWeekButtons();
         ApplyStatusLine();
     }
@@ -109,4 +113,7 @@ internal sealed partial class ProviderUsageCardWindow
     internal int HistoryBrowsePendingOffset { get; set; }
     /// <summary>The card's current weekly window identity, from the last state's snapshot (window design §15.3).</summary>
     internal UsageWindowIdentity? CurrentHistoryWindow => _currentHistoryWindow;
+
+    internal void SetUsageProjectionHeld(bool held) => _chart.SetProjectionHeld(held && IsVisible &&
+        WindowState != WindowState.Minimized && (Mode == CardMode.Full || IsPeeking));
 }

@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
 using Glideslope.Core;
@@ -7,8 +8,8 @@ namespace Glideslope.App;
 // Connects card hover/input events and the input probe to CardPeekController.
 internal sealed partial class WindowCoordinator
 {
-    // Global input is probed on Windows and through X11 on Linux. Without a probe, card events provide input.
-    // Poll only while a mini card is hovered or a peek is active and the setting is enabled.
+    // Global input is probed on Windows and through X11 on Linux. Without a probe, focused card events provide input.
+    // The same timer handles Ctrl peek and visible full-card Shift projections.
     private readonly IPeekInputProbe? _peekProbe;
     // Shared by the Linux input probe and window raiser; null when no X connection is available.
     private readonly X11Connection? _x11;
@@ -50,7 +51,12 @@ internal sealed partial class WindowCoordinator
         });
 
     private void OnCardPeekInputObserved(ProviderUsageCardWindow window, KeyModifiers modifiers, bool anyButton) =>
-        InvokePeekController(() => _peekController.OnInputObserved(modifiers.HasFlag(KeyModifiers.Control), anyButton));
+        InvokePeekController(() =>
+        {
+            _peekController.OnInputObserved(modifiers.HasFlag(KeyModifiers.Control),
+                modifiers.HasFlag(KeyModifiers.Shift), anyButton);
+            UpdateProjectionOverlays();
+        });
 
     /// <summary>2.1 design §5.4: called at every layout-changing entry point, before that operation proceeds
     /// (InterruptActiveGesture, the card-size settle, closing and exit). A no-op when nothing is peeking.</summary>
@@ -77,18 +83,23 @@ internal sealed partial class WindowCoordinator
             AppliedScale(CardMode.Full), AppliedScale(CardMode.Mini));
     }
 
-    /// <summary>2.1 design §4.2: the timer runs only while a mini card is hovered, or a peek is active, and the
-    /// setting is on; it stops the moment none of that holds. Called after every event that could change
-    /// CardPeekController.NeedsPolling.</summary>
+    /// <summary>2.1 design §4.2: the shared timer runs while peek input needs polling or a full card is visible
+    /// for Shift projections. Called after window, mode, and peek transitions.</summary>
     private void UpdatePeekProbeTimer()
     {
         if (_peekProbe is null) return;
-        if (_peekController.NeedsPolling)
+        var projectionPolling = _windows.Values.Any(window => window.IsVisible && window.WindowState != WindowState.Minimized &&
+            (window.Mode == CardMode.Full || window.IsPeeking));
+        if (!_closing && (_peekController.NeedsPolling || projectionPolling))
         {
             if (_peekProbeTimer is null)
             {
                 _peekProbeTimer = new DispatcherTimer { Interval = PeekProbePeriod };
-                _peekProbeTimer.Tick += (_, _) => InvokePeekController(_peekController.Poll);
+                _peekProbeTimer.Tick += (_, _) =>
+                {
+                    InvokePeekController(_peekController.Poll);
+                    UpdateProjectionOverlays();
+                };
             }
             if (!_peekProbeTimer.IsEnabled)
             {
@@ -100,7 +111,21 @@ internal sealed partial class WindowCoordinator
         else if (_peekProbeTimer is { IsEnabled: true })
         {
             _peekProbeTimer.Stop();
+            ClearProjectionOverlays();
             _diagnostics.Record(new DiagnosticEvent("card_peek_poll", Status: "state=stopped"));
         }
+    }
+
+    private void UpdateProjectionOverlays()
+    {
+        var shiftHeld = _peekProbe?.ShiftHeld ?? _peekController.ShiftHeld;
+        foreach (var window in _windows.Values)
+            window.SetUsageProjectionHeld(shiftHeld);
+    }
+
+    private void ClearProjectionOverlays()
+    {
+        foreach (var window in _windows.Values)
+            window.SetUsageProjectionHeld(false);
     }
 }

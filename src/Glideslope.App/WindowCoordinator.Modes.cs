@@ -60,6 +60,7 @@ internal sealed partial class WindowCoordinator
         finally { _applyingLayout = false; }
 
         RefreshCardGroupState(geometry with { Rects = result.ProposedRects });
+        UpdatePeekProbeTimer();
 
         var sample = changes.Keys.First();
         var sampleCard = result.ProposedSettings!.Cards.First(card => card.ProviderId == sample);

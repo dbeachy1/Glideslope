@@ -9,6 +9,7 @@ internal static class Program
         ProviderContractsAreImmutableAndTyped();
         PaceMathAndBoundariesAreDeterministic();
         ChartSelectionUsesOnlyMatchingRealSamples();
+        UsageProjectionUsesWindowStartAndObservationTime();
         CreditInventoryUsesAuthoritativeCountAndSafeDetails();
         WindowIdentityIsStabilizedBeforeUse();
         Console.WriteLine("Glideslope domain specs passed.");
@@ -199,6 +200,43 @@ internal static class Program
         var accountChanged = new UsageWindowIdentity("scope-b", ProviderIds.Codex, "weekly", start, reset, "weekly-limit");
         Assert(window != accountChanged, "matching reset instants cannot bridge two account scopes");
         Throws<ArgumentOutOfRangeException>(() => Observation(window, start - TimeSpan.FromTicks(1), 0.4));
+    }
+
+    private static void UsageProjectionUsesWindowStartAndObservationTime()
+    {
+        var start = Utc(2025, 1, 1);
+        var reset = start + Hours(168);
+        var window = new UsageWindowIdentity("scope-a", ProviderIds.Codex, "weekly", start, reset, "weekly-limit");
+        var sample = Observation(window, start + Hours(24), 0.75);
+        var now = sample.ObservedAtUtc + Hours(2);
+        var result = UsageProjectionCalculator.Calculate(window, sample, SnapshotFreshness.Fresh, now);
+        Assert(result is not null, "a current window with observed usage has a finite projection");
+        Near((result!.RunsOutAtUtc - sample.ObservedAtUtc).TotalHours, 72, "runout uses cumulative usage divided by elapsed time from window start");
+        Assert(result.RunsOutAtUtc > now, "projection anchors on sample observation time rather than the later render time");
+
+        var beyondReset = UsageProjectionCalculator.Calculate(window, Observation(window, start + Hours(24), 0.9), SnapshotFreshness.Fresh, now);
+        Assert(beyondReset is not null && beyondReset.RunsOutAtUtc > reset,
+            "projection retains its true runout time when it falls beyond the reset");
+        Near((beyondReset!.RunsOutAtUtc - reset).TotalHours, 72, "the beyond-reset label interval is measured after the provider reset");
+        Assert(UsageProjectionCalculator.Calculate(window, Observation(window, start + Hours(24), 1), SnapshotFreshness.Fresh, now) is null,
+            "no consumption gives no runout estimate");
+        Assert(UsageProjectionCalculator.Calculate(window, Observation(window, start + Hours(24), 0), SnapshotFreshness.Fresh, now) is null,
+            "an already exhausted bucket gives no synthetic future line");
+        Assert(UsageProjectionCalculator.Calculate(window, Observation(window, start + Hours(24), 0.25), SnapshotFreshness.Fresh,
+            start + Hours(24) + Hours(9)) is null,
+            "a stale-looking estimate that should already have run out is suppressed when usage remains");
+        Assert(UsageProjectionCalculator.Calculate(window, sample, SnapshotFreshness.Stale, now) is null,
+            "stale provider state suppresses projections");
+        Assert(UsageProjectionCalculator.Calculate(window, sample, SnapshotFreshness.Fresh, reset) is null,
+            "a window at reset is no longer projected");
+        Assert(UsageProjectionCalculator.Calculate(window, sample, SnapshotFreshness.Fresh, start - TimeSpan.FromTicks(1)) is null,
+            "a not-yet-started window is suppressed");
+        var otherWindow = new UsageWindowIdentity("scope-b", ProviderIds.Codex, "weekly", start, reset, "weekly-limit");
+        Assert(UsageProjectionCalculator.Calculate(window, Observation(otherWindow, start + Hours(24), 0.75), SnapshotFreshness.Fresh, now) is null,
+            "an observation from another account/window cannot be projected");
+        var tinyUsage = Observation(window, start + Hours(1), 0.999999999999);
+        Assert(UsageProjectionCalculator.Calculate(window, tinyUsage, SnapshotFreshness.Fresh, now) is null,
+            "a projection beyond DateTimeOffset's representable range is suppressed");
     }
 
     private static void CreditInventoryUsesAuthoritativeCountAndSafeDetails()

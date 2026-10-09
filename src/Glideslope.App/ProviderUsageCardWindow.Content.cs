@@ -136,6 +136,7 @@ internal sealed partial class ProviderUsageCardWindow
             if (fableStarted is { } started)
                 _diagnostics.Record(new DiagnosticEvent("card_fable_window", _providerId, started ? "started" : "not_started"));
         }
+        RefreshUsageProjection();
     }
 
     /// <summary>Window design §15.6: the Fable heading shows its reset only when it differs from the weekly
@@ -184,4 +185,19 @@ internal sealed partial class ProviderUsageCardWindow
     private string FormatReset(QuotaBucket bucket) => bucket.ResetAtUtc is { } reset
         ? LocalizedText.CardResetAt(reset, DateTimeOffset.UtcNow)
         : LocalizedText.CardResetUnavailable;
+
+    private void RefreshUsageProjection()
+    {
+        var freshness = _state?.Freshness ?? SnapshotFreshness.RestoredHistorical;
+        UsageProjection? projection = null;
+        if (_viewedHistoryWindow is null && freshness == SnapshotFreshness.Fresh && _state?.Status == ProviderStatus.Ready &&
+            _state.Snapshot is { } snapshot && _currentHistoryWindow is { } currentWindow &&
+            snapshot.Buckets.FirstOrDefault(bucket => bucket.Role == QuotaBucketRole.Weekly) is { } weekly &&
+            snapshot.ObservedAtUtc >= currentWindow.NominalStartUtc && snapshot.ObservedAtUtc < currentWindow.ResetAtUtc)
+        {
+            var currentObservation = new UsageObservation(currentWindow, snapshot.ObservedAtUtc, weekly.RemainingFraction);
+            projection = UsageProjectionCalculator.Calculate(currentWindow, currentObservation, freshness, DateTimeOffset.UtcNow);
+        }
+        _chart.SetProjection(projection, freshness);
+    }
 }

@@ -210,7 +210,7 @@
     <comment>{0} = provider name (Codex, Claude or Gemini).</comment>
   </data>
   <data name="Card_FooterNoSynthetic" xml:space="preserve">
-    <value>Laju mengikuti jadwal reset yang dilaporkan penyedia. Garis grafik hanya menggunakan pembacaan yang tercatat.</value>
+    <value>Laju mengikuti jadwal reset yang dilaporkan penyedia. Garis biru pada grafik hanya menggunakan pembacaan yang tercatat.</value>
   </data>
   <data name="Card_WeeklyRemaining" xml:space="preserve">
     <value>sisa mingguan</value>
@@ -660,6 +660,14 @@
   <data name="Card_ChartSampleTooltip" xml:space="preserve">
     <value>Teramati {0}: {1} tersisa · usia sampel {2}</value>
     <comment>{0} = date and time of the reading (Card_DateTimeFormat), {1} = percent remaining, {2} = an age phrase (Card_AgeDays, Card_AgeHours or Card_AgeMinutes).</comment>
+  </data>
+  <data name="Card_ProjectionRunOut" xml:space="preserve">
+    <value>Perkiraan habis {0} · {1}</value>
+    <comment>{0} = localized weekday, date, and time; {1} = a localized decimal number of days or hours remaining.</comment>
+  </data>
+  <data name="Card_ProjectionAfterReset" xml:space="preserve">
+    <value>Dengan laju saat ini, kuota bertahan {0} setelah reset</value>
+    <comment>{0} = localized decimal number of hours after the provider-reported weekly reset.</comment>
   </data>
   <data name="Card_AgeDays_One" xml:space="preserve">
     <value>{0} hari</value>

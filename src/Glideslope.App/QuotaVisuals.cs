@@ -87,11 +87,14 @@ internal static class PaceColors
     };
 }
 
-/// <summary>Plots only observations selected for the exact provider-reported weekly window.</summary>
+/// <summary>Plots selected observations for the provider-reported week and an optional average-rate projection.</summary>
 internal sealed class WeeklyHistoryChart : Control
 {
     private UsageWindowIdentity? _window;
     private ChartSeries _series = new([], []);
+    private UsageProjection? _projection;
+    private SnapshotFreshness _projectionFreshness = SnapshotFreshness.RestoredHistorical;
+    private bool _projectionHeld;
     private Point? _pointer;
     private bool _historyAvailable = true;
 
@@ -105,6 +108,8 @@ internal sealed class WeeklyHistoryChart : Control
 
     public bool IsDark { get; set; } = true;
     public TimeSpan SamplingInterval { get; set; } = TimeSpan.FromMinutes(5);
+    internal bool HasProjection => _projection is not null;
+    internal bool IsProjectionHeld => _projectionHeld;
 
     public WeeklyHistoryChart()
     {
@@ -119,6 +124,20 @@ internal sealed class WeeklyHistoryChart : Control
         _series = window is null
             ? new ChartSeries([], [])
             : ChartSeriesSelector.Select(samples, window, SamplingInterval, DateTimeOffset.UtcNow);
+        InvalidateVisual();
+    }
+
+    public void SetProjection(UsageProjection? projection, SnapshotFreshness freshness)
+    {
+        _projection = projection;
+        _projectionFreshness = freshness;
+        InvalidateVisual();
+    }
+
+    public void SetProjectionHeld(bool held)
+    {
+        if (_projectionHeld == held) return;
+        _projectionHeld = held;
         InvalidateVisual();
     }
 
@@ -189,6 +208,7 @@ internal sealed class WeeklyHistoryChart : Control
                 var fraction = (sample.ObservedAtUtc - nominalStart).Ticks / (double)durationTicks;
                 context.DrawEllipse(markerFill, actualPen, At(fraction, sample.RemainingFraction), MarkerRadius, MarkerRadius);
             }
+
         }
 
         if (_pointer is { } pointer && pointer.X >= left && pointer.X <= left + plotWidth)
@@ -208,6 +228,44 @@ internal sealed class WeeklyHistoryChart : Control
         if (_series.Samples.IsEmpty)
             DrawText(context, LocalizedText.ChartEmptyState(_window is not null && !_historyAvailable), left + 4,
                 top + plotHeight / 2 - 7, IsDark ? "#94A1B7" : "#596B80", EmptyStateFontSize);
+
+        if (_window is { } projectionWindow && start is { } projectionStart && reset is { } projectionReset &&
+            _projectionHeld && _projectionFreshness == SnapshotFreshness.Fresh && _projection is { } projection &&
+            projection.RunsOutAtUtc > projectionStart)
+        {
+            var durationTicks = (projectionReset - projectionStart).Ticks;
+            var endAt = projection.RunsOutAtUtc <= projectionReset ? projection.RunsOutAtUtc : projectionReset;
+            var endFraction = (endAt - projectionStart).Ticks / (double)durationTicks;
+            // The projection uses the same weekly burn rate from reset start through the latest real sample.
+            var band = ProjectionBand(projection, projectionWindow);
+            var projectionColor = PaceColors.For(IsDark, band);
+            var projectionPen = new Pen(new SolidColorBrush(Color.Parse(projectionColor)), TraceThickness,
+                dashStyle: DashStyle.Dot, lineCap: PenLineCap.Round);
+            var startPoint = At(0, 1);
+            var endPoint = At(endFraction, RemainingAt(projectionWindow, projection, endAt));
+            context.DrawLine(projectionPen, startPoint, endPoint);
+
+            var label = ProjectionLabel(projection, projectionReset);
+            var text = MakeText(label, projectionColor, EmptyStateFontSize);
+            var labelMaxWidth = plotWidth / 2;
+            text.MaxTextWidth = labelMaxWidth;
+            var labelWidth = Math.Min(text.Width, labelMaxWidth);
+            var lineMidpointX = (startPoint.X + endPoint.X) / 2;
+            var labelX = Math.Clamp(lineMidpointX - labelWidth / 2, left, left + plotWidth - labelWidth);
+            double LineY(double x) => startPoint.Y + (endPoint.Y - startPoint.Y) *
+                Math.Clamp((x - startPoint.X) / Math.Max(1, endPoint.X - startPoint.X), 0, 1);
+            var aboveLine = LineY(labelX) - text.Height - 4;
+            var belowLine = LineY(labelX + labelWidth) + 4;
+            var labelY = aboveLine >= top
+                ? Math.Min(aboveLine, top + plotHeight - text.Height)
+                : Math.Clamp(belowLine, top, Math.Max(top, top + plotHeight - text.Height));
+            const double labelPadding = 3;
+            var plotBackground = new SolidColorBrush(Color.Parse(IsDark ? "#171D29" : "#F6F8FC"));
+            context.DrawRectangle(plotBackground, null,
+                new Rect(labelX - labelPadding, labelY - labelPadding,
+                    labelWidth + labelPadding * 2, text.Height + labelPadding * 2));
+            context.DrawText(text, new Point(labelX, labelY));
+        }
     }
 
     private void OnPointerMoved(object? sender, PointerEventArgs e)
@@ -218,9 +276,39 @@ internal sealed class WeeklyHistoryChart : Control
 
     private static void DrawText(DrawingContext context, string value, double x, double y, string color, double size)
     {
-        // Use the active UI culture and platform font, matching the card's TextBlocks.
-        var text = new FormattedText(value, LocalizedText.UiCulture,
-            FlowDirection.LeftToRight, new Typeface(FontFamily.Default), size, new SolidColorBrush(Color.Parse(color)));
+        var text = MakeText(value, color, size);
         context.DrawText(text, new Point(x, y));
+    }
+
+    private static string ProjectionLabel(UsageProjection projection, DateTimeOffset reset)
+    {
+        return projection.RunsOutAtUtc >= reset
+            ? LocalizedText.ChartProjectionAfterReset(projection.RunsOutAtUtc - reset)
+            : LocalizedText.ChartProjectionRunOut(projection.RunsOutAtUtc, projection.RunsOutAtUtc - DateTimeOffset.Now);
+    }
+
+    internal static PaceBand ProjectionBand(UsageProjection projection, UsageWindowIdentity window)
+    {
+        ArgumentNullException.ThrowIfNull(projection);
+        ArgumentNullException.ThrowIfNull(window);
+        if (projection.RunsOutAtUtc >= window.ResetAtUtc) return PaceBand.StrongCushion;
+        var shortfallFraction = (projection.RunsOutAtUtc - window.ResetAtUtc).Ticks /
+                                (double)(window.ResetAtUtc - window.NominalStartUtc).Ticks;
+        var band = PaceCalculator.BandFor(shortfallFraction, window.ResetAtUtc - window.NominalStartUtc);
+        return band == PaceBand.OnPace ? PaceBand.SlightlyOver : band;
+    }
+
+    internal static double RemainingAt(UsageWindowIdentity window, UsageProjection projection, DateTimeOffset instant)
+    {
+        var runOutTicks = (projection.RunsOutAtUtc - window.NominalStartUtc).Ticks;
+        if (runOutTicks <= 0) return 0;
+        return Math.Clamp(1 - (instant - window.NominalStartUtc).Ticks / (double)runOutTicks, 0, 1);
+    }
+
+    private static FormattedText MakeText(string value, string color, double size)
+    {
+        // Use the active UI culture and platform font, matching the card's TextBlocks.
+        return new FormattedText(value, LocalizedText.UiCulture,
+            FlowDirection.LeftToRight, new Typeface(FontFamily.Default), size, new SolidColorBrush(Color.Parse(color)));
     }
 }

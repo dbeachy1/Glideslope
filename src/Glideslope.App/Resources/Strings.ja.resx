@@ -210,7 +210,7 @@
     <comment>{0} = provider name (Codex, Claude or Gemini).</comment>
   </data>
   <data name="Card_FooterNoSynthetic" xml:space="preserve">
-    <value>ペースはプロバイダーが報告するリセット予定に基づきます。グラフには記録された読み取り値のみを表示します。</value>
+    <value>ペースはプロバイダーが報告するリセット予定に基づきます。グラフの青い線には、記録された読み取り値のみを使用します。</value>
   </data>
   <data name="Card_WeeklyRemaining" xml:space="preserve">
     <value>週間の残り</value>
@@ -660,6 +660,14 @@
   <data name="Card_ChartSampleTooltip" xml:space="preserve">
     <value>{0}の観測値：残り{1} · サンプルの経過時間 {2}</value>
     <comment>{0} = date and time of the reading (Card_DateTimeFormat), {1} = percent remaining, {2} = an age phrase (Card_AgeDays, Card_AgeHours or Card_AgeMinutes).</comment>
+  </data>
+  <data name="Card_ProjectionRunOut" xml:space="preserve">
+    <value>予測枯渇時刻：{0} · {1}</value>
+    <comment>{0} = localized weekday, date, and time; {1} = a localized decimal number of days or hours remaining.</comment>
+  </data>
+  <data name="Card_ProjectionAfterReset" xml:space="preserve">
+    <value>現在のペースでは、リセット後も{0}持ちます</value>
+    <comment>{0} = localized decimal number of hours after the provider-reported weekly reset.</comment>
   </data>
   <data name="Card_AgeDays_One" xml:space="preserve">
     <value>{0}日</value>

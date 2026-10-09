@@ -210,7 +210,7 @@
     <comment>{0} = provider name (Codex, Claude or Gemini).</comment>
   </data>
   <data name="Card_FooterNoSynthetic" xml:space="preserve">
-    <value>Темп рассчитывается по расписанию сброса поставщика. Линии графика используют только записанные показания.</value>
+    <value>Темп рассчитывается по расписанию сброса поставщика. Синие линии графика используют только записанные показания.</value>
   </data>
   <data name="Card_WeeklyRemaining" xml:space="preserve">
     <value>остаток за неделю</value>
@@ -660,6 +660,14 @@
   <data name="Card_ChartSampleTooltip" xml:space="preserve">
     <value>Наблюдение {0}: осталось {1} · возраст измерения {2}</value>
     <comment>{0} = date and time of the reading (Card_DateTimeFormat), {1} = percent remaining, {2} = an age phrase (Card_AgeDays, Card_AgeHours or Card_AgeMinutes).</comment>
+  </data>
+  <data name="Card_ProjectionRunOut" xml:space="preserve">
+    <value>По прогнозу, запас закончится {0} · {1}</value>
+    <comment>{0} = localized weekday, date, and time; {1} = a localized decimal number of days or hours remaining.</comment>
+  </data>
+  <data name="Card_ProjectionAfterReset" xml:space="preserve">
+    <value>При текущем темпе запаса хватит ещё на {0} после сброса</value>
+    <comment>{0} = localized decimal number of hours after the provider-reported weekly reset.</comment>
   </data>
   <data name="Card_AgeDays_One" xml:space="preserve">
     <value>{0} день</value>
