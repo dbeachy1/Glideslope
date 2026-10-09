@@ -68,6 +68,7 @@
     <value>迷你卡片大小</value>
     <comment>Settings row label beside a slider from 70 % to 150 % that scales mini cards, directly under Card size.</comment>
   </data>
+  <data name="Settings_ShiftProjectionNote" xml:space="preserve"><value>提示：完整卡片显示时按住 Shift，可查看本周剩余时间的使用量预测。</value><comment>Informational note directly above Start in mini mode. Holding Shift while a full card is visible shows projected usage through the end of the current week.</comment></data>
   <data name="Settings_LogFile" xml:space="preserve">
     <value>日志文件</value>
     <comment>Settings label above the full path of the app's log file, shown as a link.</comment>
@@ -78,7 +79,7 @@
   </data>
   <data name="Settings_StartInMiniMode" xml:space="preserve">
     <value>以迷你模式启动</value>
-    <comment>Checkbox directly under Mini card size. When checked, every card opens mini at the next launch; otherwise cards open full. Card modes are not saved at shutdown.</comment>
+    <comment>Checkbox directly below the Shift projection note. When checked, every card opens mini at the next launch; otherwise cards open full. Card modes are not saved at shutdown.</comment>
   </data>
   <data name="Settings_CtrlPeek" xml:space="preserve">
     <value>在迷你卡片上按住 Ctrl 可查看完整卡片</value>

@@ -80,6 +80,12 @@ internal static class SettingsBehaviorProof
             scroll.Offset = new Vector(0, scroll.Extent.Height - scroll.Viewport.Height);
             using (small.CaptureRenderedFrame()) { }
             var rows = (StackPanel)scroll.Content!;
+            var noteIndex = rows.Children.IndexOf(small.ShiftProjectionNoteControl);
+            var miniModeIndex = rows.Children.IndexOf(small.StartInMiniModeControl);
+            Assert(noteIndex >= 0 && miniModeIndex == noteIndex + 1 &&
+                   small.ShiftProjectionNoteControl.Text == LocalizedText.SettingsShiftProjectionNote &&
+                   small.ShiftProjectionNoteControl.TextWrapping == Avalonia.Media.TextWrapping.Wrap,
+                "the Shift projection note is localized, wrapped, and directly above Start in mini mode");
             var lastRow = BoundsInWindow(rows.Children[^1], small);
             var viewport = BoundsInWindow(scroll, small);
             Assert(lastRow.Top >= viewport.Top - 0.5 && lastRow.Bottom <= viewport.Bottom + 0.5,

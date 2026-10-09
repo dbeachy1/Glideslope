@@ -175,9 +175,9 @@ internal static class LocalizedText
     public static string CardSize => Get("Card_Size");
     public static string SettingsCardSize => Get("Settings_CardSize");
 
-    /// <summary>The "Mini card size" row directly under "Card size", and the
-    /// "Start in mini mode" checkbox directly under that.</summary>
+    /// <summary>The "Mini card size" row directly under "Card size".</summary>
     public static string SettingsMiniCardSize => Get("Settings_MiniCardSize");
+    public static string SettingsShiftProjectionNote => Get("Settings_ShiftProjectionNote");
     public static string SettingsStartInMiniMode => Get("Settings_StartInMiniMode");
     // 2.1 Ctrl peek design §2: the checkbox directly under Start in mini mode.
     public static string SettingsCtrlPeek => Get("Settings_CtrlPeek");

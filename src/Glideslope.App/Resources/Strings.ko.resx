@@ -68,6 +68,7 @@
     <value>미니 카드 크기</value>
     <comment>Settings row label beside a slider from 70 % to 150 % that scales mini cards, directly under Card size.</comment>
   </data>
+  <data name="Settings_ShiftProjectionNote" xml:space="preserve"><value>참고: 전체 카드가 표시된 상태에서 Shift 키를 누르고 있으면 이번 주 남은 기간의 예상 사용량을 볼 수 있습니다.</value><comment>Informational note directly above Start in mini mode. Holding Shift while a full card is visible shows projected usage through the end of the current week.</comment></data>
   <data name="Settings_LogFile" xml:space="preserve">
     <value>로그 파일</value>
     <comment>Settings label above the full path of the app's log file, shown as a link.</comment>
@@ -78,7 +79,7 @@
   </data>
   <data name="Settings_StartInMiniMode" xml:space="preserve">
     <value>미니 모드로 시작</value>
-    <comment>Checkbox directly under Mini card size. When checked, every card opens mini at the next launch; otherwise cards open full. Card modes are not saved at shutdown.</comment>
+    <comment>Checkbox directly below the Shift projection note. When checked, every card opens mini at the next launch; otherwise cards open full. Card modes are not saved at shutdown.</comment>
   </data>
   <data name="Settings_CtrlPeek" xml:space="preserve">
     <value>미니 카드 위에서 Ctrl을 누르고 있는 동안 전체 보기</value>

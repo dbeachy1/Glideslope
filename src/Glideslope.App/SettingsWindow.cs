@@ -42,6 +42,7 @@ internal sealed class SettingsWindow : Window
     private readonly Slider _miniCardScale;
     private readonly TextBlock _miniCardScaleValue;
     private bool _syncingMiniCardScale;
+    private readonly TextBlock _shiftProjectionNote;
     private readonly CheckBox _startInMiniMode;
     // Ctrl peek preference, staged and applied on Save.
     private readonly CheckBox _ctrlPeekFullCard;
@@ -79,6 +80,7 @@ internal sealed class SettingsWindow : Window
     internal Slider MiniCardScaleControl => _miniCardScale;
     internal string MiniCardScaleValueText => _miniCardScaleValue.Text ?? string.Empty;
     internal CheckBox StartInMiniModeControl => _startInMiniMode;
+    internal TextBlock ShiftProjectionNoteControl => _shiftProjectionNote;
     internal CheckBox CtrlPeekFullCardControl => _ctrlPeekFullCard;
     internal NumericUpDown RetentionDaysControl => _retentionDays;
 
@@ -223,6 +225,14 @@ internal sealed class SettingsWindow : Window
         miniCardScaleRow.Children.Add(_miniCardScale);
         miniCardScaleRow.Children.Add(_miniCardScaleValue);
         content.Children.Add(LabeledControl(LocalizedText.SettingsMiniCardSize, miniCardScaleRow));
+
+        _shiftProjectionNote = new TextBlock
+        {
+            Text = LocalizedText.SettingsShiftProjectionNote,
+            FontSize = 12,
+            TextWrapping = TextWrapping.Wrap
+        };
+        content.Children.Add(_shiftProjectionNote);
 
         // Startup mode applies on the next launch and to newly created cards.
         _startInMiniMode = new CheckBox { Content = LocalizedText.SettingsStartInMiniMode, IsChecked = current.StartInMiniMode };
