@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>Glideslope.App</AssemblyName>
     <!-- The card title and package scripts read the application version from this project. -->
-    <Version>2.12.1</Version>
+    <Version>2.13.0</Version>
     <!-- Windows displays these names in Task Manager and the startup-apps list. -->
     <AssemblyTitle>Glideslope</AssemblyTitle>
     <Product>Glideslope</Product>

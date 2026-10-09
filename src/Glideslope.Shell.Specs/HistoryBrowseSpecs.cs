@@ -30,13 +30,15 @@ internal static class HistoryBrowseSpecs
         Assert(kept.Length == 3 && kept[2] == current, "a stored current window is not appended twice");
         var only = WindowCoordinator.BrowsableWindows(ImmutableArray<UsageWindowIdentity>.Empty, current);
         Assert(only.Length == 1 && only[0] == current, "with nothing stored the current window is the only one");
-        // Design §17 rule 4: with no current window (the week has not started) the stored weeks are browsed
-        // as they are, newest at offset 0; with nothing stored there is nothing to browse.
+        // A pending current window still occupies offset 0 as an empty live slot; stored windows begin at 1.
         var noCurrent = WindowCoordinator.BrowsableWindows(stored, null);
-        Assert(noCurrent.Length == 2 && WindowCoordinator.BrowsableWindowAt(noCurrent, 0) == middle,
-            "with no current window offset 0 is the newest stored week");
-        Assert(WindowCoordinator.BrowsableWindows(ImmutableArray<UsageWindowIdentity>.Empty, null).IsEmpty,
-            "with no current window and nothing stored the list is empty");
+        Assert(noCurrent.Length == 3 && WindowCoordinator.BrowsableWindowAt(noCurrent, 0) is null &&
+               WindowCoordinator.BrowsableWindowAt(noCurrent, 1) == middle &&
+               WindowCoordinator.BrowsableWindowAt(noCurrent, 2) == oldest,
+            "with no current identity offset 0 is empty and stored weeks begin at offset 1");
+        var pendingOnly = WindowCoordinator.BrowsableWindows(ImmutableArray<UsageWindowIdentity>.Empty, null);
+        Assert(pendingOnly.Length == 1 && WindowCoordinator.BrowsableWindowAt(pendingOnly, 0) is null,
+            "with no current identity and no stored weeks the live slot remains browseable and empty");
 
         // BrowsableWindowAt: offset 0 is the current (last) window, each older week one step toward the front.
         Assert(WindowCoordinator.BrowsableWindowAt(appended, 0) == current, "offset 0 is the current week");
@@ -59,7 +61,7 @@ internal static class HistoryBrowseSpecs
 
         // The three together: ‹, ‹, ‹, ›, Now over three windows.
         var pending = 0;
-        var trail = new List<UsageWindowIdentity>();
+        var trail = new List<UsageWindowIdentity?>();
         foreach (var step in new[] { +1, +1, +1, -1, 0 })
         {
             pending = WindowCoordinator.NextPendingHistoryOffset(step, pending);
@@ -69,6 +71,13 @@ internal static class HistoryBrowseSpecs
         }
         Assert(trail.SequenceEqual([middle, oldest, oldest, middle, current]),
             "‹ ‹ ‹ › Now visits the week before, the oldest, the oldest again, the week before, then the current week");
+
+        var pendingOffset = WindowCoordinator.ResolveHistoryOffset(WindowCoordinator.NextPendingHistoryOffset(+1, 0), noCurrent.Length);
+        Assert(pendingOffset == 1 && WindowCoordinator.BrowsableWindowAt(noCurrent, pendingOffset) == middle,
+            "the previous-week button from a pending live slot opens the newest stored week");
+        Assert(WindowCoordinator.BrowsableWindowAt(noCurrent,
+                   WindowCoordinator.ResolveHistoryOffset(WindowCoordinator.NextPendingHistoryOffset(0, pendingOffset), noCurrent.Length)) is null,
+            "Now from a stored week returns to the empty pending live slot");
 
         // a failed read of the latest request puts the pending offset back to the week shown,
         // so the next ‹ heads for the week before it again instead of skipping one; a newer request's offset is kept.

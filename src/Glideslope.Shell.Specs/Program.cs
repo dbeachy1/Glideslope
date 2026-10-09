@@ -73,6 +73,16 @@ internal static class Program
             CardPresentationProof.RunLocalizedLayoutAcceptanceProof();
             return 0;
         }
+        if (args.Length > 0 && string.Equals(args[0], "--history-browse-proof", StringComparison.Ordinal))
+        {
+            HistoryBrowseSpecs.Run();
+            return 0;
+        }
+        if (args.Length > 0 && string.Equals(args[0], "--history-reset-proof", StringComparison.Ordinal))
+        {
+            CardPresentationProof.RunHistoryResetProof();
+            return 0;
+        }
         if (args.Length == 2 && string.Equals(args[0], "--header-visual-proof", StringComparison.Ordinal))
         {
             StartWatchdog(TimeSpan.FromMinutes(2));

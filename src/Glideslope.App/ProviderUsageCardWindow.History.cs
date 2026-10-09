@@ -63,8 +63,7 @@ internal sealed partial class ProviderUsageCardWindow
             _windowCount = count;
             RefreshWeekButtons();
         }
-        // Window design §15.2 / §17 rule 4: while a past week is on view the live chart waits. With no current
-        // window, offset 0 itself shows the newest stored week, so the guard is the viewed window, not the offset.
+        // While a past week is on view the live chart waits; the viewed window is the guard, not the offset.
         if (_viewedHistoryWindow is not null) return false;
         _chart.SamplingInterval = samplingInterval;
         _chart.SetSeries(window, samples, historyAvailable);
@@ -76,9 +75,8 @@ internal sealed partial class ProviderUsageCardWindow
     /// Window design §15.2: shows one stored weekly window in the chart (offset 0 is the current window, 1 the
     /// one before, and so on), sets the offset and count, refreshes the week buttons, and while the shown
     /// window is not the current one replaces the live status text with "Past week · {start} – {reset}"
-    /// (§17 rule 4: with no current window, offset 0 is the newest stored week and reads as a past week).
-    /// The summary and bars keep showing live data; only the chart and that one line browse. A null window
-    /// (nothing stored, no current window) clears the chart.
+    /// When no current window identity exists, offset 0 is the empty live slot. The summary and bars keep showing
+    /// live data; only the chart and that one line browse. A null window clears the chart.
     /// </summary>
     public void SetHistoryView(UsageWindowIdentity? window, IEnumerable<UsageObservation> samples,
         TimeSpan samplingInterval, bool historyAvailable, int offset, int count)
@@ -86,8 +84,7 @@ internal sealed partial class ProviderUsageCardWindow
         _windowOffset = Math.Max(0, offset);
         _windowCount = Math.Max(0, count);
         HistoryBrowsePendingOffset = _windowOffset;
-        // Window design §17 rule 4: a window other than the current one is a past week, at any offset (with no
-        // current window, offset 0 is the newest stored week).
+        // A window other than the current one is a past week at any offset.
         _viewedHistoryWindow = window is not null && window != _currentHistoryWindow ? window : null;
         _chart.SamplingInterval = samplingInterval;
         _chart.SetSeries(window, samples, historyAvailable);

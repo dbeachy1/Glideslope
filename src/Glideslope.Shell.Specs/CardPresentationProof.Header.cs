@@ -23,6 +23,17 @@ namespace Glideslope.Shell.Specs;
 // grips. Governed by window design §5.1, §5.6, §15.2-§15.6 and §17, and the Claude CLI source design §2.
 internal static partial class CardPresentationProof
 {
+    public static void RunHistoryResetProof()
+    {
+        AppBuilder.Configure<PresentationTestApp>()
+            .UseSkia()
+            .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
+            .SetupWithoutStarting();
+        using var english = LocalizedText.OverrideForSpecs(System.Globalization.CultureInfo.GetCultureInfo("en-US"),
+            System.Globalization.CultureInfo.GetCultureInfo("en-US"));
+        AssertBrowsingWithoutCurrentWindow();
+    }
+
     /// <summary>
     /// Window design §15.4: at the default 940x680 and minimum card sizes, the provider name and week
     /// buttons share a vertical center within 1.5 px in both themes. The version text and dot are 4 logical px lower,
@@ -234,10 +245,9 @@ internal static partial class CardPresentationProof
     }
 
     /// <summary>
-    /// Window design §17 rule 4: a card whose weekly window has not started (identity null, bucket
-    /// known) asks for step 0 exactly once, browses the stored weeks with offset 0 as the newest one and the
-    /// "Past week" line, ignores the live path while a stored week is on view, returns to the live view with a
-    /// clean browse target when the window starts, and ends browsing when the weekly bucket goes away.
+    /// A pending weekly window keeps offset 0 as a blank live view, browses the newest stored week at offset 1,
+    /// and returns to an empty live chart on Now. Covers both launch while pending and reset from started to
+    /// pending, then verifies a newly started window receives only its own samples.
     /// </summary>
     private static void AssertBrowsingWithoutCurrentWindow()
     {
@@ -282,9 +292,17 @@ internal static partial class CardPresentationProof
             var newest = new UsageWindowIdentity("synthetic-shell-spec-scope", ProviderIds.Codex, "weekly",
                 now.AddDays(-8), now.AddDays(-1), "synthetic.shell.spec");
             var pastStatus = $"Past week · {newest.NominalStartUtc.ToLocalTime().ToString("MMM d", english)} – {newest.ResetAtUtc.ToLocalTime().AddDays(-1).ToString("MMM d", english)}";
-            window.SetHistoryView(newest, [new UsageObservation(newest, newest.NominalStartUtc.AddHours(1), 0.8)], interval, true, offset: 0, count: 3);
-            AssertButtons(true, false, false, "showing the newest stored week at offset 0");
-            Assert(Status() == pastStatus, $"with no current window offset 0 reads as a past week (got '{Status()}')");
+            window.SetHistoryView(null, [], interval, true, offset: 0, count: 3);
+            AssertButtons(true, false, false, "at the empty pending live slot");
+            Assert(Status() == Live(idle), $"the pending current slot keeps live status (got '{Status()}')");
+            Assert(!window.ChartControl.HasProjection, "the pending current slot has no old-window projection");
+            Assert(window.ChartControl.HistorySampleCount == 0, "the pending current chart contains no prior-week samples");
+            steps.Clear();
+            window.PreviousWeekControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert(steps.SequenceEqual([1]), "previous week from pending requests offset 1");
+            window.SetHistoryView(newest, [new UsageObservation(newest, newest.NominalStartUtc.AddHours(1), 0.8)], interval, true, offset: 1, count: 3);
+            AssertButtons(true, true, true, "showing the newest stored week at offset 1");
+            Assert(Status() == pastStatus, $"the newest stored week reads as past at offset 1 (got '{Status()}')");
             Assert(!window.SetHistory(null, [], interval, historyAvailable: true), "the live path does not overwrite a stored week on view");
             Assert(Status() == pastStatus, "the live path leaves the past-week line alone");
 
@@ -300,14 +318,23 @@ internal static partial class CardPresentationProof
             Assert(window.HistoryWindowOffset == 0 && window.HistoryBrowsePendingOffset == 0 && window.HistoryBrowseSequence > sequenceBefore,
                 $"the window starting resets the offset and the queued browse target (offset {window.HistoryWindowOffset}, pending {window.HistoryBrowsePendingOffset})");
             Assert(Status() == Live(started), $"the window starting restores the live status (got '{Status()}')");
-            Assert(window.SetHistory(window.CurrentHistoryWindow, [], interval, historyAvailable: true, windowCount: 4), "the live history applies to the started window");
+            Assert(window.SetHistory(window.CurrentHistoryWindow,
+                [new UsageObservation(window.CurrentHistoryWindow!, now, 0.99)], interval,
+                historyAvailable: true, windowCount: 4), "the live history applies to the newly started window");
+            Assert(window.ChartControl.HistorySampleCount == 1,
+                "the newly started window chart contains only its fresh-window observation");
             AssertButtons(true, false, false, "at offset 0 of 4 after the window started");
 
             // Back to not started (a rollover with no usage yet), a stored week on view, then the bucket goes away.
             steps.Clear();
             window.UpdateState(State(IdleSnapshot()));
             Assert(steps.SequenceEqual([0]), $"a rollover to a not-started window asks for step 0 (got {string.Join(",", steps)})");
-            window.SetHistoryView(newest, [], interval, true, offset: 0, count: 4);
+            window.SetHistoryView(null, [], interval, true, offset: 0, count: 4);
+            Assert(Status() == Live(idle) && !window.ChartControl.HasProjection && window.ChartControl.HistorySampleCount == 0,
+                "a started-to-pending reset clears the chart to an empty current view and restores live status");
+            window.PreviousWeekControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Assert(steps.Last() == 1, "previous week after reset again requests the newest stored week at offset 1");
+            window.SetHistoryView(newest, [], interval, true, offset: 1, count: 4);
             Assert(Status() == pastStatus, "the newest stored week shows again as a past week");
             steps.Clear();
             var noWeekly = State(new AccountSnapshot(ProviderIds.Codex, "synthetic-shell-spec-scope", "Synthetic", now, now,

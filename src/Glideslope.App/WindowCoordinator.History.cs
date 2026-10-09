@@ -55,18 +55,17 @@ internal sealed partial class WindowCoordinator
     /// A card's previous-week (+1), next-week (−1) or Now (0) button,
     /// or its weekly rollover (0). Lists the stored windows of the card's current weekly bucket, computes
     /// offset = step == 0 ? 0 : clamp(current + step, 0, count − 1), reads windows[count − 1 − offset] over
-    /// its whole span, and shows it with SetHistoryView. Window design §17 rule 4: the windows are listed by the
-    /// card's weekly bucket key, so a card whose current window has not started (identity null) browses the
-    /// stored weeks with offset 0 as the newest one. With no weekly bucket, no history store, or nothing
+    /// its whole span, and shows it with SetHistoryView. Offset 0 is always the live slot; when its identity is
+    /// null because the window has not started, that slot is empty and stored windows begin at offset 1. With no
+    /// weekly bucket, no history store, or nothing
     /// stored, the buttons are disabled through SetHistoryView with count 0. A failure logs
     /// history_window_view_failed and leaves the view unchanged.
     /// </summary>
     private async void OnHistoryWindowStepRequested(ProviderUsageCardWindow window, int step)
     {
         var identity = window.CurrentHistoryWindow;
-        // Window design §17 rule 4: the weekly bucket key is known whenever the weekly bucket exists, even while its
-        // window has not started (identity null). Stored weeks are listed by the key, so a card with no
-        // current window still browses; offset 0 is then the newest stored week.
+        // The weekly bucket key remains available while its window has not started. Keep offset 0 reserved for
+        // that empty live slot so the newest stored week remains at offset 1.
         var bucket = window.HistoryBucket;
         // Step from the pending target and stamp requests so quick clicks accumulate and older replies cannot overwrite newer views.
         var sequence = ++window.HistoryBrowseSequence;
@@ -102,6 +101,17 @@ internal sealed partial class WindowCoordinator
             }
             var offset = ResolveHistoryOffset(pendingOffset, count);
             var target = BrowsableWindowAt(windows, offset);
+            if (target is null)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    if (_closing || !_windows.TryGetValue(window.ProviderId, out var current) || !ReferenceEquals(current, window) ||
+                        current.HistoryBrowseSequence != sequence || current.CurrentHistoryWindow != identity)
+                        return;
+                    current.SetHistoryView(null, [], samplingInterval, historyAvailable: true, offset, count);
+                });
+                return;
+            }
             var result = await history.QueryWindowAsync(target, target.NominalStartUtc, target.ResetAtUtc,
                 SqliteUsageHistoryStore.MaximumQuerySamples).ConfigureAwait(false);
             await Dispatcher.UIThread.InvokeAsync(() =>
@@ -151,14 +161,14 @@ internal sealed partial class WindowCoordinator
         requestSequence == latestSequence ? displayedOffset : null;
 
     /// <summary>
-    /// Window design §15.3's window list, with the card's current weekly window always last (offset 0). The store
-    /// lists only windows that have an observation, so right after a weekly rollover, before the new window's
-    /// first sample is written, its newest entry is last week's; without this, offset 0 ("Now") would show
-    /// last week while the status line says live, and the count would miss the current week.
+    /// The list ends with the current live slot. A null current identity still occupies that slot while the
+    /// window is pending, so offset 0 remains live and stored weeks start at offset 1.
     /// </summary>
-    internal static ImmutableArray<UsageWindowIdentity> BrowsableWindows(ImmutableArray<UsageWindowIdentity> stored,
+    internal static ImmutableArray<UsageWindowIdentity?> BrowsableWindows(ImmutableArray<UsageWindowIdentity> stored,
         UsageWindowIdentity? current) =>
-        current is null || stored.Contains(current) ? stored : stored.Add(current);
+        current is null ? ImmutableArray.CreateRange<UsageWindowIdentity?>(stored).Add(null) :
+            stored.Contains(current) ? ImmutableArray.CreateRange<UsageWindowIdentity?>(stored) :
+            ImmutableArray.CreateRange<UsageWindowIdentity?>(stored).Add(current);
 
     /// <summary>The offset a step request heads for, before the
     /// window count is known. Now (0) always returns to the current week; ‹ (+1) and › (−1) move from the
@@ -174,6 +184,6 @@ internal sealed partial class WindowCoordinator
 
     /// <summary>The stored windows arrive oldest first and end with the current one, so offset 0 is the last
     /// element and each older week is one step toward the front.</summary>
-    internal static UsageWindowIdentity BrowsableWindowAt(ImmutableArray<UsageWindowIdentity> windows, int offset) =>
+    internal static UsageWindowIdentity? BrowsableWindowAt(ImmutableArray<UsageWindowIdentity?> windows, int offset) =>
         windows[windows.Length - 1 - offset];
 }

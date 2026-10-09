@@ -111,6 +111,7 @@ internal sealed class WeeklyHistoryChart : Control
     public TimeSpan SamplingInterval { get; set; } = TimeSpan.FromMinutes(5);
     internal bool HasProjection => _projection is not null;
     internal bool IsProjectionHeld => _projectionHeld;
+    internal int HistorySampleCount => _series.Samples.Length;
 
     public WeeklyHistoryChart()
     {

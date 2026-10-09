@@ -78,8 +78,8 @@ internal sealed partial class ProviderUsageCardWindow
                 HistoryBrowseSequence++;
                 _chart.SetSeries(identity, []);
                 // The launch's first identity is loaded by the coordinator's live path. A later change is a
-                // rollover, and a bucket whose window has not started (identity null, window design §17 rule 4) has
-                // nothing for the live path to load; both ask the coordinator for step 0.
+                // rollover, and a bucket whose window has not started has no live history to load; both ask the
+                // coordinator for step 0 to keep the empty current slot and refresh the stored-window count.
                 if (previousWindow is not null || identity is null) OnCurrentWeeklyWindowChanged(identity);
                 else { RefreshWeekButtons(); ApplyStatusLine(); }
             }
