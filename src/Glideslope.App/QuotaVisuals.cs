@@ -114,6 +114,8 @@ internal sealed class WeeklyHistoryChart : Control
     internal bool ShowsZeroUsageOverlay => _projectionHeld && _projectionFreshness == SnapshotFreshness.Fresh && _showZeroUsageOverlay;
     internal bool IsProjectionHeld => _projectionHeld;
     internal int HistorySampleCount => _series.Samples.Length;
+    internal IEnumerable<UsageObservation> SelectedSamples => _series.Samples;
+    internal UsageProjection? Projection => _projection;
 
     public WeeklyHistoryChart()
     {
@@ -262,16 +264,28 @@ internal sealed class WeeklyHistoryChart : Control
             projection.RunsOutAtUtc > projectionStart)
         {
             var durationTicks = (projectionReset - projectionStart).Ticks;
-            var endAt = projection.RunsOutAtUtc <= projectionReset ? projection.RunsOutAtUtc : projectionReset;
-            var endFraction = (endAt - projectionStart).Ticks / (double)durationTicks;
-            // The projection uses the same weekly burn rate from reset start through the latest real sample.
+            var visibleStart = projectionStart;
+            var visibleEnd = projection.RunsOutAtUtc < projectionReset ? projection.RunsOutAtUtc : projectionReset;
+            if (projection.SlopePerSecond < 0)
+            {
+                var reachesTopAtSeconds = (1 - projection.Intercept) / projection.SlopePerSecond;
+                if (reachesTopAtSeconds > 0 && double.IsFinite(reachesTopAtSeconds))
+                {
+                    var reachesTopAt = projectionStart.AddSeconds(reachesTopAtSeconds);
+                    if (reachesTopAt > visibleStart) visibleStart = reachesTopAt;
+                }
+            }
+            if (visibleStart >= visibleEnd) return;
+
             var band = ProjectionBand(projection, projectionWindow);
             var projectionColor = PaceColors.For(IsDark, band);
             // Dots need a wider stroke to carry comparable visual weight to the solid history trace.
             var projectionPen = new Pen(new SolidColorBrush(Color.Parse(projectionColor)), TraceThickness * 2,
                 dashStyle: DashStyle.Dot, lineCap: PenLineCap.Round);
-            var startPoint = At(0, 1);
-            var endPoint = At(endFraction, RemainingAt(projectionWindow, projection, endAt));
+            var startFraction = (visibleStart - projectionStart).Ticks / (double)durationTicks;
+            var endFraction = (visibleEnd - projectionStart).Ticks / (double)durationTicks;
+            var startPoint = At(startFraction, projection.RemainingAt(visibleStart, projectionWindow));
+            var endPoint = At(endFraction, projection.RemainingAt(visibleEnd, projectionWindow));
             context.DrawLine(projectionPen, startPoint, endPoint);
 
             var label = ProjectionLabel(projection, projectionReset);
@@ -349,12 +363,8 @@ internal sealed class WeeklyHistoryChart : Control
         return band == PaceBand.OnPace ? PaceBand.SlightlyOver : band;
     }
 
-    internal static double RemainingAt(UsageWindowIdentity window, UsageProjection projection, DateTimeOffset instant)
-    {
-        var runOutTicks = (projection.RunsOutAtUtc - window.NominalStartUtc).Ticks;
-        if (runOutTicks <= 0) return 0;
-        return Math.Clamp(1 - (instant - window.NominalStartUtc).Ticks / (double)runOutTicks, 0, 1);
-    }
+    internal static double RemainingAt(UsageWindowIdentity window, UsageProjection projection, DateTimeOffset instant) =>
+        projection.RemainingAt(instant, window);
 
     /// <summary>Places the padded label beside the visible segment midpoint while keeping its background clear of the dotted stroke.</summary>
     internal static Rect? FindProjectionLabelBounds(Point start, Point end, Size paddedLabelSize, Rect plot,

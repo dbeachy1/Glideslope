@@ -9,7 +9,7 @@ internal static class Program
         ProviderContractsAreImmutableAndTyped();
         PaceMathAndBoundariesAreDeterministic();
         ChartSelectionUsesOnlyMatchingRealSamples();
-        UsageProjectionUsesWindowStartAndObservationTime();
+        UsageProjectionFitsAllSelectedObservations();
         CreditInventoryUsesAuthoritativeCountAndSafeDetails();
         WindowIdentityIsStabilizedBeforeUse();
         Console.WriteLine("Glideslope domain specs passed.");
@@ -202,41 +202,88 @@ internal static class Program
         Throws<ArgumentOutOfRangeException>(() => Observation(window, start - TimeSpan.FromTicks(1), 0.4));
     }
 
-    private static void UsageProjectionUsesWindowStartAndObservationTime()
+    private static void UsageProjectionFitsAllSelectedObservations()
     {
         var start = Utc(2025, 1, 1);
         var reset = start + Hours(168);
         var window = new UsageWindowIdentity("scope-a", ProviderIds.Codex, "weekly", start, reset, "weekly-limit");
-        var sample = Observation(window, start + Hours(24), 0.75);
-        var now = sample.ObservedAtUtc + Hours(2);
-        var result = UsageProjectionCalculator.Calculate(window, sample, SnapshotFreshness.Fresh, now);
-        Assert(result is not null, "a current window with observed usage has a finite projection");
-        Near((result!.RunsOutAtUtc - sample.ObservedAtUtc).TotalHours, 72, "runout uses cumulative usage divided by elapsed time from window start");
-        Assert(result.RunsOutAtUtc > now, "projection anchors on sample observation time rather than the later render time");
+        var interval = TimeSpan.FromMinutes(5);
+        UsageProjection? Fit(IEnumerable<UsageObservation> samples, DateTimeOffset now, SnapshotFreshness freshness = SnapshotFreshness.Fresh) =>
+            UsageProjectionCalculator.Calculate(window, samples, interval, freshness, now);
 
-        var beyondReset = UsageProjectionCalculator.Calculate(window, Observation(window, start + Hours(24), 0.9), SnapshotFreshness.Fresh, now);
-        Assert(beyondReset is not null && beyondReset.RunsOutAtUtc > reset,
-            "projection retains its true runout time when it falls beyond the reset");
-        Near((beyondReset!.RunsOutAtUtc - reset).TotalHours, 72, "the beyond-reset label interval is measured after the provider reset");
-        Assert(UsageProjectionCalculator.Calculate(window, Observation(window, start + Hours(24), 1), SnapshotFreshness.Fresh, now) is null,
-            "no consumption gives no runout estimate");
-        Assert(UsageProjectionCalculator.Calculate(window, Observation(window, start + Hours(24), 0), SnapshotFreshness.Fresh, now) is null,
-            "an already exhausted bucket gives no synthetic future line");
-        Assert(UsageProjectionCalculator.Calculate(window, Observation(window, start + Hours(24), 0.25), SnapshotFreshness.Fresh,
-            start + Hours(24) + Hours(9)) is null,
-            "a stale-looking estimate that should already have run out is suppressed when usage remains");
-        Assert(UsageProjectionCalculator.Calculate(window, sample, SnapshotFreshness.Stale, now) is null,
-            "stale provider state suppresses projections");
-        Assert(UsageProjectionCalculator.Calculate(window, sample, SnapshotFreshness.Fresh, reset) is null,
-            "a window at reset is no longer projected");
-        Assert(UsageProjectionCalculator.Calculate(window, sample, SnapshotFreshness.Fresh, start - TimeSpan.FromTicks(1)) is null,
-            "a not-yet-started window is suppressed");
+        var now = start + Hours(80);
+        var endpointSamples = new[]
+        {
+            Observation(window, start + Hours(24), 0.75),
+            Observation(window, start + Hours(72), 0.50)
+        };
+        var withMiddleA = endpointSamples.Append(Observation(window, start + Hours(48), 0.70));
+        var withMiddleB = endpointSamples.Append(Observation(window, start + Hours(48), 0.20));
+        var fitA = Fit(withMiddleA, now);
+        var fitB = Fit(withMiddleB, now);
+        Assert(fitA is not null && fitB is not null && fitA.RunsOutAtUtc != fitB.RunsOutAtUtc,
+            "samples with matching endpoints but different middle readings produce different fitted projections");
+        Assert(fitA!.RunsOutAtUtc > now && fitB!.RunsOutAtUtc > now,
+            "both valid fitted runouts remain after the current instant");
+
+        var irregular = new[]
+        {
+            Observation(window, start + Hours(10), 0.9),
+            Observation(window, start + Hours(25), 0.81),
+            Observation(window, start + Hours(60), 0.6)
+        };
+        var irregularFit = Fit(irregular, start + Hours(61));
+        Assert(irregularFit is not null, "irregular timestamps with a decreasing trend produce a fit");
+        Near((irregularFit!.RunsOutAtUtc - start).TotalHours, 160,
+            "least squares uses elapsed time between irregular real observations");
+        Near(irregularFit.RemainingAt(start + Hours(25), window), 0.81,
+            "the fitted coefficients evaluate the same line that determines runout");
+
+        var lateStart = Fit([
+            Observation(window, start + Hours(48), 0.6),
+            Observation(window, start + Hours(72), 0.4)
+        ], start + Hours(73));
+        Assert(lateStart is not null, "samples beginning well after reset start still produce a fit");
+        Near(lateStart!.Intercept, 1.0, "a late-start fit freely extrapolates its intercept to 100% at window start");
+        Near((lateStart.RunsOutAtUtc - start).TotalHours, 120, "late-start runout follows the fitted intercept and slope");
+
+        var currentLive = Observation(window, start + Hours(72), 0.5);
+        var alreadyWithLive = Fit(endpointSamples.Append(currentLive), now);
+        var duplicateLive = Fit(endpointSamples.Append(currentLive).Append(currentLive), now);
+        Assert(alreadyWithLive is not null && duplicateLive?.RunsOutAtUtc == alreadyWithLive.RunsOutAtUtc,
+            "the latest live snapshot is deduplicated when history already contains the same observation");
+        Assert(Fit(endpointSamples.Append(currentLive).Append(Observation(window, currentLive.ObservedAtUtc, 0.49)), now) is null,
+            "conflicting readings at the live timestamp are excluded by chart selection");
+        Assert(Fit([endpointSamples[0]], now) is null, "one distinct timestamp cannot define a projection");
+        Assert(Fit([endpointSamples[0], Observation(window, endpointSamples[0].ObservedAtUtc, 0.7)], now) is null,
+            "duplicate timestamps do not satisfy the two-distinct-observation requirement");
+        Assert(Fit([Observation(window, start + Hours(24), 0.8), Observation(window, start + Hours(48), 0.9)], now) is null,
+            "a nondecreasing remaining-fraction fit has no usable burn rate");
+        Assert(Fit([Observation(window, start + Hours(24), 1), Observation(window, start + Hours(48), 1)], now) is null,
+            "zero usage has no finite runout estimate");
+        Assert(Fit(new[] { 0.95, 0.8, 0.65, 0.5, 0.35, 0.2 }
+                .Select((remaining, index) => Observation(window, start + Hours(24 + index * 6), remaining))
+                .Append(Observation(window, start + Hours(72), 1)), now) is null,
+            "a current 100% reading preserves the zero-usage presentation even if earlier readings trend downward");
+        Assert(Fit([Observation(window, start + Hours(24), 0.2), Observation(window, start + Hours(48), 0)], now) is null,
+            "an already exhausted quota has no future projection");
+        Assert(Fit([Observation(window, start + Hours(24), 0.2), Observation(window, start + Hours(48), 0)],
+            start + Hours(49)) is null,
+            "an exhausted latest reading suppresses a regression whose zero crossing would otherwise be future");
+        Assert(Fit([Observation(window, start + Hours(24), 0.8), Observation(window, start + Hours(48), 0.6)],
+            start + Hours(130)) is null, "a fitted runout in the past is suppressed");
+        Assert(Fit(endpointSamples, now, SnapshotFreshness.Stale) is null, "stale provider state suppresses projections");
+        Assert(Fit(endpointSamples, reset) is null, "a window at reset is no longer projected");
+        Assert(Fit(endpointSamples, start - TimeSpan.FromTicks(1)) is null, "a not-yet-started window is suppressed");
+
         var otherWindow = new UsageWindowIdentity("scope-b", ProviderIds.Codex, "weekly", start, reset, "weekly-limit");
-        Assert(UsageProjectionCalculator.Calculate(window, Observation(otherWindow, start + Hours(24), 0.75), SnapshotFreshness.Fresh, now) is null,
+        Assert(Fit([Observation(otherWindow, start + Hours(24), 0.75), Observation(otherWindow, start + Hours(48), 0.5)], now) is null,
             "an observation from another account/window cannot be projected");
-        var tinyUsage = Observation(window, start + Hours(1), 0.999999999999);
-        Assert(UsageProjectionCalculator.Calculate(window, tinyUsage, SnapshotFreshness.Fresh, now) is null,
-            "a projection beyond DateTimeOffset's representable range is suppressed");
+        var tinyFit = Fit([
+            Observation(window, start + Hours(1), 0.999999999999),
+            Observation(window, start + Hours(2), 0.999999999998)
+        ], start + Hours(3));
+        Assert(tinyFit is null, "a projection beyond DateTimeOffset's representable range is suppressed");
     }
 
     private static void CreditInventoryUsesAuthoritativeCountAndSafeDetails()

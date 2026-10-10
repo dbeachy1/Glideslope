@@ -200,8 +200,13 @@ internal sealed partial class ProviderUsageCardWindow
                 var now = DateTimeOffset.UtcNow;
                 if (now >= currentWindow.NominalStartUtc && now < currentWindow.ResetAtUtc)
                 {
-                    var currentObservation = new UsageObservation(currentWindow, snapshot.ObservedAtUtc, weekly.RemainingFraction);
-                    projection = UsageProjectionCalculator.Calculate(currentWindow, currentObservation, freshness, now);
+                    // The live quota remains authoritative even if history conflicts at its timestamp.
+                    if (weekly.RemainingFraction is > 0 and < 1)
+                    {
+                        var currentObservation = new UsageObservation(currentWindow, snapshot.ObservedAtUtc, weekly.RemainingFraction);
+                        projection = UsageProjectionCalculator.Calculate(currentWindow,
+                            _chart.SelectedSamples.Append(currentObservation), _chart.SamplingInterval, freshness, now);
+                    }
                     showZeroUsageOverlay = weekly.RemainingFraction == 1.0 && projection is null;
                 }
             }

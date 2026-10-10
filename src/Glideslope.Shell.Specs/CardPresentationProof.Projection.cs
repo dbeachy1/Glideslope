@@ -17,20 +17,65 @@ internal static partial class CardPresentationProof
         var start = new DateTimeOffset(2026, 10, 1, 0, 0, 0, TimeSpan.Zero);
         var reset = start.AddDays(7);
         var window = new UsageWindowIdentity("projection-proof", ProviderIds.Claude, "weekly", start, reset, "projection-proof");
-        var beyondReset = new UsageProjection(start.AddDays(10));
+        var beyondReset = new UsageProjection(1, -1 / TimeSpan.FromDays(10).TotalSeconds, start.AddDays(10));
         Near(WeeklyHistoryChart.RemainingAt(window, beyondReset, reset), 0.3,
             "the dotted line reaches 30% remaining at reset when the average rate projects ten days from week start");
         Near(WeeklyHistoryChart.RemainingAt(window, beyondReset, start.AddDays(1)), 0.9,
             "the start-to-reset line passes through the real day-one reading");
         Assert(WeeklyHistoryChart.ProjectionBand(beyondReset, window) == PaceBand.StrongCushion,
             "a projection that lasts through reset uses the existing green pace band");
-        Assert(WeeklyHistoryChart.ProjectionBand(new UsageProjection(reset.AddHours(-4)), window) == PaceBand.SlightlyOver,
+        var fourHoursShort = new UsageProjection(1, -1 / TimeSpan.FromHours(164).TotalSeconds, reset.AddHours(-4));
+        Assert(WeeklyHistoryChart.ProjectionBand(fourHoursShort, window) == PaceBand.SlightlyOver,
             "a shortfall below the first pace boundary still uses a visible yellow band");
-        Assert(WeeklyHistoryChart.ProjectionBand(new UsageProjection(reset.AddHours(-24)), window) == PaceBand.CriticalOver,
+        var oneDayShort = new UsageProjection(1, -1 / TimeSpan.FromHours(144).TotalSeconds, reset.AddHours(-24));
+        Assert(WeeklyHistoryChart.ProjectionBand(oneDayShort, window) == PaceBand.CriticalOver,
             "a 24-hour shortfall uses the existing critical red band");
         Assert(LocalizedText.ChartProjectionRunOut(reset, TimeSpan.FromHours(1.5)).StartsWith("Projected runout ", StringComparison.Ordinal) &&
                LocalizedText.ChartProjectionAfterReset(TimeSpan.FromHours(120)).Contains("120.0 hours", StringComparison.Ordinal),
             "projection labels use localized runout date/duration and post-reset hours resources");
+
+        var integrationNow = DateTimeOffset.UtcNow;
+        UsageProjection FitCard(double middleRemaining, bool historyIncludesLive)
+        {
+            var integrationStart = integrationNow.AddDays(-2);
+            var integrationReset = integrationStart.AddDays(7);
+            var snapshot = new AccountSnapshot(ProviderIds.Claude, "projection-fit-proof", "Synthetic",
+                integrationNow, integrationNow, "projection-fit-proof",
+                [new QuotaBucket("weekly", QuotaBucketRole.Weekly, 0.58, TimeSpan.FromDays(7),
+                    integrationReset, "projection-fit-proof")]);
+            var card = new ProviderUsageCardWindow(ProviderIds.Claude, showMark: false, _ => { });
+            try
+            {
+                card.UpdateState(State(snapshot));
+                var current = card.CurrentHistoryWindow ?? throw new InvalidOperationException("projection_fit_window_missing");
+                var observations = new List<UsageObservation>
+                {
+                    new(current, integrationStart.AddHours(6), 0.92),
+                    new(current, integrationStart.AddHours(20), middleRemaining)
+                };
+                if (historyIncludesLive)
+                    observations.Add(new UsageObservation(current, integrationNow, 0.58));
+                card.SetHistory(current, observations, TimeSpan.FromMinutes(5));
+                return card.ChartControl.Projection
+                    ?? throw new InvalidOperationException("projection_fit_missing_after_live_snapshot");
+            }
+            finally { card.CloseProgrammatically(); }
+        }
+
+        var endpointOnlyHistory = FitCard(0.68, historyIncludesLive: false);
+        var duplicateLiveHistory = FitCard(0.68, historyIncludesLive: true);
+        var changedMiddle = FitCard(0.20, historyIncludesLive: false);
+        Assert(endpointOnlyHistory.RunsOutAtUtc == duplicateLiveHistory.RunsOutAtUtc,
+            "the current live endpoint contributes once whether or not history already contains it");
+        Assert(endpointOnlyHistory.RunsOutAtUtc != changedMiddle.RunsOutAtUtc &&
+               endpointOnlyHistory.SlopePerSecond != changedMiddle.SlopePerSecond,
+            "card integration changes both the drawn fitted line and runout when only the middle reading changes");
+        var integrationWindow = new UsageWindowIdentity("projection-fit-proof", ProviderIds.Claude, "weekly",
+            integrationNow.AddDays(-2), integrationNow.AddDays(5), "projection-fit-proof");
+        Near(endpointOnlyHistory.RemainingAt(integrationNow, integrationWindow),
+            endpointOnlyHistory.Intercept + endpointOnlyHistory.SlopePerSecond *
+            (integrationNow - (integrationNow.AddDays(-2))).TotalSeconds,
+            "the card projection exposes the fitted line used by chart rendering");
 
         var projectionPlot = new Rect(8, 18, 720, 180);
         AssertProjectionLabelPlacement(new Point(8, 18), new Point(180, 198), new Size(150, 28), projectionPlot,
@@ -53,7 +98,10 @@ internal static partial class CardPresentationProof
         try
         {
             card.UpdateState(State(snapshot));
-            Assert(card.ChartControl.HasProjection, "fresh current snapshot projects even before history is available");
+            var currentWindow = card.CurrentHistoryWindow ?? throw new InvalidOperationException("projection_current_window_missing");
+            card.SetHistory(currentWindow,
+                [new UsageObservation(currentWindow, now.AddHours(-12), 0.2)], TimeSpan.FromMinutes(5));
+            Assert(card.ChartControl.HasProjection, "fresh current snapshot joins current-window history for a finite projection");
             card.Show();
             card.SetUsageProjectionHeld(true);
             Assert(card.ChartControl.IsProjectionHeld, "Shift enables the projection on a visible full card");
@@ -103,6 +151,19 @@ internal static partial class CardPresentationProof
             Assert(!window.ChartControl.HasProjection && window.ChartControl.ShowsZeroUsageOverlay,
                 "a fresh started 100% week shows the zero-usage overlay without creating a finite projection");
 
+            window.SetHistory(currentWindow,
+            [
+                new UsageObservation(currentWindow, now.AddHours(-5), 0.92),
+                new UsageObservation(currentWindow, now.AddHours(-3), 0.68),
+                new UsageObservation(currentWindow, now, 0.5)
+            ], TimeSpan.FromMinutes(5));
+            Assert(!window.ChartControl.HasProjection && window.ChartControl.ShowsZeroUsageOverlay,
+                "a conflicting history reading at the live 100% timestamp cannot replace the zero-usage overlay with a fit");
+            window.UpdateState(State(Weekly(0, started: true, nominalStart: now.AddHours(-6))));
+            Assert(!window.ChartControl.HasProjection && !window.ChartControl.ShowsZeroUsageOverlay,
+                "a conflicting history reading at the live exhausted timestamp cannot create a future projection");
+            window.UpdateState(started);
+
             var past = new UsageWindowIdentity(currentWindow.AccountScope, currentWindow.ProviderId, currentWindow.BucketId,
                 currentWindow.NominalStartUtc.AddDays(-7), currentWindow.NominalStartUtc, currentWindow.SourceSemantics);
             window.SetHistoryView(past, [], TimeSpan.FromMinutes(5), true, offset: 1, count: 2);
@@ -114,8 +175,10 @@ internal static partial class CardPresentationProof
             Assert(!window.ChartControl.ShowsZeroUsageOverlay, "a stale 100% snapshot suppresses the zero-usage overlay");
 
             window.UpdateState(State(Weekly(0.95, started: true, nominalStart: now.AddHours(-6))));
+            window.SetHistory(currentWindow,
+                [new UsageObservation(currentWindow, now.AddHours(-3), 0.97)], TimeSpan.FromMinutes(5));
             Assert(window.ChartControl.HasProjection && !window.ChartControl.ShowsZeroUsageOverlay,
-                "real usage returns to the existing finite projection and hides the zero-usage overlay");
+                "two real usage readings return to the finite projection and hide the zero-usage overlay");
 
             window.UpdateState(State(Weekly(1.0, started: true, nominalStart: now)));
             Assert(!window.ChartControl.HasProjection && window.ChartControl.ShowsZeroUsageOverlay,
@@ -197,6 +260,7 @@ internal static partial class CardPresentationProof
             .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
             .SetupWithoutStarting();
         using var english = LocalizedText.OverrideForSpecs(CultureInfo.GetCultureInfo("en-US"), CultureInfo.GetCultureInfo("en-US"));
+        AssertUsageProjectionPresentation();
         Directory.CreateDirectory(outputDirectory);
         var now = DateTimeOffset.UtcNow;
         var scenarios = new[]
@@ -205,7 +269,9 @@ internal static partial class CardPresentationProof
             (Name: "early-steep-narrow", ElapsedDays: 1d, Remaining: 0.2, Scale: 100, Width: 790d, Height: 680d),
             (Name: "near-reset-narrow", ElapsedDays: 6d, Remaining: 0.05, Scale: 100, Width: 790d, Height: 680d),
             (Name: "near-reset-scaled", ElapsedDays: 6d, Remaining: 0.05, Scale: 80, Width: 790d, Height: 680d),
-            (Name: "beyond-reset", ElapsedDays: 6d, Remaining: 0.5, Scale: 100, Width: 940d, Height: 680d)
+            (Name: "beyond-reset", ElapsedDays: 6d, Remaining: 0.5, Scale: 100, Width: 940d, Height: 680d),
+            (Name: "nonlinear-fit", ElapsedDays: 2d, Remaining: 0.58, Scale: 100, Width: 940d, Height: 680d),
+            (Name: "quiet-then-burst", ElapsedDays: 6d, Remaining: 0.25, Scale: 100, Width: 940d, Height: 680d)
         };
         var providers = new[] { ProviderIds.Claude, ProviderIds.Codex };
         foreach (var providerId in providers)
@@ -237,11 +303,31 @@ internal static partial class CardPresentationProof
                 card.Width = scenario.Width;
                 card.Height = scenario.Height;
                 card.UpdateState(State(snapshot));
-                card.SetHistory(identity,
-                [
-                    new UsageObservation(identity, start.AddHours(scenario.ElapsedDays * 24 / 2), (1 + scenario.Remaining) / 2),
-                    new UsageObservation(identity, now, scenario.Remaining)
-                ], TimeSpan.FromMinutes(5));
+                var samples = scenario.Name switch
+                {
+                    "nonlinear-fit" => new[]
+                    {
+                        new UsageObservation(identity, start.AddHours(6), 0.92),
+                        new UsageObservation(identity, start.AddHours(20), 0.68),
+                        new UsageObservation(identity, start.AddHours(32), 0.72),
+                        new UsageObservation(identity, now, scenario.Remaining)
+                    },
+                    "quiet-then-burst" => new[]
+                    {
+                        new UsageObservation(identity, start.AddDays(1), 0.98),
+                        new UsageObservation(identity, start.AddDays(2), 0.96),
+                        new UsageObservation(identity, start.AddDays(3), 0.94),
+                        new UsageObservation(identity, start.AddDays(4), 0.92),
+                        new UsageObservation(identity, start.AddDays(5), 0.90),
+                        new UsageObservation(identity, now, scenario.Remaining)
+                    },
+                    _ => new[]
+                    {
+                        new UsageObservation(identity, start.AddHours(scenario.ElapsedDays * 24 / 2), (1 + scenario.Remaining) / 2),
+                        new UsageObservation(identity, now, scenario.Remaining)
+                    }
+                };
+                card.SetHistory(identity, samples, TimeSpan.FromMinutes(5));
                 card.Show();
                 card.SetUsageProjectionHeld(true);
                 using var bitmap = card.CaptureRenderedFrame() ?? throw new InvalidOperationException("usage_projection_screenshot_render_failed");

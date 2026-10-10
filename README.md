@@ -2,7 +2,7 @@
 
 **Downloads:** [Signed Windows 11 x64 installer (2.13.0)](https://github.com/dbeachy1/Glideslope/releases/download/v2.13.0/Glideslope-Setup-2.13.0-x64.exe) · [Linux x64 Debian package (2.13.0)](https://github.com/dbeachy1/Glideslope/releases/download/v2.13.0/glideslope_2.13.0_amd64.deb)
 
-Hold **Shift** while a full card is visible to see a dotted weekly usage projection based on the average quota consumed since the provider-reported window began. The line follows the reported weekly window; its label estimates when the quota runs out or how many hours remain after reset.
+Hold **Shift** while a full card is visible to see a dotted weekly usage projection fitted to all actual readings for the current provider-reported window. The straight best-fit line uses each reading's timestamp, including the latest live reading; its label estimates when the quota runs out or how many hours remain after reset.
 
 Glideslope is a small desktop app for Windows 11 and Linux that shows how fast you are using your AI coding
 allowance. It has one card each for **Claude Code**, **OpenAI Codex** and **Google Antigravity** (the Gemini card),
