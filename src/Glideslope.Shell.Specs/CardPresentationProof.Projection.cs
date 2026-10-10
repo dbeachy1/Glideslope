@@ -17,17 +17,17 @@ internal static partial class CardPresentationProof
         var start = new DateTimeOffset(2026, 10, 1, 0, 0, 0, TimeSpan.Zero);
         var reset = start.AddDays(7);
         var window = new UsageWindowIdentity("projection-proof", ProviderIds.Claude, "weekly", start, reset, "projection-proof");
-        var beyondReset = new UsageProjection(1, -1 / TimeSpan.FromDays(10).TotalSeconds, start.AddDays(10));
+        var beyondReset = new UsageProjection(1 / TimeSpan.FromDays(10).TotalSeconds, start.AddDays(10));
         Near(WeeklyHistoryChart.RemainingAt(window, beyondReset, reset), 0.3,
             "the dotted line reaches 30% remaining at reset when the average rate projects ten days from week start");
         Near(WeeklyHistoryChart.RemainingAt(window, beyondReset, start.AddDays(1)), 0.9,
             "the start-to-reset line passes through the real day-one reading");
         Assert(WeeklyHistoryChart.ProjectionBand(beyondReset, window) == PaceBand.StrongCushion,
             "a projection that lasts through reset uses the existing green pace band");
-        var fourHoursShort = new UsageProjection(1, -1 / TimeSpan.FromHours(164).TotalSeconds, reset.AddHours(-4));
+        var fourHoursShort = new UsageProjection(1 / TimeSpan.FromHours(164).TotalSeconds, reset.AddHours(-4));
         Assert(WeeklyHistoryChart.ProjectionBand(fourHoursShort, window) == PaceBand.SlightlyOver,
             "a shortfall below the first pace boundary still uses a visible yellow band");
-        var oneDayShort = new UsageProjection(1, -1 / TimeSpan.FromHours(144).TotalSeconds, reset.AddHours(-24));
+        var oneDayShort = new UsageProjection(1 / TimeSpan.FromHours(144).TotalSeconds, reset.AddHours(-24));
         Assert(WeeklyHistoryChart.ProjectionBand(oneDayShort, window) == PaceBand.CriticalOver,
             "a 24-hour shortfall uses the existing critical red band");
         Assert(LocalizedText.ChartProjectionRunOut(reset, TimeSpan.FromHours(1.5)).StartsWith("Projected runout ", StringComparison.Ordinal) &&
@@ -35,19 +35,19 @@ internal static partial class CardPresentationProof
             "projection labels use localized runout date/duration and post-reset hours resources");
 
         var integrationNow = DateTimeOffset.UtcNow;
-        UsageProjection FitCard(double middleRemaining, bool historyIncludesLive)
+        UsageProjection AverageCard(double middleRemaining, bool historyIncludesLive)
         {
             var integrationStart = integrationNow.AddDays(-2);
             var integrationReset = integrationStart.AddDays(7);
-            var snapshot = new AccountSnapshot(ProviderIds.Claude, "projection-fit-proof", "Synthetic",
-                integrationNow, integrationNow, "projection-fit-proof",
+            var snapshot = new AccountSnapshot(ProviderIds.Claude, "projection-average-proof", "Synthetic",
+                integrationNow, integrationNow, "projection-average-proof",
                 [new QuotaBucket("weekly", QuotaBucketRole.Weekly, 0.58, TimeSpan.FromDays(7),
-                    integrationReset, "projection-fit-proof")]);
+                    integrationReset, "projection-average-proof")]);
             var card = new ProviderUsageCardWindow(ProviderIds.Claude, showMark: false, _ => { });
             try
             {
                 card.UpdateState(State(snapshot));
-                var current = card.CurrentHistoryWindow ?? throw new InvalidOperationException("projection_fit_window_missing");
+                var current = card.CurrentHistoryWindow ?? throw new InvalidOperationException("projection_average_window_missing");
                 var observations = new List<UsageObservation>
                 {
                     new(current, integrationStart.AddHours(6), 0.92),
@@ -57,25 +57,24 @@ internal static partial class CardPresentationProof
                     observations.Add(new UsageObservation(current, integrationNow, 0.58));
                 card.SetHistory(current, observations, TimeSpan.FromMinutes(5));
                 return card.ChartControl.Projection
-                    ?? throw new InvalidOperationException("projection_fit_missing_after_live_snapshot");
+                    ?? throw new InvalidOperationException("projection_average_missing_after_live_snapshot");
             }
             finally { card.CloseProgrammatically(); }
         }
 
-        var endpointOnlyHistory = FitCard(0.68, historyIncludesLive: false);
-        var duplicateLiveHistory = FitCard(0.68, historyIncludesLive: true);
-        var changedMiddle = FitCard(0.20, historyIncludesLive: false);
+        var endpointOnlyHistory = AverageCard(0.68, historyIncludesLive: false);
+        var duplicateLiveHistory = AverageCard(0.68, historyIncludesLive: true);
+        var changedMiddle = AverageCard(0.20, historyIncludesLive: false);
         Assert(endpointOnlyHistory.RunsOutAtUtc == duplicateLiveHistory.RunsOutAtUtc,
-            "the current live endpoint contributes once whether or not history already contains it");
+            "the current live sample contributes once whether or not history already contains it");
         Assert(endpointOnlyHistory.RunsOutAtUtc != changedMiddle.RunsOutAtUtc &&
-               endpointOnlyHistory.SlopePerSecond != changedMiddle.SlopePerSecond,
-            "card integration changes both the drawn fitted line and runout when only the middle reading changes");
-        var integrationWindow = new UsageWindowIdentity("projection-fit-proof", ProviderIds.Claude, "weekly",
-            integrationNow.AddDays(-2), integrationNow.AddDays(5), "projection-fit-proof");
+               endpointOnlyHistory.AverageBurnPerSecond != changedMiddle.AverageBurnPerSecond,
+            "card integration changes the average-rate line and runout when only the middle reading changes");
+        var integrationWindow = new UsageWindowIdentity("projection-average-proof", ProviderIds.Claude, "weekly",
+            integrationNow.AddDays(-2), integrationNow.AddDays(5), "projection-average-proof");
         Near(endpointOnlyHistory.RemainingAt(integrationNow, integrationWindow),
-            endpointOnlyHistory.Intercept + endpointOnlyHistory.SlopePerSecond *
-            (integrationNow - (integrationNow.AddDays(-2))).TotalSeconds,
-            "the card projection exposes the fitted line used by chart rendering");
+            1 - endpointOnlyHistory.AverageBurnPerSecond * (integrationNow - integrationWindow.NominalStartUtc).TotalSeconds,
+            "the card projection exposes the fixed-origin mean-rate line used by chart rendering");
 
         var projectionPlot = new Rect(8, 18, 720, 180);
         AssertProjectionLabelPlacement(new Point(8, 18), new Point(180, 198), new Size(150, 28), projectionPlot,
@@ -270,7 +269,7 @@ internal static partial class CardPresentationProof
             (Name: "near-reset-narrow", ElapsedDays: 6d, Remaining: 0.05, Scale: 100, Width: 790d, Height: 680d),
             (Name: "near-reset-scaled", ElapsedDays: 6d, Remaining: 0.05, Scale: 80, Width: 790d, Height: 680d),
             (Name: "beyond-reset", ElapsedDays: 6d, Remaining: 0.5, Scale: 100, Width: 940d, Height: 680d),
-            (Name: "nonlinear-fit", ElapsedDays: 2d, Remaining: 0.58, Scale: 100, Width: 940d, Height: 680d),
+            (Name: "nonlinear-average", ElapsedDays: 2d, Remaining: 0.58, Scale: 100, Width: 940d, Height: 680d),
             (Name: "quiet-then-burst", ElapsedDays: 6d, Remaining: 0.25, Scale: 100, Width: 940d, Height: 680d)
         };
         var providers = new[] { ProviderIds.Claude, ProviderIds.Codex };
@@ -305,7 +304,7 @@ internal static partial class CardPresentationProof
                 card.UpdateState(State(snapshot));
                 var samples = scenario.Name switch
                 {
-                    "nonlinear-fit" => new[]
+                    "nonlinear-average" => new[]
                     {
                         new UsageObservation(identity, start.AddHours(6), 0.92),
                         new UsageObservation(identity, start.AddHours(20), 0.68),

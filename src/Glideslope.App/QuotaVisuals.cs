@@ -266,15 +266,6 @@ internal sealed class WeeklyHistoryChart : Control
             var durationTicks = (projectionReset - projectionStart).Ticks;
             var visibleStart = projectionStart;
             var visibleEnd = projection.RunsOutAtUtc < projectionReset ? projection.RunsOutAtUtc : projectionReset;
-            if (projection.SlopePerSecond < 0)
-            {
-                var reachesTopAtSeconds = (1 - projection.Intercept) / projection.SlopePerSecond;
-                if (reachesTopAtSeconds > 0 && double.IsFinite(reachesTopAtSeconds))
-                {
-                    var reachesTopAt = projectionStart.AddSeconds(reachesTopAtSeconds);
-                    if (reachesTopAt > visibleStart) visibleStart = reachesTopAt;
-                }
-            }
             if (visibleStart >= visibleEnd) return;
 
             var band = ProjectionBand(projection, projectionWindow);
