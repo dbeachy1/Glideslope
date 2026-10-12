@@ -295,6 +295,7 @@ internal sealed partial class WindowCoordinator : IAsyncDisposable
             window.Height = defaultSize.Height;
             // Set startup placement before Show so the window manager applies it.
             window.WindowStartupLocation = WindowStartupLocation.Manual;
+            TopmostWindowDiagnostics.Attach(window, providerId, _diagnostics);
             window.Topmost = _settings.AlwaysOnTop;
             window.UserCloseRequested += OnUserCloseRequested;
             window.SettingsRequested += (_, _) => _ = OpenSettingsAsync();

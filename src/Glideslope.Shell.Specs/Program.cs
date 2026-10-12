@@ -73,6 +73,12 @@ internal static class Program
             CardPresentationProof.RunLocalizedLayoutAcceptanceProof();
             return 0;
         }
+        if (args.Length > 0 && string.Equals(args[0], "--topmost-window-diagnostics-proof", StringComparison.Ordinal))
+        {
+            TopmostWindowDiagnosticsSpecs.Run();
+            Console.WriteLine("Topmost window diagnostics proof passed.");
+            return 0;
+        }
         if (args.Length > 0 && string.Equals(args[0], "--history-browse-proof", StringComparison.Ordinal))
         {
             HistoryBrowseSpecs.Run();
