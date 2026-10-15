@@ -1,7 +1,5 @@
 # Glideslope™
 
-**Downloads:** [Signed Windows 11 x64 installer (2.13.0)](https://github.com/dbeachy1/Glideslope/releases/download/v2.13.0/Glideslope-Setup-2.13.0-x64.exe) · [Linux x64 Debian package (2.13.0)](https://github.com/dbeachy1/Glideslope/releases/download/v2.13.0/glideslope_2.13.0_amd64.deb)
-
 Hold **Shift** while a full card is visible to see a dotted weekly usage projection. It draws a straight line from 100% at the start of the current window through the latest reading, so it uses the same burn rate as the weekly pace. The label uses that rate to estimate runout or remaining hours after reset.
 
 Glideslope is a small desktop app for Windows 11 and Linux that shows how fast you are using your AI coding
@@ -81,9 +79,8 @@ services, as they do when you run them yourself.
 
 ## Installing on Linux
 
-Releases that include Linux builds have a `.deb` package for 64-bit Ubuntu and other Debian-based systems. It
-includes its own .NET runtime, so nothing else needs installing. Versions 2.8.1 through 2.8.3 are Windows-only updates and do not
-include a `.deb`; use a Linux release that includes one. Download it, then:
+Each release includes a `.deb` package for 64-bit Ubuntu and other Debian-based systems. It includes its own .NET
+runtime, so nothing else needs installing. Install it with:
 
 ```bash
 sudo apt install ./glideslope_<version>_amd64.deb
@@ -100,9 +97,8 @@ raise windows, so snapping cards together and bringing them to the front are the
 
 ## Installing on Windows
 
-Download the signed [Glideslope 2.8.3 Windows installer](https://github.com/dbeachy1/Glideslope/releases/download/v2.8.3/Glideslope-Setup-2.8.3-x64.exe)
-for Windows 11 x64. It installs for your user only (no admin rights) and offers start at sign-in. Earlier Windows
-releases through 2.8.0 were unsigned.
+Each release includes a signed Windows installer, `Glideslope-Setup-<version>-x64.exe`, for Windows 11 x64. It
+installs for your user only (no admin rights) and offers start at sign-in.
 
 Windows SmartScreen may still warn about a new signed installer while its reputation builds. Click **More info**
 to check that the publisher is **Douglas Beachy** and confirm you downloaded it from this project's official release.
