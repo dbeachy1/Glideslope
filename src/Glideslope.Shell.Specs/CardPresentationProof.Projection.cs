@@ -19,7 +19,7 @@ internal static partial class CardPresentationProof
         var window = new UsageWindowIdentity("projection-proof", ProviderIds.Claude, "weekly", start, reset, "projection-proof");
         var beyondReset = new UsageProjection(1 / TimeSpan.FromDays(10).TotalSeconds, start.AddDays(10));
         Near(WeeklyHistoryChart.RemainingAt(window, beyondReset, reset), 0.3,
-            "the dotted line reaches 30% remaining at reset when the average rate projects ten days from week start");
+            "the dotted line reaches 30% remaining at reset when the latest reading projects ten days from week start");
         Near(WeeklyHistoryChart.RemainingAt(window, beyondReset, start.AddDays(1)), 0.9,
             "the start-to-reset line passes through the real day-one reading");
         Assert(WeeklyHistoryChart.ProjectionBand(beyondReset, window) == PaceBand.StrongCushion,
@@ -35,46 +35,51 @@ internal static partial class CardPresentationProof
             "projection labels use localized runout date/duration and post-reset hours resources");
 
         var integrationNow = DateTimeOffset.UtcNow;
-        UsageProjection AverageCard(double middleRemaining, bool historyIncludesLive)
+        UsageProjection ProjectionCard(double middleRemaining, double? historyLiveRemaining)
         {
             var integrationStart = integrationNow.AddDays(-2);
             var integrationReset = integrationStart.AddDays(7);
-            var snapshot = new AccountSnapshot(ProviderIds.Claude, "projection-average-proof", "Synthetic",
-                integrationNow, integrationNow, "projection-average-proof",
+            var snapshot = new AccountSnapshot(ProviderIds.Claude, "projection-card-proof", "Synthetic",
+                integrationNow, integrationNow, "projection-card-proof",
                 [new QuotaBucket("weekly", QuotaBucketRole.Weekly, 0.58, TimeSpan.FromDays(7),
-                    integrationReset, "projection-average-proof")]);
+                    integrationReset, "projection-card-proof")]);
             var card = new ProviderUsageCardWindow(ProviderIds.Claude, showMark: false, _ => { });
             try
             {
                 card.UpdateState(State(snapshot));
-                var current = card.CurrentHistoryWindow ?? throw new InvalidOperationException("projection_average_window_missing");
+                var current = card.CurrentHistoryWindow ?? throw new InvalidOperationException("projection_card_window_missing");
                 var observations = new List<UsageObservation>
                 {
                     new(current, integrationStart.AddHours(6), 0.92),
                     new(current, integrationStart.AddHours(20), middleRemaining)
                 };
-                if (historyIncludesLive)
-                    observations.Add(new UsageObservation(current, integrationNow, 0.58));
+                if (historyLiveRemaining is { } liveRemaining)
+                    observations.Add(new UsageObservation(current, integrationNow, liveRemaining));
                 card.SetHistory(current, observations, TimeSpan.FromMinutes(5));
                 return card.ChartControl.Projection
-                    ?? throw new InvalidOperationException("projection_average_missing_after_live_snapshot");
+                    ?? throw new InvalidOperationException("projection_card_missing_after_live_snapshot");
             }
             finally { card.CloseProgrammatically(); }
         }
 
-        var endpointOnlyHistory = AverageCard(0.68, historyIncludesLive: false);
-        var duplicateLiveHistory = AverageCard(0.68, historyIncludesLive: true);
-        var changedMiddle = AverageCard(0.20, historyIncludesLive: false);
+        var endpointOnlyHistory = ProjectionCard(0.68, historyLiveRemaining: null);
+        var duplicateLiveHistory = ProjectionCard(0.68, historyLiveRemaining: 0.58);
+        var conflictingLiveHistory = ProjectionCard(0.68, historyLiveRemaining: 0.50);
+        var changedMiddle = ProjectionCard(0.20, historyLiveRemaining: null);
         Assert(endpointOnlyHistory.RunsOutAtUtc == duplicateLiveHistory.RunsOutAtUtc,
             "the current live sample contributes once whether or not history already contains it");
-        Assert(endpointOnlyHistory.RunsOutAtUtc != changedMiddle.RunsOutAtUtc &&
-               endpointOnlyHistory.AverageBurnPerSecond != changedMiddle.AverageBurnPerSecond,
-            "card integration changes the average-rate line and runout when only the middle reading changes");
-        var integrationWindow = new UsageWindowIdentity("projection-average-proof", ProviderIds.Claude, "weekly",
-            integrationNow.AddDays(-2), integrationNow.AddDays(5), "projection-average-proof");
+        Assert(endpointOnlyHistory.RunsOutAtUtc == conflictingLiveHistory.RunsOutAtUtc,
+            "a conflicting history reading at the live timestamp cannot displace the live reading");
+        Assert(endpointOnlyHistory.RunsOutAtUtc == changedMiddle.RunsOutAtUtc &&
+               endpointOnlyHistory.BurnPerSecond == changedMiddle.BurnPerSecond,
+            "card integration projects from the live reading; changing only an earlier reading does not move the line");
+        Near(endpointOnlyHistory.BurnPerSecond, 0.42 / TimeSpan.FromDays(2).TotalSeconds,
+            "card integration uses the live snapshot's cumulative burn since week start");
+        var integrationWindow = new UsageWindowIdentity("projection-card-proof", ProviderIds.Claude, "weekly",
+            integrationNow.AddDays(-2), integrationNow.AddDays(5), "projection-card-proof");
         Near(endpointOnlyHistory.RemainingAt(integrationNow, integrationWindow),
-            1 - endpointOnlyHistory.AverageBurnPerSecond * (integrationNow - integrationWindow.NominalStartUtc).TotalSeconds,
-            "the card projection exposes the fixed-origin mean-rate line used by chart rendering");
+            1 - endpointOnlyHistory.BurnPerSecond * (integrationNow - integrationWindow.NominalStartUtc).TotalSeconds,
+            "the card projection exposes the fixed-origin line used by chart rendering");
 
         var projectionPlot = new Rect(8, 18, 720, 180);
         AssertProjectionLabelPlacement(new Point(8, 18), new Point(180, 198), new Size(150, 28), projectionPlot,
@@ -269,7 +274,7 @@ internal static partial class CardPresentationProof
             (Name: "near-reset-narrow", ElapsedDays: 6d, Remaining: 0.05, Scale: 100, Width: 790d, Height: 680d),
             (Name: "near-reset-scaled", ElapsedDays: 6d, Remaining: 0.05, Scale: 80, Width: 790d, Height: 680d),
             (Name: "beyond-reset", ElapsedDays: 6d, Remaining: 0.5, Scale: 100, Width: 940d, Height: 680d),
-            (Name: "nonlinear-average", ElapsedDays: 2d, Remaining: 0.58, Scale: 100, Width: 940d, Height: 680d),
+            (Name: "nonlinear-history", ElapsedDays: 2d, Remaining: 0.58, Scale: 100, Width: 940d, Height: 680d),
             (Name: "quiet-then-burst", ElapsedDays: 6d, Remaining: 0.25, Scale: 100, Width: 940d, Height: 680d)
         };
         var providers = new[] { ProviderIds.Claude, ProviderIds.Codex };
@@ -304,7 +309,7 @@ internal static partial class CardPresentationProof
                 card.UpdateState(State(snapshot));
                 var samples = scenario.Name switch
                 {
-                    "nonlinear-average" => new[]
+                    "nonlinear-history" => new[]
                     {
                         new UsageObservation(identity, start.AddHours(6), 0.92),
                         new UsageObservation(identity, start.AddHours(20), 0.68),

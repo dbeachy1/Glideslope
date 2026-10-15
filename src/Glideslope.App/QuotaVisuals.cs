@@ -87,7 +87,7 @@ internal static class PaceColors
     };
 }
 
-/// <summary>Plots selected observations for the provider-reported week and an optional average-rate projection.</summary>
+/// <summary>Plots selected observations for the provider-reported week and an optional latest-reading projection.</summary>
 internal sealed class WeeklyHistoryChart : Control
 {
     private UsageWindowIdentity? _window;

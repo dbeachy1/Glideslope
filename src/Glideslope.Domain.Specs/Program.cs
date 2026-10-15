@@ -9,7 +9,7 @@ internal static class Program
         ProviderContractsAreImmutableAndTyped();
         PaceMathAndBoundariesAreDeterministic();
         ChartSelectionUsesOnlyMatchingRealSamples();
-        UsageProjectionUsesMeanBurnRateFromFixedOrigin();
+        UsageProjectionRunsFromFixedOriginThroughLatestReading();
         CreditInventoryUsesAuthoritativeCountAndSafeDetails();
         WindowIdentityIsStabilizedBeforeUse();
         Console.WriteLine("Glideslope domain specs passed.");
@@ -202,7 +202,7 @@ internal static class Program
         Throws<ArgumentOutOfRangeException>(() => Observation(window, start - TimeSpan.FromTicks(1), 0.4));
     }
 
-    private static void UsageProjectionUsesMeanBurnRateFromFixedOrigin()
+    private static void UsageProjectionRunsFromFixedOriginThroughLatestReading()
     {
         var start = Utc(2025, 1, 1);
         var reset = start + Hours(168);
@@ -219,12 +219,12 @@ internal static class Program
         };
         var withMiddleA = endpointSamples.Append(Observation(window, start + Hours(48), 0.70));
         var withMiddleB = endpointSamples.Append(Observation(window, start + Hours(48), 0.20));
-        var averageA = Fit(withMiddleA, now);
-        var averageB = Fit(withMiddleB, now);
-        Assert(averageA is not null && averageB is not null && averageA.RunsOutAtUtc != averageB.RunsOutAtUtc,
-            "samples with matching endpoints but different middle readings produce different average-rate projections");
-        Assert(averageA!.RunsOutAtUtc > now && averageB!.RunsOutAtUtc > now,
-            "both valid projected runouts remain after the current instant");
+        var latestA = Fit(withMiddleA, now);
+        var latestB = Fit(withMiddleB, now);
+        Assert(latestA is not null && latestB is not null && latestA.RunsOutAtUtc == latestB.RunsOutAtUtc,
+            "earlier readings do not move the projection; only the latest cumulative reading does");
+        Near((latestA!.RunsOutAtUtc - start).TotalHours, 144,
+            "50% used over 72 hours projects runout at 144 hours from start");
 
         var irregular = new[]
         {
@@ -234,14 +234,26 @@ internal static class Program
         };
         var irregularFit = Fit(irregular, start + Hours(31));
         Assert(irregularFit is not null, "irregular timestamps with positive cumulative burn produce a projection");
-        Near(irregularFit!.AverageBurnPerSecond * 3600, 0.02,
-            "the arithmetic mean of the three cumulative rates is 2% of quota per hour");
-        Near((irregularFit.RunsOutAtUtc - start).TotalHours, 50,
-            "the 2% per hour mean rate projects runout 50 hours after nominal start");
+        Near(irregularFit!.BurnPerSecond * 3600, 0.03,
+            "90% used over 30 hours is 3% of quota per hour");
+        Near((irregularFit.RunsOutAtUtc - start).TotalHours, 100d / 3,
+            "the 3% per hour rate projects runout 33.3 hours after nominal start");
         Near(irregularFit.RemainingAt(start, window), 1,
             "every projection begins at 100% at nominal window start");
-        Near(irregularFit.RemainingAt(start + Hours(50), window), 0,
+        Near(irregularFit.RemainingAt(start + Hours(30), window), 0.1,
+            "the drawn line passes through the latest reading");
+        Near(irregularFit.RemainingAt(irregularFit.RunsOutAtUtc, window), 0,
             "the drawn line reaches zero at the same instant as the runout estimate");
+
+        // Weekly pace is total used over the elapsed share of the window, so a line through the latest reading
+        // runs out exactly when pace says it will: 7% used 6 hours into a 168-hour week is 196% pace.
+        var paceFit = Fit([Observation(window, start + Hours(6), 0.93)], start + Hours(6));
+        var pace = PaceCalculator.Calculate(
+            new QuotaBucket("weekly", QuotaBucketRole.Weekly, 0.93, Hours(168), reset, "weekly-limit"),
+            start + Hours(6), SnapshotFreshness.Fresh);
+        Assert(paceFit is not null && pace.PacePercent is not null, "pace and projection are both available");
+        Near((paceFit!.RunsOutAtUtc - start).TotalHours, 168 / (pace.PacePercent!.Value / 100),
+            "the projection runs out when the weekly pace percentage says the quota runs out");
 
         var lateStart = Fit([
             Observation(window, start + Hours(48), 0.6)
@@ -257,11 +269,11 @@ internal static class Program
             Observation(window, start + Hours(24), 1),
             Observation(window, start + Hours(48), 0.76)
         ], start + Hours(49));
-        Assert(startAndQuiet is not null, "the zero-elapsed origin sample is skipped and a post-start quiet sample is retained");
-        Near(startAndQuiet!.AverageBurnPerSecond * 3600, 0.0025,
-            "a 24-hour zero-burn sample counts beside the later 0.5% per hour sample");
-        Near((startAndQuiet.RunsOutAtUtc - start).TotalHours, 400,
-            "quiet time followed by a burst projects from the mean of every sample rate");
+        Assert(startAndQuiet is not null, "quiet earlier readings do not suppress a projection from the latest reading");
+        Near(startAndQuiet!.BurnPerSecond * 3600, 0.005,
+            "24% used over 48 hours is 0.5% per hour; the quiet day is already inside that total");
+        Near((startAndQuiet.RunsOutAtUtc - start).TotalHours, 200,
+            "quiet time followed by a burst is not counted twice");
 
         var currentLive = Observation(window, start + Hours(72), 0.5);
         var alreadyWithLive = Fit(endpointSamples.Append(currentLive), now);
@@ -280,7 +292,7 @@ internal static class Program
         Assert(Fit([Observation(window, start + Hours(24), 1), Observation(window, start + Hours(48), 1)], now) is null,
             "zero usage has no finite runout estimate");
         Assert(Fit([Observation(window, start + Hours(24), 0.8), Observation(window, start + Hours(48), 0.9)], now) is not null,
-            "a later increase in remaining quota does not erase the positive average cumulative burn");
+            "a later increase in remaining quota still projects from the latest positive cumulative burn");
         Assert(Fit(new[] { 0.95, 0.8, 0.65, 0.5, 0.35, 0.2 }
                 .Select((remaining, index) => Observation(window, start + Hours(24 + index * 6), remaining))
                 .Append(Observation(window, start + Hours(72), 1)), now) is null,
@@ -291,7 +303,7 @@ internal static class Program
             start + Hours(49)) is null,
             "an exhausted latest reading suppresses a projection whose runout would otherwise be future");
         Assert(Fit([Observation(window, start + Hours(24), 0.8), Observation(window, start + Hours(48), 0.6)],
-            start + Hours(130)) is null, "an average-rate runout in the past is suppressed");
+            start + Hours(130)) is null, "a runout in the past is suppressed");
         Assert(Fit(endpointSamples, now, SnapshotFreshness.Stale) is null, "stale provider state suppresses projections");
         Assert(Fit(endpointSamples, reset) is null, "a window at reset is no longer projected");
         Assert(Fit(endpointSamples, start - TimeSpan.FromTicks(1)) is null, "a not-yet-started window is suppressed");

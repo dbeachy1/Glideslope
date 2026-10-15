@@ -203,9 +203,13 @@ internal sealed partial class ProviderUsageCardWindow
                     // The live quota remains authoritative even if history conflicts at its timestamp.
                     if (weekly.RemainingFraction is > 0 and < 1)
                     {
+                        // Drop any history reading at the live timestamp; the selector would otherwise discard both
+                        // conflicting values and project from an older reading.
                         var currentObservation = new UsageObservation(currentWindow, snapshot.ObservedAtUtc, weekly.RemainingFraction);
                         projection = UsageProjectionCalculator.Calculate(currentWindow,
-                            _chart.SelectedSamples.Append(currentObservation), _chart.SamplingInterval, freshness, now);
+                            _chart.SelectedSamples.Where(sample => sample.ObservedAtUtc != snapshot.ObservedAtUtc)
+                                .Append(currentObservation),
+                            _chart.SamplingInterval, freshness, now);
                     }
                     showZeroUsageOverlay = weekly.RemainingFraction == 1.0 && projection is null;
                 }
