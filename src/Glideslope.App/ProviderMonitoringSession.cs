@@ -76,6 +76,8 @@ internal sealed class ProviderMonitoringSession : IAsyncDisposable
             // Read Antigravity's Gemini Models usage through its CLI.
             [ProviderIds.Gemini] = new AntigravityUsageProvider(
                 new AntigravityHomeContextReader(), new AntigravityCliUsageTransport(providerDiagnostics),
+                scopeKeys.ResolveAsync, providerDiagnostics),
+            [ProviderIds.Grok] = new GrokUsageProvider(new GrokCliUsageTransport(providerDiagnostics),
                 scopeKeys.ResolveAsync, providerDiagnostics)
         };
         Func<UsageObservation, bool>? historySink = history is null ? null : history.TryAppend;

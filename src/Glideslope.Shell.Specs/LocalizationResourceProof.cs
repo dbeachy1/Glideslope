@@ -30,6 +30,10 @@ internal static class LocalizationResourceProof
         Assert(LocalizedText.AppName == "Glideslope", "neutral app name");
         Assert(LocalizedText.TrayShow == "Show Glideslope" && LocalizedText.TrayExit == "Exit", "neutral tray labels");
         Assert(LocalizedText.ProviderName(ProviderCatalog.Gemini) == "Gemini", "provider display name belongs to presentation");
+        Assert(LocalizedText.ProviderName(ProviderCatalog.Grok) == "Grok" &&
+               LocalizedText.CardNoticeSignIn(ProviderCatalog.Grok) == "Run grok login to sign in." &&
+               LocalizedText.CardNoticeMissing(ProviderCatalog.Grok) == "Install the official Grok CLI.",
+            "neutral Grok name and CLI notices use the official command and installation wording");
         Assert(!string.IsNullOrWhiteSpace(LocalizedText.CardFooterNoSynthetic), "card footer resource");
 
         var manager = new ResourceManager("Glideslope.App.Resources.Strings", typeof(LocalizedText).Assembly);
@@ -51,6 +55,7 @@ internal static class LocalizationResourceProof
         Assert(LocalizedText.SettingsSnapToScreenEdge == "Snap cards together and to screen edges", "updated snap label (design doc §12)");
 
         RunPluralTable(manager);
+        RunGrokResources();
         RunCreditExpirationDate();
         RunEveryOneKeyHasAnOtherTwin(manager);
         RunNoHardCodedOrdinalSuffix(manager);
@@ -71,6 +76,21 @@ internal static class LocalizationResourceProof
     {
         var manager = new ResourceManager("Glideslope.App.Resources.Strings", typeof(LocalizedText).Assembly);
         RunSatelliteResources(manager);
+    }
+
+    private static void RunGrokResources()
+    {
+        foreach (var language in AppSettings.SupportedLanguageChoices.Where(choice => choice != "auto"))
+        {
+            var culture = CultureInfo.GetCultureInfo(language);
+            using var localized = LocalizedText.OverrideForSpecs(culture, culture);
+            Assert(LocalizedText.ProviderName(ProviderCatalog.Grok) == "Grok",
+                $"{language}: Grok keeps its provider brand in Settings and card headings");
+            Assert(LocalizedText.CardNoticeSignIn(ProviderCatalog.Grok).Contains("grok login", StringComparison.Ordinal),
+                $"{language}: the Grok sign-in notice preserves the documented command");
+            Assert(!string.IsNullOrWhiteSpace(LocalizedText.CardNoticeMissing(ProviderCatalog.Grok)),
+                $"{language}: the Grok missing-CLI notice is translated");
+        }
     }
 
     /// <summary>

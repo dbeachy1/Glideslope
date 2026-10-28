@@ -122,6 +122,18 @@ internal static class Program
             CardPresentationProof.CaptureSettingsProjectionNoteScreenshots(Path.GetFullPath(args[1]));
             return 0;
         }
+        if (args.Length == 2 && string.Equals(args[0], "--grok-visual-proof", StringComparison.Ordinal))
+        {
+            StartWatchdog(TimeSpan.FromMinutes(2));
+            CardPresentationProof.CaptureLiveGrokScreenshots(Path.GetFullPath(args[1]));
+            return 0;
+        }
+        if (args.Length == 2 && string.Equals(args[0], "--grok-settings-restart-visual-proof", StringComparison.Ordinal))
+        {
+            StartWatchdog(TimeSpan.FromMinutes(2));
+            CardPresentationProof.CaptureGrokRestartSettingsScreenshots(Path.GetFullPath(args[1]));
+            return 0;
+        }
         if (args.Length > 0 && string.Equals(args[0], "--language-settings-proof", StringComparison.Ordinal))
         {
             await RestartLifecycleProof.RunAsync().ConfigureAwait(false);
@@ -150,6 +162,8 @@ internal static class Program
             var paths = new TestPaths(tempRoot);
             Announce("settings");
             await SettingsDefaultsAndRoundTrip(paths);
+            Announce("Grok catalog and settings");
+            await GrokShellProof.RunSettingsAsync(tempRoot);
             Announce("settings revision");
             await SettingsRevisionAndFutureSchema(tempRoot);
             Announce("settings fallback revision");

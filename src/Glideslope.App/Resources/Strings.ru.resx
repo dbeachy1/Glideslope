@@ -822,4 +822,14 @@
     <value>{0} минут</value>
     <comment>{0} = whole number of minutes.</comment>
   </data>
+  <data name="Provider_Grok" xml:space="preserve">
+    <value>Grok</value>
+  </data>
+  <data name="Card_NoticeSignInGrok" xml:space="preserve">
+    <value>Выполните grok login, чтобы войти.</value>
+    <comment>"grok login" is a command; do not translate it.</comment>
+  </data>
+  <data name="Card_NoticeMissingGrok" xml:space="preserve">
+    <value>Установите официальную CLI Grok.</value>
+  </data>
 </root>

@@ -215,4 +215,14 @@
   <data name="Card_AgeHours_Other" xml:space="preserve"><value>{0} heures</value><comment>{0} = hours with one decimal.</comment></data>
   <data name="Card_AgeMinutes_One" xml:space="preserve"><value>{0} minute</value><comment>{0} = whole number of minutes.</comment></data>
   <data name="Card_AgeMinutes_Other" xml:space="preserve"><value>{0} minutes</value><comment>{0} = whole number of minutes.</comment></data>
+  <data name="Provider_Grok" xml:space="preserve">
+    <value>Grok</value>
+  </data>
+  <data name="Card_NoticeSignInGrok" xml:space="preserve">
+    <value>Exécutez grok login pour vous connecter.</value>
+    <comment>"grok login" is a command; do not translate it.</comment>
+  </data>
+  <data name="Card_NoticeMissingGrok" xml:space="preserve">
+    <value>Installez la CLI officielle de Grok.</value>
+  </data>
 </root>

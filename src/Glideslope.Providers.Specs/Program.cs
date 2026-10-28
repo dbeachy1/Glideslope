@@ -27,6 +27,8 @@ internal static class Program
         // "agy.exe" for its own process-level transport specs, and the two fakes must never interfere.
         if (Environment.GetEnvironmentVariable("GLIDESLOPE_FAKE_ANTIGRAVITY_CHILD") == "1")
             return RunFakeAntigravityChild(args);
+        if (Environment.GetEnvironmentVariable("GLIDESLOPE_FAKE_GROK_CHILD") == "1")
+            return RunFakeGrokChild();
 
         if (args.Length == 5 && args[0] == "--scope-child")
             return await RunScopeChildAsync(args[1], args[2], args[3], args[4]).ConfigureAwait(false);
@@ -42,6 +44,14 @@ internal static class Program
             return await RunLiveCodexAsync(temp.Path).ConfigureAwait(false);
         if (args.Length == 1 && args[0] == "--live-codex-shape")
             return await RunLiveCodexShapeAsync().ConfigureAwait(false);
+        if (args.Length == 1 && args[0] == "--grok-live-proof")
+            return await GrokUsageSpecs.RunLiveProofAsync().ConfigureAwait(false);
+        if (args.Length == 1 && args[0] == "--grok-specs-only")
+        {
+            await GrokUsageSpecs.RunAllAsync(temp.Path).ConfigureAwait(false);
+            Console.WriteLine("Grok provider specifications passed.");
+            return 0;
+        }
 
         TimeoutBudgetSpecs();
         ClaudeCliSpecs.ParserSpecs();
@@ -55,6 +65,7 @@ internal static class Program
         await ClaudeCliSpecs.TransportProcessSpecsAsync(temp.Path).ConfigureAwait(false);
         await CodexTransportProcessSpecsAsync(temp.Path).ConfigureAwait(false);
         await AntigravitySpecs.RunAllAsync(temp.Path).ConfigureAwait(false);
+        await GrokUsageSpecs.RunAllAsync(temp.Path).ConfigureAwait(false);
         Console.WriteLine("Provider and account-scope specifications passed.");
         return 0;
     }
@@ -153,6 +164,52 @@ internal static class Program
         return int.TryParse(exitCodeText, out var exitCode) ? exitCode : 0;
     }
 
+    private static int RunFakeGrokChild()
+    {
+        Console.InputEncoding = new UTF8Encoding(false);
+        Console.OutputEncoding = new UTF8Encoding(false);
+        var marker = Environment.GetEnvironmentVariable("GLIDESLOPE_FAKE_GROK_SEQUENCE_MARKER");
+        var updater = Environment.GetEnvironmentVariable("GLIDESLOPE_FAKE_GROK_UPDATER_MARKER");
+        if (updater is not null) File.WriteAllText(updater, Environment.GetEnvironmentVariable("GROK_DISABLE_AUTOUPDATER") ?? "<unset>");
+        var cwd = Environment.GetEnvironmentVariable("GLIDESLOPE_FAKE_GROK_CWD_MARKER");
+        if (cwd is not null) File.WriteAllText(cwd, Environment.CurrentDirectory);
+        var hangMarker = Environment.GetEnvironmentVariable("GLIDESLOPE_FAKE_GROK_HANG_MARKER");
+        if (hangMarker is not null) File.WriteAllText(hangMarker, Environment.ProcessId.ToString());
+        if (Environment.GetEnvironmentVariable("GLIDESLOPE_FAKE_GROK_HANG") == "1") Thread.Sleep(Timeout.Infinite);
+        var scenario = Environment.GetEnvironmentVariable("GLIDESLOPE_FAKE_GROK_SCENARIO");
+        var methods = new List<string>();
+        string? line;
+        while ((line = Console.In.ReadLine()) is not null)
+        {
+            using var request = System.Text.Json.JsonDocument.Parse(line);
+            var root = request.RootElement;
+            var id = root.GetProperty("id").GetRawText();
+            var method = root.GetProperty("method").GetString() ?? "";
+            methods.Add(method);
+            var head = "{\"jsonrpc\":\"2.0\",\"id\":" + id;
+            var result = method switch
+            {
+                "initialize" when scenario == "protocol" => head + ",\"result\":{\"protocolVersion\":2}}",
+                "_x.ai/auth/info" when scenario == "signed-out" => head + ",\"result\":{\"methodId\":null,\"principalId\":null}}",
+                "_x.ai/auth/info" when scenario == "api-key" => head + ",\"result\":{\"methodId\":\"api_key\",\"principalId\":\"synthetic-principal\"}}",
+                "_x.ai/auth/info" when scenario == "malformed-auth" => head + ",\"result\":{\"methodId\":42}}",
+                "_x.ai/auth/info" when scenario == "auth-missing" => head + ",\"error\":{\"code\":-32601}}",
+                "_x.ai/auth/info" when scenario == "auth-offline" => head + ",\"error\":{\"code\":-32603}}",
+                "_x.ai/billing" when scenario == "billing-sign-in" => head + ",\"error\":{\"code\":-32000}}",
+                "_x.ai/billing" when scenario == "billing-missing" => head + ",\"error\":{\"code\":-32601}}",
+                "_x.ai/billing" when scenario == "malformed-error" => head + ",\"error\":{\"code\":\"private arbitrary text\"}}",
+                "initialize" => head + ",\"result\":{\"protocolVersion\":1,\"authMethods\":[{\"id\":\"cached_token\"}]}}",
+                "_x.ai/auth/info" => head + ",\"result\":{\"methodId\":\"cached_token\",\"principalId\":\"synthetic-principal\",\"principalType\":\"user\",\"teamId\":\"synthetic-team\"}}",
+                "_x.ai/billing" => head + ",\"result\":{\"config\":{\"creditUsagePercent\":4,\"currentPeriod\":{\"type\":\"USAGE_PERIOD_TYPE_WEEKLY\",\"start\":\"2026-10-28T14:22:27.097-04:00\",\"end\":\"2026-11-04T13:22:27.097-05:00\"}},\"subscription_tier\":\"SuperGrok\"}}",
+                _ => head + ",\"error\":{\"code\":-32601,\"message\":\"unsupported\"}}"
+            };
+            Console.Out.WriteLine(result);
+            Console.Out.Flush();
+        }
+        if (marker is not null) File.WriteAllText(marker, string.Join('\u001f', methods));
+        return 0;
+    }
+
     /// <summary>A child process that inherits a fake CLI's output pipes and remains alive until the spec stops it.</summary>
     private static int RunPipeHolder()
     {
@@ -239,6 +296,10 @@ internal static class Program
             "the Claude provider finishes before the scheduler's read timeout");
         Equal(true, CodexAppServerTransport.WorstCaseReadDuration < Glideslope.Monitoring.ProviderScheduler.DefaultReadTimeout,
             "the Codex exchange times out before the scheduler's read timeout");
+        Equal(true, GrokCliUsageTransport.WorstCaseReadDuration < Glideslope.Monitoring.ProviderScheduler.DefaultReadTimeout,
+            "the Grok exchange and both shutdown waits fit inside the scheduler's read timeout");
+        Equal(true, GrokCliUsageTransport.ShutdownAndDrainAllowance <= Glideslope.Monitoring.ProviderScheduler.DisposeReadDrainTimeout,
+            "dispose allows enough time for Grok's graceful wait, forced wait, and pipe drain");
         Equal(true, AntigravityCliUsageTransport.WorstCaseRunDuration < Glideslope.Monitoring.ProviderScheduler.DefaultReadTimeout,
             "the agy run times out before the scheduler's read timeout");
         // A silent Antigravity hang is retried once; the prechecks are local file reads and add no process time.

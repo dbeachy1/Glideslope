@@ -180,10 +180,6 @@ internal static class SettingsBehaviorProof
         var card = new ProviderUsageCardWindow(ProviderIds.Codex, showMark: false, _ => { });
         try
         {
-            var codexBox = settings.ProviderCheckbox(ProviderIds.Codex);
-            var geminiBox = settings.ProviderCheckbox(ProviderIds.Gemini);
-            var claudeBox = settings.ProviderCheckbox(ProviderIds.Claude);
-            codexBox.IsChecked = false;
             settings.ThemeSelector.SelectedIndex = 1;
             settings.AlwaysOnTopControl.IsChecked = true;
             settings.SnapToScreenEdgeControl.IsChecked = true;
@@ -194,15 +190,15 @@ internal static class SettingsBehaviorProof
 
             // Unchecking every provider and pressing Save keeps the existing at-least-one rule,
             // applies nothing, and never even calls the save delegate.
-            geminiBox.IsChecked = false;
-            claudeBox.IsChecked = false;
+            foreach (var providerId in ProviderCatalog.DefaultEnabledProviderIds)
+                settings.ProviderCheckbox(providerId).IsChecked = false;
             settings.SaveControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Assert(saveCalls == 0 && settings.ErrorText == LocalizedText.SettingsAtLeastOneProvider,
                 "unchecking every provider and pressing Save is rejected locally before any save attempt");
 
             // Re-check one provider, then a failed save applies nothing: the error is shown and the
             // staged edits remain exactly as typed so the user can retry.
-            claudeBox.IsChecked = true;
+            settings.ProviderCheckbox(ProviderIds.Claude).IsChecked = true;
             nextResult = new SettingsSaveResult(false, "settings_save_io_error");
             var closedAfterFailure = false;
             settings.Closed += (_, _) => closedAfterFailure = true;
@@ -221,6 +217,7 @@ internal static class SettingsBehaviorProof
                    !lastSaveRequest.EnabledProviderIds.Contains(ProviderIds.Codex) &&
                    lastSaveRequest.EnabledProviderIds.Contains(ProviderIds.Claude) &&
                    !lastSaveRequest.EnabledProviderIds.Contains(ProviderIds.Gemini) &&
+                   !lastSaveRequest.EnabledProviderIds.Contains(ProviderIds.Grok) &&
                    lastSaveRequest.ThemeMode == "dark" && lastSaveRequest.AlwaysOnTop && lastSaveRequest.SnapToScreenEdge,
                 "the single committed save carries every staged control's value together");
         }
@@ -611,6 +608,7 @@ internal static class SettingsBehaviorProof
             try
             {
                 window.Show();
+                window.FitToWorkingArea(new PixelRect(0, 0, 1920, 1040), 1.0);
                 window.UpdateLayout();
                 var client = new Rect(0, 0, window.ClientSize.Width, window.ClientSize.Height);
                 var button = BoundsInWindow(window.RestartControl, window);

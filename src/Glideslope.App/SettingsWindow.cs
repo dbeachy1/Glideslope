@@ -26,7 +26,7 @@ internal sealed class SettingsWindow : Window
     internal const int MinimumRetentionDays = 7;
     internal const int MaximumRetentionDays = 365;
     private const double CardScaleSliderWidth = 160;
-    private static readonly string[] ProviderOrder = [ProviderIds.Codex, ProviderIds.Claude, ProviderIds.Gemini];
+    private static readonly string[] ProviderOrder = [ProviderIds.Codex, ProviderIds.Claude, ProviderIds.Gemini, ProviderIds.Grok];
     private readonly Dictionary<string, CheckBox> _providers = new(StringComparer.Ordinal);
     private readonly CheckBox _startAtSignIn;
     private readonly CheckBox _alwaysOnTop;

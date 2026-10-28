@@ -217,6 +217,7 @@ internal static partial class CardPresentationProof
         AssertWeekNavigation();
         AssertBrowsingWithoutCurrentWindow();
         AssertSignInNotice();
+        AssertGrokPresentation();
         AssertPlanTypeLine();
         AssertFableReset();
         AssertFableNotStarted();

@@ -37,8 +37,9 @@ internal static class SettingsWindowRevisionProof
         Assert(tracker.ApplyCommitted(coordinator.Revision, coordinator.Layout, coordinator.EnabledProviderIds),
             "the pushed commit is taken");
         Assert(tracker.ExpectedRevision == 5, "the push moves the window to the committed revision");
-        Assert(!tracker.EnabledProviderIds.Contains(ProviderIds.Claude) && tracker.EnabledProviderIds.Count == 2,
-            "the push carries the committed selection the checkboxes re-sync to");
+        Assert(!tracker.EnabledProviderIds.Contains(ProviderIds.Claude) &&
+               tracker.EnabledProviderIds.SequenceEqual(coordinator.EnabledProviderIds),
+            "the push carries the complete committed selection the checkboxes re-sync to");
 
         // Save from the window with the pushed revision: it succeeds.
         var request = tracker.CreateRequest();
@@ -121,14 +122,16 @@ internal static class SettingsWindowRevisionProof
                 "the open window takes the pushed disable");
             Assert(window.ProviderCheckbox(ProviderIds.Claude).IsChecked == false &&
                    window.ProviderCheckbox(ProviderIds.Codex).IsChecked == true &&
-                   window.ProviderCheckbox(ProviderIds.Gemini).IsChecked == true,
+                   window.ProviderCheckbox(ProviderIds.Gemini).IsChecked == true &&
+                   window.ProviderCheckbox(ProviderIds.Grok).IsChecked == true,
                 "the push re-syncs the checkboxes: the closed provider is no longer shown checked");
 
             window.ThemeSelector.SelectedIndex = 1;
             window.SaveControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Assert(receivedRevisions.SequenceEqual([8L]), "the window's Save sends the pushed revision");
             Assert(closed && store.Committed.Revision == 9 && store.Committed.ThemeMode == "dark" &&
-                   !store.Committed.EnabledProviderIds.Contains(ProviderIds.Claude) && store.Committed.LanguageChoice == "es",
+                   !store.Committed.EnabledProviderIds.Contains(ProviderIds.Claude) &&
+                   store.Committed.EnabledProviderIds.Contains(ProviderIds.Grok) && store.Committed.LanguageChoice == "es",
                 "the save succeeds, keeps the disable and staged language, and closes the window");
         }
         finally
@@ -155,14 +158,15 @@ internal static class SettingsWindowRevisionProof
                 "an older push is refused");
             Assert(second.ProviderCheckbox(ProviderIds.Gemini).IsChecked == false &&
                    second.ProviderCheckbox(ProviderIds.Claude).IsChecked == false &&
-                   second.ProviderCheckbox(ProviderIds.Codex).IsChecked == true,
+                   second.ProviderCheckbox(ProviderIds.Codex).IsChecked == true &&
+                   second.ProviderCheckbox(ProviderIds.Grok).IsChecked == true,
                 "a refused push leaves the checkboxes on the committed selection");
 
             second.SaveControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Assert(receivedRevisions.SequenceEqual([9L, 10L]), "the retry sends the pushed revision");
             Assert(secondClosed && store.Committed.Revision == 11 &&
-                   store.Committed.EnabledProviderIds.SequenceEqual([ProviderIds.Codex]),
-                "after the push the same Save succeeds with only the remaining provider");
+                   store.Committed.EnabledProviderIds.SequenceEqual([ProviderIds.Codex, ProviderIds.Grok]),
+                "after the push the same Save succeeds with the remaining selected providers");
         }
         finally
         {
@@ -209,7 +213,8 @@ internal static class SettingsWindowRevisionProof
                 "the layout push is taken");
             Assert(staged.ProviderCheckbox(ProviderIds.Gemini).IsChecked == false &&
                    staged.ProviderCheckbox(ProviderIds.Claude).IsChecked == true &&
-                   staged.ProviderCheckbox(ProviderIds.Codex).IsChecked == true,
+                   staged.ProviderCheckbox(ProviderIds.Codex).IsChecked == true &&
+                   staged.ProviderCheckbox(ProviderIds.Grok).IsChecked == true,
                 "a push with an unchanged provider set leaves the user's unchecked Gemini alone");
 
             // The user closes the Claude card: the push removes Claude.
@@ -218,12 +223,13 @@ internal static class SettingsWindowRevisionProof
                 "the disable push is taken");
             Assert(staged.ProviderCheckbox(ProviderIds.Claude).IsChecked == false &&
                    staged.ProviderCheckbox(ProviderIds.Gemini).IsChecked == false &&
-                   staged.ProviderCheckbox(ProviderIds.Codex).IsChecked == true,
+                   staged.ProviderCheckbox(ProviderIds.Codex).IsChecked == true &&
+                   staged.ProviderCheckbox(ProviderIds.Grok).IsChecked == true,
                 "a push that removes Claude unchecks Claude and keeps the user's Gemini choice");
 
             staged.SaveControl.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             Assert(thirdRevisions.SequenceEqual([22L]), "the Save sends the latest pushed revision");
-            Assert(stagedClosed && thirdStore.Committed.EnabledProviderIds.SequenceEqual([ProviderIds.Codex]),
+            Assert(stagedClosed && thirdStore.Committed.EnabledProviderIds.SequenceEqual([ProviderIds.Codex, ProviderIds.Grok]),
                 "the Save commits the user's Gemini toggle together with the pushed Claude removal");
         }
         finally

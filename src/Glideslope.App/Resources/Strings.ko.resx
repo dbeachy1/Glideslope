@@ -694,4 +694,14 @@
     <value>{0}분</value>
     <comment>{0} = whole number of minutes.</comment>
   </data>
+  <data name="Provider_Grok" xml:space="preserve">
+    <value>Grok</value>
+  </data>
+  <data name="Card_NoticeSignInGrok" xml:space="preserve">
+    <value>로그인하려면 grok login을 실행하세요.</value>
+    <comment>"grok login" is a command; do not translate it.</comment>
+  </data>
+  <data name="Card_NoticeMissingGrok" xml:space="preserve">
+    <value>공식 Grok CLI를 설치하세요.</value>
+  </data>
 </root>

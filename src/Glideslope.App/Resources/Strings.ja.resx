@@ -694,4 +694,14 @@
     <value>{0}分</value>
     <comment>{0} = whole number of minutes.</comment>
   </data>
+  <data name="Provider_Grok" xml:space="preserve">
+    <value>Grok</value>
+  </data>
+  <data name="Card_NoticeSignInGrok" xml:space="preserve">
+    <value>サインインするには grok login を実行してください。</value>
+    <comment>"grok login" is a command; do not translate it.</comment>
+  </data>
+  <data name="Card_NoticeMissingGrok" xml:space="preserve">
+    <value>Grok の公式 CLI をインストールしてください。</value>
+  </data>
 </root>

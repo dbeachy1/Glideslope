@@ -82,6 +82,7 @@ internal static class LocalizedText
         ProviderIds.Codex => Get("Provider_Codex"),
         ProviderIds.Claude => Get("Provider_Claude"),
         ProviderIds.Gemini => Get("Provider_Gemini"),
+        ProviderIds.Grok => Get("Provider_Grok"),
         _ => providerId,
     };
 
@@ -109,12 +110,14 @@ internal static class LocalizedText
     {
         Glideslope.Domain.ProviderIds.Codex => Get("Card_NoticeSignInCodex"),
         Glideslope.Domain.ProviderIds.Gemini => Get("Card_NoticeSignInGemini"),
+        Glideslope.Domain.ProviderIds.Grok => Get("Card_NoticeSignInGrok"),
         _ => Get("Card_NoticeSignInClaude")
     };
     public static string CardNoticeMissing(string providerId) => providerId switch
     {
         Glideslope.Domain.ProviderIds.Codex => Get("Card_NoticeMissingCodex"),
         Glideslope.Domain.ProviderIds.Gemini => Get("Card_NoticeMissingGemini"),
+        Glideslope.Domain.ProviderIds.Grok => Get("Card_NoticeMissingGrok"),
         _ => Get("Card_NoticeMissingClaude")
     };
     public static string CardCreditExpirationUnknown => Get("Card_CreditExpirationUnknown");
@@ -377,7 +380,7 @@ internal static class LocalizedText
         if (state.SafeErrorCode == "antigravity_usage_command_unsupported") return Get("Card_QuotaGuardDetails");
         if (state.Status == Glideslope.Domain.ProviderStatus.Ready && snapshot is not null)
         {
-            if (state.SafeErrorCode is "claude_history_scope_unavailable" or "codex_history_scope_unavailable")
+            if (state.SafeErrorCode is "claude_history_scope_unavailable" or "codex_history_scope_unavailable" or "grok_history_scope_unavailable")
                 return Get("Card_HistoryScopeUnavailable");
             if (state.Freshness == SnapshotFreshness.Stale) return Get("Card_StaleDetails");
             if (state.Freshness == SnapshotFreshness.RestoredHistorical) return Get("Card_HistoricalDetails");

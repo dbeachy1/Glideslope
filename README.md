@@ -3,7 +3,7 @@
 Hold **Shift** while a full card is visible to see a dotted weekly usage projection. It draws a straight line from 100% at the start of the current window through the latest reading, so it uses the same burn rate as the weekly pace. The label uses that rate to estimate runout or remaining hours after reset.
 
 Glideslope is a small desktop app for Windows 11 and Linux that shows how fast you are using your AI coding
-allowance. It has one card each for **Claude Code**, **OpenAI Codex** and **Google Antigravity** (the Gemini card),
+allowance. It has one card each for **Claude Code**, **OpenAI Codex**, **Google Antigravity** (the Gemini card), and **Grok**,
 and each card answers one question: am I ahead of or behind an even pace toward my next reset? English is the
 original language; the interface has AI translations in Spanish, French, German, Italian, Brazilian Portuguese,
 Japanese, Simplified Chinese, Korean, Russian, Indonesian, and Traditional Chinese.
@@ -60,10 +60,16 @@ token, and never sends a model request to get a reading.
 | Claude | `claude auth status --json`, then `claude -p --no-session-persistence --strict-mcp-config --setting-sources project,local --output-format json /usage` (run from an empty folder so no hooks or MCP servers load) | none (`num_turns` 0, checked on every run; a run that ever spends a turn stops the card's reads until the Claude CLI is updated; that stop survives restarts) |
 | Codex | `codex app-server` over its documented JSON protocol, `account/rateLimits/read` | none |
 | Gemini | `agy -p /usage --output-format json` (Google Antigravity) | none (checked on every run) |
+| Grok | `grok agent --no-leader stdio`; Glideslope reads `_x.ai/auth/info` and `_x.ai/billing` over ACP | none; reads the authenticated subscription's weekly pool only |
 
-So you need the tool for each card you use, installed and signed in: Claude Code, the Codex CLI, or Antigravity.
+So you need the tool for each card you use, installed and signed in: Claude Code, the Codex CLI, Antigravity, or Grok.
 Sign-in stays with each vendor's own tool. If a tool reports you are signed out, the card says so and tells you
 which command to run; Glideslope never signs you in itself.
+
+For Grok, install the [official xAI CLI](https://docs.x.ai/build/overview) on Windows or Linux and sign in
+with `grok login`. Glideslope reads the weekly subscription allowance from the CLI's structured billing response;
+it does not infer a weekly allowance from monthly billing, prepaid balance, or purchased credits. Accounts whose
+reported pool is monthly or unknown are marked unsupported.
 
 **What this means for the Claude card.** Claude Code's CLI does not expose the weekly-limit "Reset for
 free" credit that claude.ai shows under Settings › Usage, so the card cannot show it. The endpoint that

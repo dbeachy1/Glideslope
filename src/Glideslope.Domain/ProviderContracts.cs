@@ -8,8 +8,9 @@ public static class ProviderIds
     public const string Codex = "codex";
     public const string Claude = "claude";
     public const string Gemini = "gemini";
+    public const string Grok = "grok";
 
-    public static bool IsKnown(string providerId) => providerId is Codex or Claude or Gemini;
+    public static bool IsKnown(string providerId) => providerId is Codex or Claude or Gemini or Grok;
 }
 
 public enum QuotaBucketRole
