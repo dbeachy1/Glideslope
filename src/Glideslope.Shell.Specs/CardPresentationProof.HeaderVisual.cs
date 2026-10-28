@@ -23,7 +23,8 @@ internal static partial class CardPresentationProof
         var cases = new[]
         {
             (ProviderIds.Claude, 100), (ProviderIds.Codex, 100), (ProviderIds.Gemini, 100),
-            (ProviderIds.Claude, CardScale.MinimumPercent), (ProviderIds.Claude, CardScale.MaximumPercent)
+            (ProviderIds.Claude, CardScale.MinimumPercent), (ProviderIds.Claude, CardScale.MaximumPercent),
+            (ProviderIds.Grok, 100), (ProviderIds.Grok, CardScale.MinimumPercent), (ProviderIds.Grok, CardScale.MaximumPercent)
         };
         foreach (var (providerId, percent) in cases)
         foreach (var theme in new[] { ThemeVariant.Dark, ThemeVariant.Light })

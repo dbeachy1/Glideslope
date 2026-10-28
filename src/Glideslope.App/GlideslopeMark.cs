@@ -29,6 +29,7 @@ internal sealed class GlideslopeMark : Control
     {
         ProviderIds.Gemini => "#A9C5E5",
         ProviderIds.Claude => "#EDB9A1",
+        ProviderIds.Grok => "#D6CCEB",
         _ => "#E0E5EC",
     };
 }
