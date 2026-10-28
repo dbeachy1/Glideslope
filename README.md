@@ -10,6 +10,8 @@ Japanese, Simplified Chinese, Korean, Russian, Indonesian, and Traditional Chine
 Glideslope selects a supported system language when it starts. To change it, choose a language in Settings, click
 Save, then click Restart now to apply it.
 
+Grok weekly subscription usage is supported through the official Grok CLI.
+
 If you're a native speaker and spot a translation that sounds wrong, please open a GitHub issue with the exact
 text you saw and the exact wording you recommend. I'll review the correction and include it in a patch release.
 
