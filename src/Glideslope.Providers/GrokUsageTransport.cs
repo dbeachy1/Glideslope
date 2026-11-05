@@ -104,7 +104,7 @@ public sealed class GrokCliUsageTransport : IGrokUsageTransport
             var initialize = await RequestAsync(process, 1, "initialize", new
             {
                 protocolVersion = 1,
-                clientInfo = new { name = "glideslope", version = "3.0.0" },
+                clientInfo = new { name = "glideslope", version = "3.0.1" },
                 clientCapabilities = new { }
             }, linked.Token).ConfigureAwait(false);
             if (initialize.ErrorCode is not null)

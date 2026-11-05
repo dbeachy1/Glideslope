@@ -41,6 +41,12 @@ internal static class GrokUsageSpecs
         Throws<GrokUsageAccountException>(() => GrokUsageParser.Parse(Auth, monthly, ObservedAt), "monthly pool is unsupported");
         var unknown = Weekly.Replace("USAGE_PERIOD_TYPE_WEEKLY", "USAGE_PERIOD_TYPE_UNKNOWN", StringComparison.Ordinal);
         Throws<GrokUsageAccountException>(() => GrokUsageParser.Parse(Auth, unknown, ObservedAt), "unknown pool is unsupported");
+        var omitted = GrokUsageParser.Parse(Auth, Weekly.Replace("\"creditUsagePercent\":4,", "", StringComparison.Ordinal), ObservedAt);
+        Program.Equal(1d, omitted.WeeklyWindow.RemainingFraction, "an omitted usage percentage is the backend's zero");
+        Program.Equal(false, omitted.UsageReported, "the omission is reported to the provider");
+        Program.Equal(true, parsed.UsageReported, "a present usage percentage is reported");
+        var nullUsage = Weekly.Replace("\"creditUsagePercent\":4", "\"creditUsagePercent\":null", StringComparison.Ordinal);
+        Program.Equal(false, GrokUsageParser.Parse(Auth, nullUsage, ObservedAt).UsageReported, "a null usage percentage is an omission");
         var malformed = Weekly.Replace("\"creditUsagePercent\":4", "\"creditUsagePercent\":\"4\"", StringComparison.Ordinal);
         Throws<GrokUsageSchemaException>(() => GrokUsageParser.Parse(Auth, malformed, ObservedAt), "malformed usage percentage is a schema change");
         var noReset = Weekly.Replace("2026-11-04T13:22:27.097-05:00", "2026-11-04T13:22:27.097", StringComparison.Ordinal);
@@ -77,6 +83,80 @@ internal static class GrokUsageSpecs
         Program.Equal(ProviderStatus.UnsupportedAccount,
             (await unsupported.ReadAsync(CancellationToken.None).ConfigureAwait(false)).Status,
             "provider maps monthly pool to UnsupportedAccount");
+
+        await OmittedUsageSpecsAsync().ConfigureAwait(false);
+    }
+
+    private static async Task OmittedUsageSpecsAsync()
+    {
+        var periodStart = DateTimeOffset.UtcNow.AddHours(-1);
+        var otherAuth = Auth.Replace("fixture-principal", "other-principal", StringComparison.Ordinal);
+        var sequence = new SequenceTransport(
+            (Auth, CurrentWeekly(periodStart, usedPercent: null)),
+            (Auth, CurrentWeekly(periodStart, usedPercent: 4)),
+            (Auth, CurrentWeekly(periodStart, usedPercent: null)),
+            (Auth, CurrentWeekly(periodStart.AddSeconds(20), usedPercent: null)),
+            (Auth, CurrentWeekly(periodStart, usedPercent: 5)),
+            (Auth, CurrentWeekly(periodStart, usedPercent: null)),
+            (Auth, CurrentWeekly(periodStart, usedPercent: null)),
+            (Auth, CurrentWeekly(periodStart, usedPercent: null)),
+            (Auth, CurrentWeekly(periodStart, usedPercent: null)),
+            (otherAuth, CurrentWeekly(periodStart, usedPercent: null)),
+            (Auth, CurrentWeekly(periodStart.AddMinutes(-30), usedPercent: null)));
+        var diagnostics = new Program.CapturingDiagnostics();
+        var clock = new ManualClock(DateTimeOffset.UtcNow);
+        var provider = new GrokUsageProvider(sequence, static (_, _, _, _) => ValueTask.FromResult("scope"), diagnostics, clock);
+
+        var fresh = await provider.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+        Program.Equal(ProviderStatus.Ready, fresh.Status, "an omitted percentage in a fresh period is ready");
+        Program.Equal(1d, fresh.Snapshot!.Buckets[0].RemainingFraction, "a fresh period with no usage is fully remaining");
+
+        var used = await provider.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+        Program.Equal(.96d, used.Snapshot!.Buckets[0].RemainingFraction, "reported usage replaces the zero reading");
+
+        var gap = await provider.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+        Program.Equal(ProviderStatus.Offline, gap.Status, "an omission after usage in the same period is a backend gap");
+        Program.Equal(GrokUsageProvider.UsageOmittedCode, gap.SafeErrorCode, "the gap has its own diagnostic code");
+        Program.Equal(true, gap.Snapshot is null, "a backend gap never publishes a false 0 percent reading");
+        Program.Equal(true, gap.Actions.Any(action => action.Kind == ProviderActionKind.Retry), "a backend gap offers Retry");
+
+        clock.Advance(TimeSpan.FromMinutes(10));
+        var jitteredGap = await provider.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+        Program.Equal(ProviderStatus.Offline, jitteredGap.Status, "reset jitter within a minute is still the same period");
+
+        var recovered = await provider.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+        Program.Equal(.95d, recovered.Snapshot!.Buckets[0].RemainingFraction, "the next reported reading recovers");
+
+        // A reported reading restarts the gap timer; an omission that lasts the limit is accepted as zero.
+        var gapStarts = await provider.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+        Program.Equal(ProviderStatus.Offline, gapStarts.Status, "a new gap after recovery is held back");
+        clock.Advance(GrokUsageProvider.OmissionGapLimit - TimeSpan.FromMinutes(1));
+        var gapContinues = await provider.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+        Program.Equal(ProviderStatus.Offline, gapContinues.Status, "a gap shorter than the limit is still held back");
+        clock.Advance(TimeSpan.FromMinutes(1));
+        var persisted = await provider.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+        Program.Equal(ProviderStatus.Ready, persisted.Status, "an omission lasting the limit is a genuine reset to zero");
+        Program.Equal(1d, persisted.Snapshot!.Buckets[0].RemainingFraction, "the persisted omission reads as zero usage");
+        var afterReset = await provider.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+        Program.Equal(ProviderStatus.Ready, afterReset.Status, "after the accepted reset, omissions stay zero");
+
+        var otherAccount = await provider.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+        Program.Equal(ProviderStatus.Ready, otherAccount.Status, "another account's usage does not mark this one as used");
+
+        var differentReset = await provider.ReadAsync(CancellationToken.None).ConfigureAwait(false);
+        Program.Equal(ProviderStatus.Ready, differentReset.Status, "a different reset starts from zero again");
+        Program.Equal(1d, differentReset.Snapshot!.Buckets[0].RemainingFraction, "the other period's omission is zero usage");
+        Program.Equal(true, diagnostics.Events.Any(d => d.Code == GrokUsageProvider.UsageOmittedCode && d.Status == "after_usage_in_period"),
+            "the backend gap is logged");
+        Program.Equal(true, diagnostics.Events.Any(d => d.Code == GrokUsageProvider.UsageOmittedCode && d.Status == "persisted_read_as_zero"),
+            "accepting a persisted omission is logged");
+    }
+
+    private sealed class ManualClock(DateTimeOffset start) : TimeProvider
+    {
+        private DateTimeOffset _now = start;
+        public override DateTimeOffset GetUtcNow() => _now;
+        public void Advance(TimeSpan by) => _now += by;
     }
 
     private static async Task TransportProcessSpecsAsync(string tempRoot)
@@ -213,16 +293,30 @@ internal static class GrokUsageSpecs
         throw new InvalidOperationException($"Specification failed: {message}.");
     }
 
-    private static string CurrentWeekly()
+    private static string CurrentWeekly() => CurrentWeekly(DateTimeOffset.UtcNow.AddHours(-1), usedPercent: 4);
+
+    /// <summary>A current weekly billing reply; a null <paramref name="usedPercent"/> omits the field, as the
+    /// backend does for zero usage.</summary>
+    private static string CurrentWeekly(DateTimeOffset start, int? usedPercent)
     {
-        var start = DateTimeOffset.UtcNow.AddHours(-1);
-        var end = start.AddDays(7);
-        var fixture = System.Text.Json.JsonSerializer.Serialize(new
+        var period = new { type = "USAGE_PERIOD_TYPE_WEEKLY", start, end = start.AddDays(7) };
+        object config = usedPercent is { } used
+            ? new { creditUsagePercent = used, currentPeriod = period }
+            : new { currentPeriod = period };
+        return System.Text.Json.JsonSerializer.Serialize(new { config, subscription_tier = "SuperGrok" });
+    }
+
+    private sealed class SequenceTransport(params (string Auth, string Billing)[] replies) : IGrokUsageTransport
+    {
+        private int _next;
+
+        public ValueTask<GrokUsageExchange> ReadAsync(CancellationToken cancellationToken)
         {
-            config = new { creditUsagePercent = 4, currentPeriod = new { type = "USAGE_PERIOD_TYPE_WEEKLY", start, end } },
-            subscription_tier = "SuperGrok"
-        });
-        return fixture;
+            cancellationToken.ThrowIfCancellationRequested();
+            var reply = replies[_next++];
+            return ValueTask.FromResult(new GrokUsageExchange(new GrokRpcReply("""{"protocolVersion":1}""", null),
+                new GrokRpcReply(reply.Auth, null), new GrokRpcReply(reply.Billing, null)));
+        }
     }
 
     private sealed class FakeTransport(GrokUsageExchange exchange) : IGrokUsageTransport

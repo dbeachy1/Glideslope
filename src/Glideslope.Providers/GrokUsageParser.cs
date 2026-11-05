@@ -5,7 +5,9 @@ using Glideslope.Domain;
 
 namespace Glideslope.Providers;
 
-public sealed record ParsedGrokUsage(string Subject, string? Plan, QuotaBucket WeeklyWindow);
+/// <param name="UsageReported">False when the billing config omitted <c>creditUsagePercent</c> and the
+/// window was read as 0 percent used.</param>
+public sealed record ParsedGrokUsage(string Subject, string? Plan, QuotaBucket WeeklyWindow, bool UsageReported = true);
 
 /// <summary>Normalizes the authenticated ACP principal and the reported weekly subscription pool.</summary>
 public static partial class GrokUsageParser
@@ -29,8 +31,14 @@ public static partial class GrokUsageParser
             throw new GrokUsageAccountException(ProviderStatus.UnsupportedAccount, "grok_billing_config_unavailable");
         if (config.ValueKind != JsonValueKind.Object)
             throw new GrokUsageSchemaException("grok_billing_config_invalid");
-        if (!config.TryGetProperty("creditUsagePercent", out var usedElement) ||
-            usedElement.ValueKind != JsonValueKind.Number || !usedElement.TryGetDouble(out var used) || !double.IsFinite(used) || used < 0)
+        // The billing backend omits zero-valued fields, so a fresh weekly period with no usage arrives
+        // without creditUsagePercent (observed 2026-11-04 right after a reset, Grok CLI 1.0.70). The
+        // provider decides whether an omission in a period that already showed usage is a backend gap.
+        var usageReported = config.TryGetProperty("creditUsagePercent", out var usedElement) &&
+            usedElement.ValueKind != JsonValueKind.Null;
+        var used = 0d;
+        if (usageReported && (usedElement.ValueKind != JsonValueKind.Number || !usedElement.TryGetDouble(out used) ||
+            !double.IsFinite(used) || used < 0))
             throw new GrokUsageSchemaException("grok_usage_percent_invalid");
         if (!config.TryGetProperty("currentPeriod", out var period) || period.ValueKind != JsonValueKind.Object)
             throw new GrokUsageSchemaException("grok_period_unavailable");
@@ -49,7 +57,7 @@ public static partial class GrokUsageParser
         var remaining = 1d - Math.Min(used, 100d) / 100d;
         var bucket = new QuotaBucket(WeeklyBucketId, QuotaBucketRole.Weekly, remaining, duration, end,
             $"{SourceId}.weekly");
-        return new ParsedGrokUsage(subject, ReadPlan(billing), bucket);
+        return new ParsedGrokUsage(subject, ReadPlan(billing), bucket, usageReported);
     }
 
     /// <summary>Validates the selected account before the transport requests its billing data.</summary>

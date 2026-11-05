@@ -10,19 +10,28 @@ namespace Glideslope.Providers;
 public sealed class GrokUsageProvider : IUsageProvider
 {
     public const string HistoryScopeUnavailableCode = "grok_history_scope_unavailable";
+    public const string UsageOmittedCode = "grok_usage_percent_omitted";
     private static readonly Uri Instructions = new("https://docs.x.ai/build/overview");
+    private static readonly TimeSpan SamePeriodTolerance = TimeSpan.FromMinutes(1);
+    /// <summary>How long an omission may persist after usage was seen before it is accepted as zero, so a
+    /// genuine mid-period reset by xAI cannot hold the card offline for the rest of the week.</summary>
+    internal static readonly TimeSpan OmissionGapLimit = TimeSpan.FromMinutes(30);
+    private readonly object _periodGate = new();
+    private (string Subject, DateTimeOffset ResetAtUtc, bool UsageSeen, DateTimeOffset? FirstOmissionUtc)? _lastPeriod;
     private readonly IGrokUsageTransport _transport;
     private readonly AccountScopeResolver _scopeResolver;
     private readonly IProviderDiagnosticSink _diagnostics;
+    private readonly TimeProvider _time;
     private readonly byte[] _sessionScopeKey = RandomNumberGenerator.GetBytes(32);
     private int _scopeWarningIssued;
 
     public GrokUsageProvider(IGrokUsageTransport transport, AccountScopeResolver scopeResolver,
-        IProviderDiagnosticSink? diagnostics = null)
+        IProviderDiagnosticSink? diagnostics = null, TimeProvider? timeProvider = null)
     {
         _transport = transport ?? throw new ArgumentNullException(nameof(transport));
         _scopeResolver = scopeResolver ?? throw new ArgumentNullException(nameof(scopeResolver));
         _diagnostics = diagnostics ?? new NullProviderDiagnosticSink();
+        _time = timeProvider ?? TimeProvider.System;
     }
 
     public async ValueTask<ProviderReadResult> ReadAsync(CancellationToken cancellationToken)
@@ -34,8 +43,13 @@ public sealed class GrokUsageProvider : IUsageProvider
             var exchange = await _transport.ReadAsync(cancellationToken).ConfigureAwait(false);
             GrokCliUsageTransport.ValidateInitialize(exchange.Initialize.ResultJson);
 
-            var now = DateTimeOffset.UtcNow;
+            var now = _time.GetUtcNow();
             var parsed = GrokUsageParser.Parse(exchange.AuthInfo.ResultJson, exchange.Billing.ResultJson, now);
+            if (!AcceptUsage(parsed, now))
+            {
+                result = Failure(ProviderStatus.Offline, UsageOmittedCode);
+                return result;
+            }
             string accountScope;
             try
             {
@@ -98,6 +112,39 @@ public sealed class GrokUsageProvider : IUsageProvider
             _diagnostics.Record(new ProviderDiagnostic("provider_read_finished", ProviderIds.Grok,
                 $"{result?.Status.ToString().ToLowerInvariant() ?? "cancelled"},code={result?.SafeErrorCode ?? "none"}",
                 Math.Max(0, (long)Stopwatch.GetElapsedTime(started).TotalMilliseconds)));
+        }
+    }
+
+    /// <summary>An omitted percentage normally means zero usage. After this account reported usage above
+    /// zero in the same period, a short omission is treated as a backend gap: the read fails as Offline, so
+    /// the card keeps the last reading and the scheduler retries, instead of publishing a false 0 percent.
+    /// Isolated reads failed the usage-percentage check mid-period on 2026-11-02..04 between normal
+    /// readings. An omission lasting <see cref="OmissionGapLimit"/> is accepted as zero, which covers a
+    /// genuine mid-period reset.</summary>
+    private bool AcceptUsage(ParsedGrokUsage parsed, DateTimeOffset now)
+    {
+        var reset = parsed.WeeklyWindow.ResetAtUtc ?? DateTimeOffset.MinValue;
+        lock (_periodGate)
+        {
+            var samePeriod = _lastPeriod is { } last && StringComparer.Ordinal.Equals(last.Subject, parsed.Subject) &&
+                (last.ResetAtUtc - reset).Duration() <= SamePeriodTolerance;
+            var usageSeen = samePeriod && _lastPeriod!.Value.UsageSeen;
+            if (!parsed.UsageReported && usageSeen)
+            {
+                var firstOmission = _lastPeriod!.Value.FirstOmissionUtc ?? now;
+                if (now - firstOmission < OmissionGapLimit)
+                {
+                    _diagnostics.Record(new ProviderDiagnostic(UsageOmittedCode, ProviderIds.Grok, "after_usage_in_period", 0));
+                    _lastPeriod = (parsed.Subject, reset, true, firstOmission);
+                    return false;
+                }
+                _diagnostics.Record(new ProviderDiagnostic(UsageOmittedCode, ProviderIds.Grok, "persisted_read_as_zero", 0));
+                usageSeen = false;
+            }
+            else if (!parsed.UsageReported && !samePeriod)
+                _diagnostics.Record(new ProviderDiagnostic(UsageOmittedCode, ProviderIds.Grok, "read_as_zero", 0));
+            _lastPeriod = (parsed.Subject, reset, usageSeen || parsed.WeeklyWindow.RemainingFraction < 1, null);
+            return true;
         }
     }
 
